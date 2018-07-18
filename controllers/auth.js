@@ -34,6 +34,34 @@ class AuthController extends BaseController {
 			});
 		}
 	}
+
+	async login(req, res) {
+		if (!this.validate(req, res)) {
+			return;
+		}
+
+		try {
+			let user = await new User({
+				username: req.body.username
+			}).fetch({
+				require: true
+			});
+
+			await user.authenticate(req.body.password);
+
+			let token = user.generateJwt();
+			res.status(200);
+			res.json({
+				token
+			});
+
+		} catch (error) {
+			res.status(403);
+			return res.json({
+				'message': 'Invalid  Credentials'
+			});
+		}
+	}
 }
 
 

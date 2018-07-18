@@ -13,6 +13,8 @@ module.exports = async function createTable() {
 		table.string('username');
 		table.string('password_digest',1024);
 		table.timestamps();
+
+		table.unique('username');
 	});
 	console.log('created users table');
 

@@ -11,4 +11,10 @@ router.post('/register', [
 	check('password').isLength({min: 6}).trim()
 ], AuthController.register.bind(AuthController));
 
+router.post('/login', [
+	csrfProtection,
+	check('username').not().isEmpty(),
+	check('password').not().isEmpty()
+], AuthController.login.bind(AuthController));
+
 module.exports = router;
