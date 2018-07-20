@@ -7,7 +7,7 @@ require('dotenv').config();
 let app = express();
 
 app.set('port', process.env.PORT || 3000);
-app.use('/api/images', express.static('public/images'));
+app.use('/api/images', express.static('./public/images'));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
