@@ -19,7 +19,7 @@ class MarkersController extends BaseController {
 			let marker = new Marker();
 
 			//TODO make this for current user
-			marker.user_id = 1;
+			marker.user_id = req.user.id;
 			marker.lat = req.body.lat;
 			marker.lng = req.body.lng;
 			marker.time = req.body.time;
@@ -33,9 +33,12 @@ class MarkersController extends BaseController {
 
 			await media.$marker.assign(marker);
 			await marker.load('media');
+			await marker.load('user');
+
 			res.status(200);
-			res.json(marker);
+			res.json(marker)
 		} catch (error) {
+			console.log(error);
 			res.status(500);
 			res.json({
 				error: 'Error'
@@ -54,7 +57,12 @@ class MarkersController extends BaseController {
 				}).fetch({
 					withRelated: [
 						'markers',
-						'markers.media'
+						'markers.media',
+						{
+							'markers.user': (query) => {
+								return query.select('id', 'username');
+							}
+						}
 					]
 				});
 
@@ -63,12 +71,14 @@ class MarkersController extends BaseController {
 				markers = await new Marker()
 					.fetchAll({
 						withRelated: [
-							'media'
-						]
+							'media',
+							{
+								user(query) {
+									return query.select('id', 'username');
+								}
+							}]
 					});
 			}
-
-
 			res.status(200);
 			res.json(markers);
 		} catch (error) {
@@ -77,18 +87,6 @@ class MarkersController extends BaseController {
 				error: 'Error'
 			});
 		}
-	}
-
-	async edit(req, res) {
-		const markers = await new Marker({user_id: req.user.id})
-			.fetchAll({
-				withRelated: [
-					'media'
-				]
-			});
-
-		res.status(200);
-		res.json(markers);
 	}
 
 	async delete(req, res) {
