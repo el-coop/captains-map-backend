@@ -17,12 +17,11 @@ class MarkersController extends BaseController {
 		try {
 
 			let marker = new Marker();
-
-			//TODO make this for current user
 			marker.user_id = req.user.id;
 			marker.lat = req.body.lat;
 			marker.lng = req.body.lng;
 			marker.time = req.body.time;
+			marker.type = req.body.type;
 			marker.description = req.body.description;
 
 			await marker.save();
@@ -96,8 +95,18 @@ class MarkersController extends BaseController {
 					'media'
 				]
 			});
-			fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
-			await marker.$media.destroy();
+			try {
+				fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
+			} catch (error) {
+				console.log(error);
+			}
+			try {
+				if (marker.$media) {
+					await marker.$media.destroy();
+				}
+			} catch (error) {
+				console.log(error);
+			}
 			await marker.destroy();
 			res.status(200);
 			res.json({

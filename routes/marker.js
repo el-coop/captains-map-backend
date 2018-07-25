@@ -32,6 +32,12 @@ router.post('/create', [
 	check('lat').not().isEmpty(),
 	check('lng').not().isEmpty(),
 	check('time').not().isEmpty(),
+	check('type').isIn([
+		'Visited',
+		'Plan',
+		'Suggestion',
+		'Other'
+	]).not().isEmpty(),
 ], MarkerController.create.bind(MarkerController));
 
 router.delete('/:marker', [

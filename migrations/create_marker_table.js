@@ -14,12 +14,7 @@ module.exports = async function createTable() {
 		table.foreign('user_id').references('users.id').onDelete('CASCADE');
 		table.string('lat');
 		table.string('lng');
-		table.enum('type', [
-			'visited',
-			'plan',
-			'suggestion',
-			'other'
-		]).default('visited');
+		table.string('type');
 		table.dateTime('time');
 		table.text('description');
 		table.timestamps();
