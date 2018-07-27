@@ -95,11 +95,11 @@ class MarkersController {
 
 	async delete(req, res) {
 		try {
-			let marker = await new Marker({id: req.params.marker}).fetch({
-				withRelated: [
-					'media'
-				]
-			});
+			let marker = req.objects.marker;
+			await marker.load(['media']);
+
+			console.log(marker.$media);
+
 
 			try {
 				fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));

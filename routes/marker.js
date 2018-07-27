@@ -3,9 +3,9 @@ const router = express.Router();
 const authMiddleware = require('../middleware/AuthMiddleware');
 const csrf = require('csurf');
 const csrfProtection = csrf({cookie: true});
-const {check} = require('express-validator/check');
 const upload = require('../middleware/FileMiddleware');
 const validation = require('../middleware/ValidationMiddleware');
+const modelMiddleware = require('../middleware/ModelMiddleware');
 
 const MarkerController = require('../controllers/marker');
 
@@ -31,6 +31,8 @@ router.post('/create', [
 router.delete('/:marker', [
 	csrfProtection,
 	authMiddleware,
+	modelMiddleware.inject,
+	modelMiddleware.valdiateOwnership('marker')
 ], MarkerController.delete.bind(MarkerController));
 
 module.exports = router;
