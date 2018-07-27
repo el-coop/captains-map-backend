@@ -1,19 +1,13 @@
 'use strict';
 
-const BaseController = require('./base');
 const User = require('../models/User');
 const Marker = require('../models/Marker');
 const Media = require('../models/Media');
 const fs = require('fs');
 const path = require('path');
 
-class MarkersController extends BaseController {
+class MarkersController {
 	async create(req, res) {
-
-		if (!this.validate(req, res)) {
-			return;
-		}
-
 		try {
 
 			let marker = new Marker();
@@ -27,8 +21,19 @@ class MarkersController extends BaseController {
 			await marker.save();
 
 			let media = new Media();
-			media.type = 'image';
-			media.path = `/images/${req.file.filename}`;
+			let inputMedia = req.body.media;
+			media.type = inputMedia.type;
+			if (inputMedia.type === 'instagram') {
+				media.path = inputMedia.path;
+				console.log('instagram');
+				res.status(200);
+				res.json({
+					instagram: 'true'
+				});
+				return;
+			} else {
+				media.path = `/images/${req.file.filename}`;
+			}
 
 			await media.$marker.assign(marker);
 			await marker.load('media');
@@ -95,6 +100,7 @@ class MarkersController extends BaseController {
 					'media'
 				]
 			});
+
 			try {
 				fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
 			} catch (error) {

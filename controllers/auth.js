@@ -1,14 +1,9 @@
 'use strict';
 
 const User = require('../models/User');
-const BaseController = require('./base');
 
-class AuthController extends BaseController {
+class AuthController {
 	async register(req, res) {
-
-		if (!this.validate(req, res)) {
-			return;
-		}
 
 		try {
 			if (await User.count() > 0) {
@@ -36,9 +31,6 @@ class AuthController extends BaseController {
 	}
 
 	async login(req, res) {
-		if (!this.validate(req, res)) {
-			return;
-		}
 
 		try {
 			let user = await new User({

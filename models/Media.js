@@ -5,8 +5,6 @@ let Fields = require('bookshelf-schema/lib/fields'),
 	DateTimeField = Fields.DateTimeField;
 let Relations = require('bookshelf-schema/lib/relations'),
 	belongsTo = Relations.BelongsTo;
-require('./Marker');
-require('./User');
 
 let Media = Bookshelf.Model.extend({
 	tableName: 'medias',

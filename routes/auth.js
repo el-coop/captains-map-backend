@@ -2,19 +2,25 @@ let express = require('express');
 let router = express.Router();
 let csrf = require('csurf');
 let csrfProtection = csrf({cookie: true});
-const {check} = require('express-validator/check');
+const validation = require('../middleware/ValidationMiddleware');
 
 let AuthController = require('../controllers/auth');
 
 router.post('/register', [
-	check('username').not().isEmpty(),
-	check('password').isLength({min: 6}).trim()
+	validation.rules({
+		username: ['required'],
+		password: ['min:6']
+	}),
+	validation.verify
 ], AuthController.register.bind(AuthController));
 
 router.post('/login', [
 	csrfProtection,
-	check('username').not().isEmpty(),
-	check('password').not().isEmpty()
+	validation.rules({
+		username: ['required'],
+		password: ['required']
+	}),
+	validation.verify
 ], AuthController.login.bind(AuthController));
 
 module.exports = router;

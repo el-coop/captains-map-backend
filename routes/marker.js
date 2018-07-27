@@ -1,48 +1,36 @@
-let express = require('express');
-let router = express.Router();
-let authMiddleware = require('../middleware/AuthMiddleware');
+const express = require('express');
+const router = express.Router();
+const authMiddleware = require('../middleware/AuthMiddleware');
 const csrf = require('csurf');
 const csrfProtection = csrf({cookie: true});
-const mime = require('mime');
 const {check} = require('express-validator/check');
-const multer = require('multer');
-const crypto = require('crypto');
-const path = require('path');
+const upload = require('../middleware/FileMiddleware');
+const validation = require('../middleware/ValidationMiddleware');
 
 const MarkerController = require('../controllers/marker');
 
-const upload = multer({
-	storage: multer.diskStorage({
-		destination: path.join(__dirname, '../public/images'),
-		filename(req, file, cb) {
-			crypto.pseudoRandomBytes(16, function (err, raw) {
-				cb(null, raw.toString('hex') + Date.now() + '.' + mime.getExtension(file.mimetype));
-			});
-		}
-	})
-});
-
 router.get('/:user?', MarkerController.index);
-
 
 router.post('/create', [
 	csrfProtection,
 	authMiddleware,
-	upload.single('media'),
-	check('lat').not().isEmpty(),
-	check('lng').not().isEmpty(),
-	check('time').not().isEmpty(),
-	check('type').isIn([
-		'Visited',
-		'Plan',
-		'Suggestion',
-		'Other'
-	]).not().isEmpty(),
+	upload.image('media[image]'),
+	validation.rules({
+		lat: ['required'],
+		lng: ['required'],
+		time: ['required'],
+		description: [],
+		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
+		'media.type': ['required'],
+		'media.path': ['requiredIf:media.type,instagram'],
+		'media.file': ['requiredIf:media.type,image,file']
+	}),
+	validation.verify
 ], MarkerController.create.bind(MarkerController));
 
 router.delete('/:marker', [
 	csrfProtection,
 	authMiddleware,
-], MarkerController.delete);
+], MarkerController.delete.bind(MarkerController));
 
 module.exports = router;
