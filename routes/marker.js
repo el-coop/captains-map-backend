@@ -11,18 +11,20 @@ const MarkerController = require('../controllers/marker');
 
 router.get('/:user?', MarkerController.index);
 
+router.get('/instagram/:id', MarkerController.getInstagramData);
+
 router.post('/create', [
 	csrfProtection,
 	authMiddleware,
 	upload.image('media[image]'),
 	validation.rules({
-		lat: ['required'],
-		lng: ['required'],
-		time: ['required'],
+		lat: ['required', 'numeric'],
+		lng: ['required', 'numeric'],
+		time: ['required', 'date'],
 		description: [],
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
-		'media.path': ['requiredIf:media.type,instagram'],
+		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\/\/www\.instagram\.com\/p\/\w*\/.*'],
 		'media.file': ['requiredIf:media.type,image,file']
 	}),
 	validation.verify

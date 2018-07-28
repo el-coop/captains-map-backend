@@ -4,7 +4,10 @@ class Validator {
 	rules(rules) {
 		let validationRules = [];
 		for (let fieldName in rules) {
-			let fieldValidation = check(fieldName).trim().escape();
+			let fieldValidation = check(fieldName).trim();
+			if (rules[fieldName].indexOf('date') === -1 && rules[fieldName].indexOf('url') === -1) {
+				fieldValidation = check(fieldName).escape();
+			}
 			rules[fieldName].forEach((item) => {
 				const variables = item.split(':');
 				const methodName = variables[0];
@@ -20,7 +23,6 @@ class Validator {
 	}
 
 	verify(req, res, next) {
-		console.log('verify-inner');
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(422).json({errors: errors.array()});
@@ -38,6 +40,22 @@ class Validator {
 
 	in(args) {
 		this.isIn(args);
+	}
+
+	numeric() {
+		this.isNumeric();
+	}
+
+	date() {
+		this.toDate();
+	}
+
+	matches(args) {
+		this.matches(args[0]);
+	}
+
+	url() {
+		this.isURL();
 	}
 
 	requiredIf(args, self) {

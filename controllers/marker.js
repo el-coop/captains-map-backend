@@ -3,13 +3,13 @@
 const User = require('../models/User');
 const Marker = require('../models/Marker');
 const Media = require('../models/Media');
+const http = require('../services/HttpService');
 const fs = require('fs');
 const path = require('path');
 
 class MarkersController {
 	async create(req, res) {
 		try {
-
 			let marker = new Marker();
 			marker.user_id = req.user.id;
 			marker.lat = req.body.lat;
@@ -24,14 +24,10 @@ class MarkersController {
 			let inputMedia = req.body.media;
 			media.type = inputMedia.type;
 			if (inputMedia.type === 'instagram') {
-				media.path = inputMedia.path;
-				console.log('instagram');
-				res.status(200);
-				res.json({
-					instagram: 'true'
-				});
-				return;
-			} else {
+				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
+				media.path = regex.exec(inputMedia.path)[1];
+			}
+			else {
 				media.path = `/images/${req.file.filename}`;
 			}
 
@@ -41,7 +37,9 @@ class MarkersController {
 
 			res.status(200);
 			res.json(marker)
-		} catch (error) {
+		}
+
+		catch (error) {
 			console.log(error);
 			res.status(500);
 			res.json({
@@ -56,32 +54,34 @@ class MarkersController {
 		let markers;
 		try {
 			if (req.params.user) {
-				let user = await new User({
-					username: req.params.user
-				}).fetch({
-					withRelated: [
-						'markers',
-						'markers.media',
-						{
-							'markers.user': (query) => {
-								return query.select('id', 'username');
+				let user = await
+					new User({
+						username: req.params.user
+					}).fetch({
+						withRelated: [
+							'markers',
+							'markers.media',
+							{
+								'markers.user': (query) => {
+									return query.select('id', 'username');
+								}
 							}
-						}
-					]
-				});
+						]
+					});
 
 				markers = user.$markers;
 			} else {
-				markers = await new Marker()
-					.fetchAll({
-						withRelated: [
-							'media',
-							{
-								user(query) {
-									return query.select('id', 'username');
-								}
-							}]
-					});
+				markers = await
+					new Marker()
+						.fetchAll({
+							withRelated: [
+								'media',
+								{
+									user(query) {
+										return query.select('id', 'username');
+									}
+								}]
+						});
 			}
 			res.status(200);
 			res.json(markers);
@@ -96,10 +96,8 @@ class MarkersController {
 	async delete(req, res) {
 		try {
 			let marker = req.objects.marker;
-			await marker.load(['media']);
-
-			console.log(marker.$media);
-
+			await
+				marker.load(['media']);
 
 			try {
 				fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
@@ -108,7 +106,8 @@ class MarkersController {
 			}
 			try {
 				if (marker.$media) {
-					await marker.$media.destroy();
+					await
+						marker.$media.destroy();
 				}
 			} catch (error) {
 				console.log(error);
@@ -125,6 +124,27 @@ class MarkersController {
 				error: 'Error'
 			});
 		}
+	}
+
+	async getInstagramData(req, res) {
+		try {
+			let id = req.params.id;
+			let response = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${id}/&omitscript=true&hidecaption=true`);
+			if (response.status == 200) {
+				res.status(200);
+				res.json({
+					data: response.data
+				});
+				return;
+			}
+		} catch (error) {
+			console.log(error);
+		}
+		res.status(500);
+		res.json({
+			error: 'Error'
+		});
+
 	}
 }
 

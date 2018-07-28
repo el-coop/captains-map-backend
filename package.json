@@ -10,6 +10,7 @@
 		"setup-db": "npm run migrate && npm run seed"
 	},
 	"dependencies": {
+		"axios": "^0.18.0",
 		"bookshelf": "^0.13.3",
 		"bookshelf-schema": "^0.3.6",
 		"bookshelf-secure-password": "^3.1.0",
