@@ -86,6 +86,7 @@ class MarkersController {
 			res.status(200);
 			res.json(markers);
 		} catch (error) {
+			console.log(error);
 			res.status(500);
 			res.json({
 				error: 'Error'

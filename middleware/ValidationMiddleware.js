@@ -4,7 +4,7 @@ class Validator {
 	rules(rules) {
 		let validationRules = [];
 		for (let fieldName in rules) {
-			let fieldValidation = check(fieldName).trim();
+			let fieldValidation = check(fieldName).trim().optional();
 			if (rules[fieldName].indexOf('date') === -1 && rules[fieldName].indexOf('url') === -1) {
 				fieldValidation = check(fieldName).escape();
 			}
@@ -55,6 +55,7 @@ class Validator {
 	}
 
 	url() {
+		console.log(this);
 		this.isURL();
 	}
 
@@ -63,10 +64,10 @@ class Validator {
 			if (self.findFieldValue(req.body, args[0]) === args[1]) {
 				if ((args[2] || 'body') === 'file') {
 					if (!req.file) {
-						return Promise.reject('Invalid value');
+						return Promise.reject('Must upload file');
 					}
 				} else if (!value) {
-					return Promise.reject('Invalid value');
+					return Promise.reject(`Required if ${args[0]} is ${args[1]}`);
 				}
 			}
 			return Promise.resolve();
