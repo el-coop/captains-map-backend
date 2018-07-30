@@ -6,11 +6,11 @@ class AuthController {
 	async register(req, res) {
 
 		try {
-			if (await User.count() > 0) {
+/*			if (await User.count() > 0) {
 				return res.status(403).json({
 					'message': 'registration is closed'
 				});
-			}
+			}*/
 			let user = new User();
 
 			user.username = req.body.username;
