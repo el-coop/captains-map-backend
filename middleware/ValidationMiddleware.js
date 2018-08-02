@@ -55,7 +55,6 @@ class Validator {
 	}
 
 	url() {
-		console.log(this);
 		this.isURL();
 	}
 
@@ -64,7 +63,7 @@ class Validator {
 			if (self.findFieldValue(req.body, args[0]) === args[1]) {
 				if ((args[2] || 'body') === 'file') {
 					if (!req.file) {
-						return Promise.reject('Must upload file');
+						return Promise.reject('Must upload a file');
 					}
 				} else if (!value) {
 					return Promise.reject(`Required if ${args[0]} is ${args[1]}`);
