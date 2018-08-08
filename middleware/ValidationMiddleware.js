@@ -5,9 +5,6 @@ class Validator {
 		let validationRules = [];
 		for (let fieldName in rules) {
 			let fieldValidation = check(fieldName).trim().optional();
-			if (rules[fieldName].indexOf('date') === -1 && rules[fieldName].indexOf('url') === -1) {
-				fieldValidation = check(fieldName).escape();
-			}
 			rules[fieldName].forEach((item) => {
 				const variables = item.split(':');
 				const methodName = variables[0];

@@ -59,7 +59,11 @@ class MarkersController {
 						username: req.params.user
 					}).fetch({
 						withRelated: [
-							'markers',
+							{
+								markers(query) {
+									return query.orderBy('created_at', 'DESC');
+								},
+							},
 							'markers.media',
 							{
 								'markers.user': (query) => {
@@ -72,7 +76,7 @@ class MarkersController {
 				markers = user.$markers;
 			} else {
 				markers = await
-					new Marker()
+					new Marker().orderBy('created_at', 'DESC')
 						.fetchAll({
 							withRelated: [
 								'media',
