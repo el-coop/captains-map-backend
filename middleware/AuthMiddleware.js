@@ -1,13 +1,17 @@
 let jwtService = require('../services/JwtService');
 
 module.exports = function (req, res, next) {
-	let token = req.headers.jwt;
+	const {token} = req.signedCookies;
 	let user = jwtService.verify(token);
 	if (user) {
 		req.user = user;
 		next();
 	} else {
 		res.status(403)
-			.json({message: "Access forbidden."})
+			.clearCookie("token")
+			.json({
+				message: "No user.",
+				clearToken: true
+			})
 	}
 };

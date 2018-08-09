@@ -2,7 +2,7 @@
 
 class SiteController {
 	csurf(req, res) {
-		return res.json({csrfToken: req.csrfToken()});
+		return res.status(200).json({csrfToken: req.csrfToken()});
 	}
 }
 

@@ -6,11 +6,11 @@ class AuthController {
 	async register(req, res) {
 
 		try {
-/*			if (await User.count() > 0) {
+			if (await User.count() > 0) {
 				return res.status(403).json({
 					'message': 'registration is closed'
 				});
-			}*/
+			}
 			let user = new User();
 
 			user.username = req.body.username;
@@ -42,10 +42,15 @@ class AuthController {
 			await user.authenticate(req.body.password);
 
 			let token = user.generateJwt();
-			res.status(200);
-			res.json({
-				token
-			});
+			res.status(200)
+				.cookie('token', token, {
+					httpOnly: true,
+					signed: true,
+					maxAge: 604800
+				})
+				.json({
+					token
+				});
 
 		} catch (error) {
 			res.status(403);
