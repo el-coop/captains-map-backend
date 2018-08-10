@@ -46,7 +46,8 @@ class AuthController {
 				.cookie('token', token, {
 					httpOnly: true,
 					signed: true,
-					maxAge: 604800
+					maxAge: 604800,
+					secure: process.env.APP_ENV === 'production'
 				})
 				.json({
 					token

@@ -7,7 +7,10 @@ let siteController = require('../controllers/site');
 
 
 // Send CSRF token for session
-router.get('/csrf-token', csrfProtection, siteController.csurf);
+router.use(csrfProtection, [(req, res, next) => {
+	res.header('csrfToken', req.csrfToken());
+	next();
+}]);
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
