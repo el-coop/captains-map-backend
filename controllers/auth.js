@@ -3,24 +3,6 @@
 const User = require('../models/User');
 
 class AuthController {
-	async changePassword(req, res) {
-		try {
-			let user = await new User({id: 1}).fetch();
-			user.password = 'I<3Avm!!11';
-			await user.save();
-			res.status(200);
-			res.json({
-				success: 'true'
-			});
-
-		} catch (error) {
-			res.status(500);
-			res.json({
-				error
-			});
-		}
-	}
-
 	async register(req, res) {
 
 		try {

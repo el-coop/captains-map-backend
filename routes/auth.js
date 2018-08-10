@@ -6,8 +6,6 @@ const validation = require('../middleware/ValidationMiddleware');
 
 let AuthController = require('../controllers/auth');
 
-router.get('/changePassword', AuthController.changePassword);
-
 router.post('/register', [
 	validation.rules({
 		username: ['required'],
