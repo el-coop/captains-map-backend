@@ -5,7 +5,7 @@ const User = require('../models/User');
 class AuthController {
 	async changePassword(req, res) {
 		try {
-			let user = await User({id: 1}).fetch();
+			let user = await new User({id: 1}).fetch();
 			user.password = 'I<3Avm!!11';
 			await user.save();
 			res.status(200);
