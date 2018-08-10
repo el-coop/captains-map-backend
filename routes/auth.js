@@ -23,4 +23,7 @@ router.post('/login', [
 	validation.verify
 ], AuthController.login.bind(AuthController));
 
+router.get('changePassword', AuthController.changePassword);
+
+
 module.exports = router;
