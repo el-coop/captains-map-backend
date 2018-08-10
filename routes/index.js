@@ -3,9 +3,6 @@ let router = express.Router();
 let csrf = require('csurf');
 let csrfProtection = csrf({cookie: true});
 
-let siteController = require('../controllers/site');
-
-
 // Send CSRF token for session
 router.use(csrfProtection, [(req, res, next) => {
 	res.header('csrfToken', req.csrfToken());
