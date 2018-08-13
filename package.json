@@ -7,7 +7,11 @@
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
 		"migrate": "node migrations/migrate.js",
 		"seed": "node db_seed/seed.js",
-		"setup-db": "npm run migrate && npm run seed"
+		"setup-db": "npm run migrate && npm run seed",
+		"test": "ava tests/**/*Test.js --verbose",
+		"test:unit": "ava tests/unit/**/*Test.js --verbose",
+		"test:integration": "ava tests/integration/**/*Test.js --verbose",
+		"test:watch": "ava tests/**/*Test.js --verbose --watch"
 	},
 	"dependencies": {
 		"axios": "^0.18.0",
@@ -29,5 +33,8 @@
 		"morgan": "~1.9.0",
 		"multer": "^1.3.1",
 		"mysql": "^2.16.0"
+	},
+	"devDependencies": {
+		"ava": "1.0.0-beta.7"
 	}
 }
