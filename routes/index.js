@@ -4,15 +4,12 @@ let csrf = require('csurf');
 let csrfProtection = csrf({cookie: true});
 
 // Send CSRF token for session
-router.use(csrfProtection, [(req, res, next) => {
-	res.header('csrfToken', req.csrfToken());
-	next();
-}]);
-
-/* GET home page. */
-router.get('/', function (req, res, next) {
-	res.send('it works');
-});
+if (process.env.APP_ENV !== 'test') {
+	router.use(csrfProtection, [(req, res, next) => {
+		res.header('csrfToken', req.csrfToken());
+		next();
+	}]);
+}
 
 router.use('/auth', require('./auth'));
 router.use('/marker', require('./marker'));

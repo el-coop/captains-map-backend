@@ -4,7 +4,7 @@ let csrf = require('csurf');
 let csrfProtection = csrf({cookie: true});
 const validation = require('../middleware/ValidationMiddleware');
 
-let AuthController = require('../controllers/auth');
+let AuthController = require('../controllers/AuthController');
 
 router.post('/register', [
 	validation.rules({

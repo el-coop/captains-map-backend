@@ -1,4 +1,4 @@
-const User = require('../../models/User');
+const User = require('../../../models/User');
 
 exports.seed = async function (knex, Promise) {
 	// Deletes ALL existing entries

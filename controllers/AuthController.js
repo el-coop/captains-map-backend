@@ -8,7 +8,7 @@ class AuthController {
 		try {
 			if (await User.count() > 0) {
 				return res.status(403).json({
-					'message': 'registration is closed'
+					'message': 'Registration is closed'
 				});
 			}
 			let user = new User();
@@ -18,13 +18,11 @@ class AuthController {
 
 			await user.save();
 
-			res.status(200);
-			res.json({
-				success: 'true'
+			return res.status(200).json({
+				success: true
 			});
 		} catch (error) {
-			res.status(500);
-			res.json({
+			return res.status(500).json({
 				error
 			});
 		}
