@@ -5,9 +5,6 @@
 	"scripts": {
 		"start": "node ./bin/www",
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
-		"migrate": "node migrations/migrate.js",
-		"seed": "node db_seed/seed.js",
-		"setup-db": "npm run migrate && npm run seed",
 		"test": "ava tests/**/*Test.js --verbose",
 		"test:unit": "ava tests/unit/**/*Test.js --verbose",
 		"test:integration": "ava tests/integration/**/*Test.js --verbose",
@@ -26,15 +23,15 @@
 		"express": "~4.16.0",
 		"express-validator": "^5.3.0",
 		"http-errors": "~1.6.2",
-		"jade": "~1.11.0",
 		"jsonwebtoken": "^8.3.0",
-		"knex": "^0.13.0",
+		"knex": "^0.15.2",
 		"mime": "^2.3.1",
 		"morgan": "~1.9.0",
 		"multer": "^1.3.1",
 		"mysql": "^2.16.0"
 	},
 	"devDependencies": {
-		"ava": "1.0.0-beta.7"
+		"ava": "1.0.0-beta.7",
+		"sqlite3": "^4.0.2"
 	}
 }
