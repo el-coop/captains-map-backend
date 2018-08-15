@@ -1,5 +1,4 @@
 import test from 'ava';
-import env from '../loadEnv';
 import app from '../../app';
 import knex from '../../database/knex';
 import User from '../../models/User';

@@ -40,8 +40,6 @@ class AuthController {
 			await user.authenticate(req.body.password);
 
 			let token = user.generateJwt();
-			let exp = new Date();
-			exp.setDate(exp.getDate() + 7);
 			res.status(200)
 				.cookie('token', token, {
 					httpOnly: true,
@@ -53,7 +51,7 @@ class AuthController {
 					user: {
 						id: user.id,
 						username: user.username,
-						exp: exp.getTime()
+						exp: Date.now() + 604800
 					}
 				});
 

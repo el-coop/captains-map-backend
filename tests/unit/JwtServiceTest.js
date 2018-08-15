@@ -1,5 +1,4 @@
 import test from 'ava';
-import env from '../loadEnv';
 import JwtService from '../../services/JwtService';
 
 
