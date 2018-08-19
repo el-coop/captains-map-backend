@@ -6,9 +6,9 @@
 		"start": "node ./bin/www",
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
 		"test": "ava tests/**/*Test.js --verbose",
-		"test:unit": "ava tests/unit/**/*Test.js --verbose",
-		"test:integration": "ava tests/integration/**/*Test.js --verbose",
-		"test:watch": "ava tests/**/*Test.js --verbose --watch"
+		"test:unit": "ava tests/unit/**/*.spec.js --verbose",
+		"test:integration": "ava tests/integration/**/*.spec.js --verbose",
+		"test:watch": "ava tests/**/*.spec.js --verbose --watch"
 	},
 	"dependencies": {
 		"axios": "^0.18.0",
