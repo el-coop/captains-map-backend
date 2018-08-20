@@ -7,7 +7,7 @@
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
 		"test": "ava tests/**/*Test.js --verbose",
 		"test:unit": "ava tests/unit/**/*.spec.js --verbose",
-		"test:integration": "ava tests/integration/**/*.spec.js --verbose",
+		"test:integration": "ava tests/integration/**/*.spec.js --verbose --serial",
 		"test:watch": "ava tests/**/*.spec.js --verbose --watch"
 	},
 	"dependencies": {
@@ -21,6 +21,7 @@
 		"debug": "~2.6.9",
 		"dotenv": "^6.0.0",
 		"express": "~4.16.0",
+		"express-async-errors": "^3.0.0",
 		"express-validator": "^5.3.0",
 		"http-errors": "~1.6.2",
 		"jsonwebtoken": "^8.3.0",
@@ -32,6 +33,7 @@
 	},
 	"devDependencies": {
 		"ava": "1.0.0-beta.7",
+		"sinon": "^6.1.5",
 		"sqlite3": "^4.0.2",
 		"supertest": "^3.1.0"
 	},

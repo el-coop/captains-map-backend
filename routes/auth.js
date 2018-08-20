@@ -1,7 +1,5 @@
 let express = require('express');
 let router = express.Router();
-let csrf = require('csurf');
-let csrfProtection = csrf({cookie: true});
 const validation = require('../middleware/ValidationMiddleware');
 
 let AuthController = require('../controllers/AuthController');
@@ -15,7 +13,6 @@ router.post('/register', [
 ], AuthController.register.bind(AuthController));
 
 router.post('/login', [
-	csrfProtection,
 	validation.rules({
 		username: ['required'],
 		password: ['required']
