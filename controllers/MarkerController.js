@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Marker = require('../models/Marker');
 const Media = require('../models/Media');
 const http = require('../services/HttpService');
+const BaseError = require('../errors/BaseError');
 const fs = require('fs');
 const path = require('path');
 
@@ -46,56 +47,48 @@ class MarkersController {
 				error: 'Error'
 			});
 		}
-
-
 	}
 
 	async index(req, res) {
-		let markers;
-		try {
-			if (req.params.user) {
-				let user = await
-					new User({
-						username: req.params.user
-					}).fetch({
-						withRelated: [
-							{
-								markers(query) {
-									return query.orderBy('created_at', 'ASC');
-								},
-							},
-							'markers.media',
-							{
-								'markers.user': (query) => {
-									return query.select('id', 'username');
-								}
-							}
-						]
-					});
-
-				markers = user.$markers;
-			} else {
-				markers = await
-					new Marker().orderBy('created_at', 'ASC')
-						.fetchAll({
-							withRelated: [
-								'media',
-								{
-									user(query) {
-										return query.select('id', 'username');
-									}
-								}]
-						});
-			}
-			res.status(200);
-			res.json(markers);
-		} catch (error) {
-			console.log(error);
-			res.status(500);
-			res.json({
-				error: 'Error'
+		let markers = await new Marker()
+			.orderBy('created_at', 'ASC').fetchAll({
+				withRelated: [
+					'media',
+					{
+						user(query) {
+							return query.select('id', 'username');
+						}
+					}]
 			});
+		res.status(200);
+		res.json(markers);
+	}
+
+	async userMarkers(req, res) {
+		let user = await new User({
+			username: req.params.user
+		}).fetch({
+			withRelated: [
+				{
+					markers(query) {
+						return query.orderBy('created_at', 'ASC');
+					},
+				},
+				'markers.media',
+				{
+					'markers.user': (query) => {
+						return query.select('id', 'username');
+					}
+				}
+			]
+		});
+
+		if (!user) {
+			throw new BaseError('Not Found', 404);
 		}
+
+		res.status(200);
+		res.json(user.$markers);
 	}
 
 	async delete(req, res) {

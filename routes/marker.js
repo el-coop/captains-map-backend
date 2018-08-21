@@ -7,9 +7,10 @@ const upload = require('../middleware/FileMiddleware');
 const validation = require('../middleware/ValidationMiddleware');
 const modelMiddleware = require('../middleware/ModelMiddleware');
 
-const MarkerController = require('../controllers/marker');
+const MarkerController = require('../controllers/MarkerController');
 
-router.get('/:user?', MarkerController.index);
+router.get('/', MarkerController.index);
+router.get('/:user', MarkerController.userMarkers);
 
 router.get('/instagram/:id', MarkerController.getInstagramData);
 
