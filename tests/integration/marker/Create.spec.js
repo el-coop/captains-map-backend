@@ -97,7 +97,7 @@ test.serial('It uploads a photo and creates a marker', async t => {
 	fs.unlinkSync(filePath);
 });
 
-test.serial.only('It validates data', async t => {
+test.serial('It validates data', async t => {
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
 			lat: '',
