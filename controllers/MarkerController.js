@@ -10,43 +10,33 @@ const path = require('path');
 
 class MarkersController {
 	async create(req, res) {
-		try {
-			let marker = new Marker();
-			marker.user_id = req.user.id;
-			marker.lat = req.body.lat;
-			marker.lng = req.body.lng;
-			marker.time = req.body.time;
-			marker.type = req.body.type;
-			marker.description = req.body.description;
+		let marker = new Marker();
+		marker.user_id = req.user.id;
+		marker.lat = req.body.lat;
+		marker.lng = req.body.lng;
+		marker.time = req.body.time;
+		marker.type = req.body.type;
+		marker.description = req.body.description;
+		await marker.save();
 
-			await marker.save();
-
-			let media = new Media();
-			let inputMedia = req.body.media;
-			media.type = inputMedia.type;
-			if (inputMedia.type === 'instagram') {
-				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
-				media.path = regex.exec(inputMedia.path)[1];
-			}
-			else {
-				media.path = `/images/${req.file.filename}`;
-			}
-
-			await media.$marker.assign(marker);
-			await marker.load('media');
-			await marker.load('user');
-
-			res.status(200);
-			res.json(marker)
+		let media = new Media();
+		let inputMedia = req.body.media;
+		media.type = inputMedia.type;
+		if (inputMedia.type === 'instagram') {
+			const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
+			media.path = regex.exec(inputMedia.path)[1];
 		}
-
-		catch (error) {
-			console.log(error);
-			res.status(500);
-			res.json({
-				error: 'Error'
-			});
+		else {
+			media.path = `/images/${req.file.filename}`;
 		}
+		await media.$marker.assign(marker);
+
+		await marker.load('media');
+		await marker.load('user');
+
+		res.status(200);
+		res.json(marker)
+
 	}
 
 	async index(req, res) {

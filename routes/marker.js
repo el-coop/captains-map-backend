@@ -3,7 +3,7 @@ const router = express.Router();
 const authMiddleware = require('../middleware/AuthMiddleware');
 const csrf = require('csurf');
 const csrfProtection = csrf({cookie: true});
-const upload = require('../middleware/FileMiddleware');
+const upload = require('../middleware/UploadMiddleware');
 const validation = require('../middleware/ValidationMiddleware');
 const modelMiddleware = require('../middleware/ModelMiddleware');
 
@@ -15,7 +15,6 @@ router.get('/:user', MarkerController.userMarkers);
 router.get('/instagram/:id', MarkerController.getInstagramData);
 
 router.post('/create', [
-	csrfProtection,
 	authMiddleware,
 	upload.image('media[image]'),
 	validation.rules({
@@ -32,7 +31,6 @@ router.post('/create', [
 ], MarkerController.create.bind(MarkerController));
 
 router.delete('/:marker', [
-	csrfProtection,
 	authMiddleware,
 	modelMiddleware.inject,
 	modelMiddleware.valdiateOwnership('marker')

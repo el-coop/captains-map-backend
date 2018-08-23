@@ -32,7 +32,7 @@ class Validator {
 	}
 
 	required() {
-		this.not().isEmpty();
+		this.exists().not().isEmpty();
 	}
 
 	in(args) {

@@ -2,7 +2,6 @@ import test from 'ava';
 import app from '../../../app';
 import knex from '../../../database/knex';
 import MarkerFactory from '../../../database/factories/MarkerFactory';
-import Marker from '../../../models/Marker';
 import request from 'supertest';
 
 test.beforeEach(async () => {
