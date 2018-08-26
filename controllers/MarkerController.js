@@ -7,6 +7,7 @@ const http = require('../services/HttpService');
 const BaseError = require('../errors/BaseError');
 const fs = require('fs');
 const path = require('path');
+const Cache = require('../services/CacheService');
 
 class MarkersController {
 	async create(req, res) {
@@ -115,24 +116,17 @@ class MarkersController {
 	}
 
 	async getInstagramData(req, res) {
-		try {
-			let id = req.params.id;
+		let id = req.params.id;
+		const response = await Cache.remember(`instagram${id}`, async () => {
 			let response = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${id}/&omitscript=true&hidecaption=true`);
-			if (response.status == 200) {
-				res.status(200);
-				res.json({
-					data: response.data
-				});
-				return;
+			if (response.status === 200) {
+				return response.data;
 			}
-		} catch (error) {
-			console.log(error);
-		}
-		res.status(500);
-		res.json({
-			error: 'Error'
-		});
-
+			throw new BaseError('An error occurred with the Instagram API', 500)
+		},60 * 60 * 12);
+		return res.status(200).json(
+			response
+		);
 	}
 }
 

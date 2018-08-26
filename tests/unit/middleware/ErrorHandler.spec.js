@@ -29,7 +29,7 @@ test.serial('It uses existing http status', t => {
 	error.statusCode = 403;
 
 	errorHandler(error, {}, res, {});
-	t.truthy(statusSpy.calledWith(403));
+	t.true(statusSpy.calledWith(403));
 });
 
 test.serial('It sets status 500 when not supplied', t => {
@@ -37,7 +37,7 @@ test.serial('It sets status 500 when not supplied', t => {
 	const statusSpy = sinon.spy(res, 'status');
 
 	errorHandler(error, {}, res, {});
-	t.truthy(statusSpy.calledWith(500));
+	t.true(statusSpy.calledWith(500));
 });
 
 test.serial('It sends the error name and message', t => {
