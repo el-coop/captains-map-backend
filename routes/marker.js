@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/AuthMiddleware');
-const csrf = require('csurf');
-const csrfProtection = csrf({cookie: true});
 const upload = require('../middleware/UploadMiddleware');
 const validation = require('../middleware/ValidationMiddleware');
 const modelMiddleware = require('../middleware/ModelMiddleware');
