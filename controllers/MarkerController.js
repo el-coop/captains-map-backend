@@ -116,15 +116,15 @@ class MarkersController {
 	}
 
 	async getInstagramData(req, res) {
-		let id = req.params.id;
-		const response = await Cache.remember(`instagram${id}`, async () => {
-			let response = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${id}/&omitscript=true&hidecaption=true`);
+		let instagramId = req.objects.media.path;
+		const response = await Cache.remember(`instagram${instagramId}`, async () => {
+			let response = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
 			if (response.status === 200) {
 				return response.data;
 			}
 			throw new BaseError('An error occurred with the Instagram API', 500)
-		},60 * 60 * 12);
-		return res.status(200).json(
+		}, 60 * 60 * 12);
+		return res.status(200).set('Cache-Control', 'public, max-age=' + (60 * 60 * 6)).json(
 			response
 		);
 	}

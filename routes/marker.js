@@ -6,13 +6,12 @@ const csrfProtection = csrf({cookie: true});
 const upload = require('../middleware/UploadMiddleware');
 const validation = require('../middleware/ValidationMiddleware');
 const modelMiddleware = require('../middleware/ModelMiddleware');
-
 const MarkerController = require('../controllers/MarkerController');
 
 router.get('/', MarkerController.index);
 router.get('/:user', MarkerController.userMarkers);
 
-router.get('/instagram/:id', MarkerController.getInstagramData);
+router.get('/instagram/:media', modelMiddleware.inject, MarkerController.getInstagramData);
 
 router.post('/create', [
 	authMiddleware,

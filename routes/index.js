@@ -11,10 +11,6 @@ if (process.env.APP_ENV !== 'test') {
 	}]);
 }
 
-router.get('/', () => {
-	throw new Error('message');
-});
-
 router.use('/auth', require('./auth'));
 router.use('/marker', require('./marker'));
 errorHandler(router);
