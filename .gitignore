@@ -3,3 +3,4 @@ node_modules
 .env
 /public/images/
 /database/test.sqlite3
+/tests/.env.test
