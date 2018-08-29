@@ -18,8 +18,8 @@ test.afterEach.always(async () => {
 });
 
 test.serial('It returns Instagram data results from api', async t => {
-	const cacheStub = sinon.stub(Cache, 'exists').callsFake(() => {
-		return false
+	sinon.stub(Cache, 'exists').callsFake(() => {
+		return false;
 	});
 	const httpStub = sinon.stub(httpService, 'get').callsFake(() => {
 		return {
@@ -39,9 +39,6 @@ test.serial('It returns Instagram data results from api', async t => {
 
 test.serial('It returns data from cache', async t => {
 	const httpStub = sinon.stub(httpService, 'get');
-	sinon.stub(Cache, 'exists').callsFake(() => {
-		return true;
-	});
 	const cacheStub = sinon.stub(Cache, 'remember').callsFake(() => {
 		return {
 			message: 'fake data'
@@ -67,7 +64,7 @@ test.serial('It throws error when httpService fails', async t => {
 		}
 	});
 	sinon.stub(Cache, 'exists').callsFake(() => {
-		return false
+		return false;
 	});
 
 
