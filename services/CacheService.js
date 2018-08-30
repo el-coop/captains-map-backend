@@ -3,6 +3,7 @@ const redis = new Redis({
 	port: process.env.CACHE_PORT,          // Redis port
 	host: process.env.CACHE_HOST,   // Redis host
 	password: process.env.CACHE_PASSWORD,
+	keyPrefix: process.env.CACHE_PREFIX
 });
 
 class Cache {

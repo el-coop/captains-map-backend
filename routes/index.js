@@ -13,6 +13,7 @@ if (process.env.APP_ENV !== 'test') {
 
 router.use('/auth', require('./auth'));
 router.use('/marker', require('./marker'));
+router.use('/geocode', require('./geocode'));
 errorHandler(router);
 
 module.exports = router;
