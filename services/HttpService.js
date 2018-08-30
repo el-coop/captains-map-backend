@@ -5,7 +5,7 @@ class HttpService {
 		try {
 			return await axios.get(url, headers);
 		} catch (error) {
-			return error;
+			return error.response;
 		}
 	}
 }
