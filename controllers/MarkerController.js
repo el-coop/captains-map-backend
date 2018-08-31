@@ -117,7 +117,7 @@ class MarkersController {
 
 	async getInstagramData(req, res) {
 		let instagramId = req.objects.media.path;
-		const response = await Cache.remember(`instagram${instagramId}`, async () => {
+		const response = await Cache.remember(`instagram.${instagramId}`, async () => {
 			let response = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
 			if (response.status === 200) {
 				return response.data;

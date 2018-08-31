@@ -22,7 +22,7 @@ class GeocoderService {
 	}
 
 	async geocodeCached(query) {
-		return await Cache.remember(`query`, async () => {
+		return await Cache.remember(`geocode.${query}`, async () => {
 			return await this.geocode(query);
 		}, 60 * 60 * 12);
 	}
