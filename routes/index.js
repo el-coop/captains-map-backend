@@ -1,14 +1,10 @@
 let express = require('express');
 let router = express.Router();
-let csrf = require('csurf');
-let csrfProtection = csrf({cookie: true});
 const errorHandler = require('../middleware/ErrorHandlerMiddleware');
+const CSRFMiddleware = require('../middleware/CSRFMiddleware');
 
 if (process.env.APP_ENV !== 'test') {
-	router.use(csrfProtection, [(req, res, next) => {
-		res.header('csrfToken', req.csrfToken());
-		next();
-	}]);
+	CSRFMiddleware(router);
 }
 
 router.use('/auth', require('./auth'));
