@@ -2,7 +2,8 @@ let Bookshelf = require('./bookshelf');
 let Fields = require('bookshelf-schema/lib/fields'),
 	StringField = Fields.StringField,
 	IntField = Fields.IntField,
-	DateTimeField = Fields.DateTimeField;
+	DateTimeField = Fields.DateTimeField,
+	EmailField = Fields.EmailField;
 let jwtService = require('../services/JwtService');
 
 let Relations = require('bookshelf-schema/lib/relations'),
@@ -25,6 +26,7 @@ let User = Bookshelf.Model.extend({
 	schema: [
 		IntField('id'),
 		StringField('username'),
+		EmailField('email'),
 		StringField('password_digest'),
 		DateTimeField('created_at'),
 		DateTimeField('updated_at'),
