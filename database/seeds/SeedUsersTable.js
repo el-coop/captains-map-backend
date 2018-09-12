@@ -7,7 +7,6 @@ exports.seed = async function (knex, Promise) {
 	let user = new User();
 
 	user.username = 'nur';
-	user.email = 'nur@elcoop.io';
 	user.password = '123456';
 
 	await user.save();
