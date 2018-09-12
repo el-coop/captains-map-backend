@@ -18,9 +18,8 @@ const imageUpload = multer({
 	storage: multer.diskStorage({
 		destination: path.join(__dirname, '../public/images'),
 		filename(req, file, cb) {
-			crypto.pseudoRandomBytes(16, function (err, raw) {
-				cb(null, raw.toString('hex') + Date.now() + '.' + mime.getExtension(file.mimetype));
-			});
+			const name = crypto.randomBytes(16).toString("hex");
+			cb(null,`${name}${Date.now()}.${mime.getExtension(file.mimetype)}`);
 		}
 	})
 });
