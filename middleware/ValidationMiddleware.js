@@ -70,6 +70,10 @@ class Validator {
 		});
 	}
 
+	email() {
+		this.isEmail().normalizeEmail();
+	}
+
 	findFieldValue(src, path) {
 		path = path.split('.');
 		let result = src;

@@ -19,7 +19,8 @@ test.serial('Return registration closed message for registration when users exis
 	await knex.seed.run();
 	const response = await request(app).post('/api/auth/register').send({
 		username: 'nur',
-		password: 123456
+		password: '123456',
+		email: 'lcd344@yahoo.com'
 	});
 
 	t.is(response.status, 403);
@@ -30,7 +31,8 @@ test.serial('First user registers successfully', async t => {
 	t.plan(3);
 	const response = await request(app).post('/api/auth/register').send({
 		username: 'nur',
-		password: '123456'
+		password: '123456',
+		email: 'lcd344@yahoo.com'
 	});
 
 	t.is(response.status, 200);
@@ -41,14 +43,15 @@ test.serial('First user registers successfully', async t => {
 });
 
 test.serial('Validates user data before registration', async t => {
-	t.plan(3);
 	await knex.seed.run();
 	const response = await request(app).post('/api/auth/register').send({
 		username: '',
+		email: '',
 		password: ''
 	});
 
 	t.is(response.status, 422);
 	t.is(response.body.errors[0].param, 'username');
 	t.is(response.body.errors[1].param, 'password');
+	t.is(response.body.errors[2].param, 'email');
 });

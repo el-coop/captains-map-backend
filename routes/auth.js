@@ -7,7 +7,8 @@ let AuthController = require('../controllers/AuthController');
 router.post('/register', [
 	validation.rules({
 		username: ['required'],
-		password: ['min:6']
+		password: ['min:6'],
+		email: ['required','email']
 	}),
 	validation.verify
 ], AuthController.register.bind(AuthController));
