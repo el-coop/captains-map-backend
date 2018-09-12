@@ -63,7 +63,7 @@ class Validator {
 						return Promise.reject('Must upload a file');
 					}
 				} else if (!value) {
-					return Promise.reject(`Required if ${args[0].replace('.', ' ')} is ${args[1]}`);
+					return Promise.reject(`Required if ${args[0]} is ${args[1]}`);
 				}
 			}
 			return Promise.resolve();

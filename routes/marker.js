@@ -22,8 +22,7 @@ router.post('/create', [
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
 		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\/\/www\.instagram\.com\/p\/\w*\/.*'],
-		'media.file': ['requiredIf:media.type,image,file'],
-		'media.camera': ['requiredIf:media.type,camera']
+		'media.file': ['requiredIf:media.type,image,file']
 	}),
 	validation.verify
 ], MarkerController.create.bind(MarkerController));
