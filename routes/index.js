@@ -3,9 +3,9 @@ let router = express.Router();
 const errorHandler = require('../middleware/ErrorHandlerMiddleware');
 const CSRFMiddleware = require('../middleware/CSRFMiddleware');
 
-if (process.env.APP_ENV !== 'test') {
+/*if (process.env.APP_ENV !== 'test') {
 	CSRFMiddleware(router);
-}
+}*/
 
 router.use('/auth', require('./auth'));
 router.use('/marker', require('./marker'));
