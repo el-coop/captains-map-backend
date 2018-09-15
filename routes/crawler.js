@@ -3,7 +3,7 @@ const router = express.Router();
 const modelMiddleware = require('../middleware/ModelMiddleware');
 const CrawlerController = require('../controllers/CrawlerController');
 
-router.get('/:user?', [
+router.get('/:user?/:marker?', [
 	modelMiddleware.inject({
 		User: 'username'
 	})
