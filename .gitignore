@@ -1,7 +1,7 @@
 node_modules
 .idea
 .env
-/public/images/
+/public/images/*
 !/public/images/globe-icon.png
 /database/test.sqlite3
 /tests/.env.test
