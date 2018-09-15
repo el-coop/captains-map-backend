@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "NODE_ENV=production node ./bin/www",
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
-		"test": "ava tests/**/HttpService.spec.js --verbose --watch -- serial",
+		"test": "ava tests/**/Metadata.spec.js --verbose --watch -- serial",
 		"test:unit": "ava tests/unit/**/*.spec.js --verbose",
 		"test:integration": "ava tests/integration/**/*.spec.js --verbose --serial",
 		"test:watch": "ava tests/**/*.spec.js --verbose --watch -- serial"
@@ -31,7 +31,8 @@
 		"morgan": "~1.9.1",
 		"multer": "^1.3.1",
 		"mysql": "^2.16.0",
-		"node-geocoder": "^3.22.0"
+		"node-geocoder": "^3.22.0",
+		"nunjucks": "^3.1.3"
 	},
 	"devDependencies": {
 		"ava": "1.0.0-beta.7",

@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const CrawlerController = require('../controllers/CrawlerController');
 
-router.get('/', (req, res) => {
-	return res.status(204).json({
-		success: true
-	});
-});
+router.get('/', CrawlerController.index);
 
 module.exports = router;

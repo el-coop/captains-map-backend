@@ -4,11 +4,16 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const cookieEncrypter = require('cookie-encrypter');
 const logger = require('morgan');
+const nunjucks = require('nunjucks');
 require('dotenv').config();
 
 let app = express();
 
 app.set('port', process.env.PORT || 3000);
+nunjucks.configure('views', {
+	autoescape: true,
+	express: app
+});
 app.use('/api/images', express.static('./public/images', {
 	immutable: true,
 	maxAge: 31536000,
