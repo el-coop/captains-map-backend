@@ -1,21 +1,31 @@
 const Media = require('../models/Media');
 const Marker = require('../models/Marker');
+const User = require('../models/User');
 
 const models = {
 	Marker,
-	Media
-}
+	Media,
+	User
+};
 
 class ModelMiddleware {
-	async inject(req, res, next) {
-		req.objects = {};
-		for (let prop in req.params) {
-			let className = prop.charAt(0).toUpperCase() + prop.substr(1);
-			if (models[className] !== undefined) {
-				req.objects[prop] = await new models[className]({id: req.params[prop]}).fetch();
+	inject(keys = {}) {
+		return async (req, res, next) => {
+			req.objects = {};
+			for (let prop in req.params) {
+				if (req.params[prop]) {
+					let className = prop.charAt(0).toUpperCase() + prop.substr(1);
+					if (models[className] !== undefined) {
+						const key = keys[className] || 'id';
+						const condition = {};
+						condition[key] = req.params[prop];
+
+						req.objects[prop] = await new models[className](condition).fetch();
+					}
+				}
 			}
+			next();
 		}
-		next();
 	}
 
 	valdiateOwnership(object) {

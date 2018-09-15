@@ -9,7 +9,7 @@ const MarkerController = require('../controllers/MarkerController');
 router.get('/', MarkerController.index);
 router.get('/:user', MarkerController.userMarkers);
 
-router.get('/instagram/:media', modelMiddleware.inject, MarkerController.getInstagramData);
+router.get('/instagram/:media', modelMiddleware.inject(), MarkerController.getInstagramData);
 
 router.post('/create', [
 	authMiddleware,
@@ -29,7 +29,7 @@ router.post('/create', [
 
 router.delete('/:marker', [
 	authMiddleware,
-	modelMiddleware.inject,
+	modelMiddleware.inject(),
 	modelMiddleware.valdiateOwnership('marker')
 ], MarkerController.delete.bind(MarkerController));
 

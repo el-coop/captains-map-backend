@@ -1,4 +1,5 @@
 function ErrorHandlerMiddleware(err, req, res, next) {
+	console.log(err);
 	let data = err.data;
 	if (!data) {
 		data = {
