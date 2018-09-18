@@ -14,13 +14,6 @@ nunjucks.configure('views', {
 	autoescape: true,
 	express: app
 });
-app.use('/api/images', express.static('./public/images', {
-	immutable: true,
-	maxAge: 31536000,
-	setHeaders: function (res, path, stat) {
-		res.set('Cache-Control', 'public, max-age=31536000')
-	}
-}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -28,6 +21,20 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cookieEncrypter(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/api/images', express.static('./public/images', {
+	immutable: true,
+	maxAge: 31536000,
+	setHeaders(res, path, stat) {
+		res.set('Cache-Control', 'public, max-age=31536000');
+	}
+}));
+app.use('/api/thumbnails', express.static('./public/thumbnails', {
+	immutable: true,
+	maxAge: 31536000,
+	setHeaders(res, path, stat) {
+		res.set('Cache-Control', 'public, max-age=31536000');
+	}
+}));
 app.use('/api', require('./routes/index'));
 
 module.exports = app;
