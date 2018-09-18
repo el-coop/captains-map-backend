@@ -20,6 +20,11 @@ class ModelMiddleware {
 						const condition = {};
 						condition[key] = req.params[prop];
 
+						let model = await new models[className](condition).fetch();
+						if (!model) {
+							res.status(404).json({Error: 'Not Found'});
+							return false;
+						}
 						req.objects[prop] = await new models[className](condition).fetch();
 					}
 				}
@@ -30,8 +35,8 @@ class ModelMiddleware {
 
 	valdiateOwnership(object) {
 		return (req, res, next) => {
-			if (req.objects[object].user_id !== req.user.id) {
-				res.status(403).json({'Error': 'Forbidden'});
+			if (!req.user || req.objects[object].user_id !== req.user.id) {
+				res.status(403).json({Error: 'Forbidden'});
 				return false;
 			}
 			next();
