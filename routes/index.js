@@ -4,9 +4,9 @@ const ThumbnailController = require('../controllers/ThumbnailController');
 const errorHandler = require('../middleware/ErrorHandlerMiddleware');
 const CSRFMiddleware = require('../middleware/CSRFMiddleware');
 
-// if (process.env.APP_ENV !== 'test') {
-// 	CSRFMiddleware(router);
-// }
+if (process.env.APP_ENV !== 'test') {
+	CSRFMiddleware(router);
+}
 
 
 router.use('/auth', require('./auth'));
