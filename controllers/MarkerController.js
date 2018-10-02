@@ -8,6 +8,7 @@ const BaseError = require('../errors/BaseError');
 const fs = require('fs');
 const path = require('path');
 const Cache = require('../services/CacheService');
+const MarkerRepository = require('../repositories/MarkerRepository');
 
 class MarkersController {
 	async create(req, res) {
@@ -41,45 +42,23 @@ class MarkersController {
 	}
 
 	async index(req, res) {
-		let markers = await new Marker()
-			.orderBy('created_at', 'ASC').fetchAll({
-				withRelated: [
-					'media',
-					{
-						user(query) {
-							return query.select('id', 'username');
-						}
-					}]
-			});
+		let markers = await MarkerRepository.getPage(req.query.startingId || false);
 		res.status(200);
 		res.json(markers);
 	}
 
 	async userMarkers(req, res) {
-		let user = await new User({
+		const user = await new User({
 			username: req.params.user
-		}).fetch({
-			withRelated: [
-				{
-					markers(query) {
-						return query.orderBy('created_at', 'ASC');
-					},
-				},
-				'markers.media',
-				{
-					'markers.user': (query) => {
-						return query.select('id', 'username');
-					}
-				}
-			]
-		});
+		}).fetch();
 
 		if (!user) {
 			throw new BaseError('Not Found', 404);
 		}
 
+		let markers = await MarkerRepository.getPage(req.query.startingId || false, user.id);
 		res.status(200);
-		res.json(user.$markers);
+		res.json(markers);
 	}
 
 	async delete(req, res) {
