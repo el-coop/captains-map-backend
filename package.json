@@ -6,7 +6,7 @@
 		"start": "NODE_ENV=production node ./bin/www",
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
 		"test": "ava tests/**/Get.spec.js --verbose -- serial",
-		"test:unit": "ava tests/unit/**/*.spec.js --verbose",
+		"test:unit": "ava tests/unit/**/*.spec.js --verbose --serial",
 		"test:integration": "ava tests/integration/**/*.spec.js --verbose --serial",
 		"test:watch": "ava tests/**/*.spec.js --verbose --watch -- serial"
 	},
