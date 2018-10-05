@@ -87,15 +87,15 @@ test.serial('It returns only markers of specific user after specific id when spe
 
 	const response = await request(app).get(`/api/marker/nur?startingId=${userSecondMarkers[2].id}`);
 	t.is(response.body.markers.length, 3);
-	t.not(response.body.markers.find((item) => {
+	t.not(undefined, response.body.markers.find((item) => {
 		return item.id === userFirstMarkers[2].id;
-	}), null);
-	t.not(response.body.markers.find((item) => {
-		return item.id === userFirstMarkers[1].id;
-	}), null);
-	t.not(response.body.markers.find((item) => {
+	}));
+	t.not(undefined, response.body.markers.find((item) => {
+		return item.id === userSecondMarkers[1].id;
+	}));
+	t.not(undefined, response.body.markers.find((item) => {
 		return item.id === userSecondMarkers[0].id;
-	}), null);
+	}));
 	t.true(response.body.pagination.hasNext);
 });
 
@@ -113,9 +113,64 @@ test.serial('It returns only markers of specific user with hasNext true when mor
 	t.true(response.body.pagination.hasNext);
 });
 
+test.serial('It returns specific marker page with has next when needed', async t => {
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+	}, 4);
+
+	const response = await request(app).get(`/api/marker/nur/${markers[3].id}`);
+	const responseMarkers = response.body.markers;
+	t.is(responseMarkers.length, 3);
+	t.is(undefined, responseMarkers.find((item) => {
+		return item.id === markers[0].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[1].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[2].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[3].id;
+	}));
+
+	t.true(response.body.pagination.hasNext);
+	t.is(response.body.pagination.page, 0);
+});
+
+test.serial('It returns specific marker page with no has next when no next', async t => {
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+	}, 6);
+
+	const response = await request(app).get(`/api/marker/nur/${markers[2].id}`);
+	const responseMarkers = response.body.markers;
+	t.is(responseMarkers.length, 3);
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[0].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[1].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[2].id;
+	}));
+
+	t.false(response.body.pagination.hasNext);
+	t.is(response.body.pagination.page, 1);
+});
+
 
 test('It returns 404 for unknown user', async t => {
 	const response = await request(app).get('/api/marker/bla');
+
+	t.is(response.status, 404);
+	t.is(response.body.message, 'Not Found');
+});
+
+
+test.serial('It returns 404 for unknown marker', async t => {
+	const response = await request(app).get('/api/marker/nur/1');
 
 	t.is(response.status, 404);
 	t.is(response.body.message, 'Not Found');

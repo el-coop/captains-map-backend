@@ -55,8 +55,17 @@ class MarkersController {
 		if (!user) {
 			throw new BaseError('Not Found', 404);
 		}
+		let markers;
+		if (!req.params.marker) {
+			markers = await MarkerRepository.getPage(req.query.startingId || false, user.id);
+		} else {
+			try {
+				markers = await MarkerRepository.getObjectPage(req.params.marker, user.id);
+			} catch (error) {
+				throw new BaseError('Not Found', 404);
+			}
+		}
 
-		let markers = await MarkerRepository.getPage(req.query.startingId || false, user.id);
 		res.status(200);
 		res.json(markers);
 	}
