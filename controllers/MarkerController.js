@@ -1,6 +1,5 @@
 'use strict';
 
-const User = require('../models/User');
 const Marker = require('../models/Marker');
 const Media = require('../models/Media');
 const http = require('../services/HttpService');
@@ -48,24 +47,26 @@ class MarkersController {
 	}
 
 	async userMarkers(req, res) {
-		const user = await new User({
-			username: req.params.user
-		}).fetch();
 
-		if (!user) {
-			throw new BaseError('Not Found', 404);
-		}
+		const user = req.objects.user;
+
 		let markers;
-		if (!req.params.marker) {
+		if (!req.params.markerId) {
 			markers = await MarkerRepository.getPage(req.query.startingId || false, user.id);
 		} else {
 			try {
-				markers = await MarkerRepository.getObjectPage(req.params.marker, user.id);
+				markers = await MarkerRepository.getObjectPage(req.params.markerId, user.id);
 			} catch (error) {
 				throw new BaseError('Not Found', 404);
 			}
 		}
 
+		res.status(200);
+		res.json(markers);
+	}
+
+	async previousMarkers(req, res) {
+		const markers = await MarkerRepository.getPreviousPage(req.params.markerId, req.objects.user.id);
 		res.status(200);
 		res.json(markers);
 	}

@@ -33,6 +33,29 @@ class MarkerRepository {
 		}
 	}
 
+	async getPreviousPage(startId, user = false) {
+		let markers = new Marker();
+		markers.where('id', '>', startId);
+		if (user) {
+			markers.where('user_id', user);
+		}
+
+		markers = await this.get(markers, 'ASC', pageSize + 1);
+
+		return {
+			markers: markers.toJSON().sort((a, b) => {
+				if (a.id > b.id) {
+					return -1;
+				}
+				return 1;
+			}),
+			pagination: {
+				hasNext: null,
+				page: null
+			}
+		};
+	}
+
 	async getObjectPage(object, user) {
 		let hasNext = false;
 		const data = await this.calculateObjectPage(object, user);

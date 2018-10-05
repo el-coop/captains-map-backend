@@ -44,7 +44,6 @@ test.serial('Return invalid credentials when wrong password', async t => {
 
 
 test.serial('Requires username and password', async t => {
-	t.plan(4);
 	const response = await request(app).post('/api/auth/login').send({
 		username: '',
 		password: ''
@@ -56,7 +55,6 @@ test.serial('Requires username and password', async t => {
 });
 
 test.serial('Generates token and a cookie', async t => {
-	t.plan(3);
 	const jwtSpy = sinon.spy(JwtService, 'generate');
 	const response = await request(app).post('/api/auth/login').send({
 		username: 'nur',

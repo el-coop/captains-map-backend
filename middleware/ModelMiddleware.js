@@ -1,6 +1,7 @@
 const Media = require('../models/Media');
 const Marker = require('../models/Marker');
 const User = require('../models/User');
+const BaseError = require('../errors/BaseError');
 
 const models = {
 	Marker,
@@ -22,8 +23,7 @@ class ModelMiddleware {
 
 						let model = await new models[className](condition).fetch();
 						if (!model) {
-							res.status(404).json({Error: 'Not Found'});
-							return false;
+							throw new BaseError('Not Found', 404);
 						}
 						req.objects[prop] = await new models[className](condition).fetch();
 					}

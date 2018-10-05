@@ -163,7 +163,6 @@ test.serial('It returns specific marker page with no has next when no next', asy
 
 test('It returns 404 for unknown user', async t => {
 	const response = await request(app).get('/api/marker/bla');
-
 	t.is(response.status, 404);
 	t.is(response.body.message, 'Not Found');
 });
@@ -174,4 +173,26 @@ test.serial('It returns 404 for unknown marker', async t => {
 
 	t.is(response.status, 404);
 	t.is(response.body.message, 'Not Found');
+});
+
+test.serial('It returns previous page', async t => {
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+	}, 6);
+
+	const response = await request(app).get(`/api/marker/nur/${markers[2].id}/previous`);
+	const responseMarkers = response.body.markers;
+	t.is(responseMarkers.length, 3);
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[3].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[4].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[5].id;
+	}));
+
+	t.is(response.body.pagination.hasNext, null);
+	t.is(response.body.pagination.page, null);
 });

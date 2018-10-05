@@ -25,18 +25,15 @@ test.afterEach.always('Restore sinon', async () => {
 	sinon.restore();
 });
 
-test.serial('It returns 404 when there is no model', async t => {
+test.serial('It throws 404 when there is no model', async t => {
 	const req = {
 		params: {
 			'marker': 1
 		}
 	};
 
-	await modelMiddleware.inject()(req, res, next);
+	await t.throwsAsync(modelMiddleware.inject()(req, res, next));
 
-	t.true(res.status.calledWith(404));
-	t.true(res.json.calledWith({'Error': 'Not Found'}));
-	t.false(next.called);
 });
 
 

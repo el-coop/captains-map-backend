@@ -152,3 +152,24 @@ test.serial('It returns false for not found object', async t => {
 		message: 'EmptyResponse'
 	});
 });
+
+test.serial.only('It returns previous page', async t => {
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+	}, 9);
+
+	const result = await MarkerRepository.getPreviousPage(markers[5].id, 1);
+
+	t.is(3, result.markers.length);
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === markers[6].id;
+	}));
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === markers[7].id;
+	}));
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === markers[8].id;
+	}));
+	t.is(result.pagination.hasNext, null);
+	t.is(result.pagination.page, null);
+});

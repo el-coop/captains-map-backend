@@ -17,7 +17,7 @@ test.afterEach.always(async () => {
 	await knex.migrate.rollback();
 });
 
-test.serial('It returns Instagram data results from api', async t => {
+test.serial.only('It returns Instagram data results from api', async t => {
 	sinon.stub(Cache, 'exists').callsFake(() => {
 		return false;
 	});

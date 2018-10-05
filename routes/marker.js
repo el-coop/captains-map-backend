@@ -7,9 +7,17 @@ const modelMiddleware = require('../middleware/ModelMiddleware');
 const MarkerController = require('../controllers/MarkerController');
 
 router.get('/', MarkerController.index);
-router.get('/:user/:marker?', MarkerController.userMarkers);
 
 router.get('/instagram/:media', modelMiddleware.inject(), MarkerController.getInstagramData);
+
+router.get('/:user/:markerId?', modelMiddleware.inject({
+	User: 'username'
+}), MarkerController.userMarkers);
+
+router.get('/:user/:markerId/previous', modelMiddleware.inject({
+	User: 'username'
+}), MarkerController.previousMarkers);
+
 
 router.post('/create', [
 	authMiddleware,
