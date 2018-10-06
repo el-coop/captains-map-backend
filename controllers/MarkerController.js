@@ -74,11 +74,13 @@ class MarkersController {
 	async delete(req, res) {
 		try {
 			let marker = req.objects.marker;
-			await
-				marker.load(['media']);
+			await marker.load(['media']);
 
 			try {
-				fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
+				if (marker.$media.type == 'image') {
+					fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
+					fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path.replace('images', 'thumbnails')}`));
+				}
 			} catch (error) {
 				console.log(error);
 			}

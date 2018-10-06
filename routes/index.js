@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
 const ThumbnailController = require('../controllers/ThumbnailController');
-const errorHandler = require('../middleware/ErrorHandlerMiddleware');
+const ErrorHandler = require('../middleware/ErrorHandlerMiddleware');
 const CSRFMiddleware = require('../middleware/CSRFMiddleware');
 
 if (process.env.APP_ENV !== 'test') {
@@ -15,6 +15,6 @@ router.use('/geocode', require('./geocode'));
 router.use('/crawler', require('./crawler'));
 router.get('/thumbnails/:filename', ThumbnailController.generate);
 
-errorHandler(router);
+ErrorHandler(router);
 
 module.exports = router;
