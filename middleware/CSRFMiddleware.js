@@ -1,8 +1,16 @@
-let csrfProtection = require('csurf')({cookie: true});
+const BaseMiddleware = require('./BaseMiddleware');
+const csrfProtection = require('csurf')({cookie: true});
 
-module.exports = function (router) {
-	router.use(csrfProtection, [(req, res, next) => {
+class CSRFMiddleware extends BaseMiddleware {
+	constructor(router) {
+		router.use(csrfProtection);
+		super(router);
+	}
+
+	handle(req, res, next) {
 		res.header('csrfToken', req.csrfToken());
 		next();
-	}]);
-};
+	}
+}
+
+module.exports = CSRFMiddleware;
