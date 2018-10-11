@@ -1,0 +1,19 @@
+class {{name}} {
+	constructor() {
+	}
+
+	handle() {
+		console.log(chalk.yellow(`yourCommand`));
+
+		try {
+			console.log(chalk.green(`${this.path}/${name}.js created successfully`));
+		} catch (error) {
+			console.log(chalk.red(`${this.path}/${name}.js creation failed with the following error`, error));
+		}
+	}
+}
+
+{{name}}.signature = "command:signature";
+{{name}}.description = "description";
+
+module.exports = {{name}};

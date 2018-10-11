@@ -1,0 +1,13 @@
+const BaseMiddleware = require('./BaseMiddleware');
+
+class {{name}} extends BaseMiddleware {
+	constructor(router) {
+		super(router);
+	}
+
+	handle(req, res, next) {
+
+	}
+}
+
+module.exports = {{name}};
