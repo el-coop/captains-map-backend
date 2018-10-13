@@ -3,7 +3,7 @@ import app from '../../../app';
 import knex from '../../../database/knex';
 import request from 'supertest';
 import helpers from '../../Helpers';
-import Marker from '../../../models/Marker';
+import Marker from '../../../App/models/Marker';
 import path from 'path';
 import fs from 'fs';
 

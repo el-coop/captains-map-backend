@@ -1,13 +1,13 @@
 'use strict';
 
-const Marker = require('../models/Marker');
-const Media = require('../models/Media');
-const http = require('../services/HttpService');
-const BaseError = require('../errors/BaseError');
+const Marker = require('../../models/Marker');
+const Media = require('../../models/Media');
+const http = require('../../services/HttpService');
+const BaseError = require('../../errors/BaseError');
 const fs = require('fs');
 const path = require('path');
-const Cache = require('../services/CacheService');
-const MarkerRepository = require('../repositories/MarkerRepository');
+const Cache = require('../../services/CacheService');
+const MarkerRepository = require('../../repositories/MarkerRepository');
 
 class MarkersController {
 	async create(req, res) {

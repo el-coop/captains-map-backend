@@ -1,4 +1,4 @@
-const GeocoderService = require('../services/GeocoderService');
+const GeocoderService = require('../../services/GeocoderService');
 
 class GeocoderController {
 	async geocode(req, res) {

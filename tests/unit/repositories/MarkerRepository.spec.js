@@ -1,5 +1,5 @@
 import test from 'ava';
-import MarkerRepository from '../../../repositories/MarkerRepository';
+import MarkerRepository from '../../../App/repositories/MarkerRepository';
 import knex from "../../../database/knex";
 import MarkerFactory from "../../../database/factories/MarkerFactory";
 

@@ -1,3 +1,3 @@
-const commands = require('./Console/Commands');
+const commands = require('./App/Console/Commands');
 
 commands.execute();

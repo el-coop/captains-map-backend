@@ -2,9 +2,9 @@ import test from 'ava';
 import app from '../../../app';
 import knex from '../../../database/knex';
 import sinon from 'sinon';
-import JwtService from '../../../services/JwtService';
+import JwtService from '../../../App/services/JwtService';
 import request from 'supertest';
-import User from "../../../models/User";
+import User from "../../../App/models/User";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

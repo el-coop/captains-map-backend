@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
-const ErrorHandlerMiddleware = require('../middleware/ErrorHandlerMiddleware');
-const CSRFMiddleware = require('../middleware/CSRFMiddleware');
+const ErrorHandlerMiddleware = require('../App/Http/middleware/ErrorHandlerMiddleware');
+const CSRFMiddleware = require('../App/Http/middleware/CSRFMiddleware');
 
 if (process.env.APP_ENV !== 'test') {
 	new CSRFMiddleware(router);

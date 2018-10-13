@@ -1,4 +1,4 @@
-let jwtService = require('../services/JwtService');
+let jwtService = require('../../services/JwtService');
 
 module.exports = function (req, res, next) {
 	const {token} = req.signedCookies;

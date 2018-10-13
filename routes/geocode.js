@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/AuthMiddleware');
-const GeocodcerController = require('../controllers/GeocoderController');
+const authMiddleware = require('../App/Http/middleware/AuthMiddleware');
+const GeocodcerController = require('../App/Http/controllers/GeocoderController');
 
 router.get('/:query', authMiddleware, GeocodcerController.geocode);
 

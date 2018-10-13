@@ -1,4 +1,4 @@
-const knex = require('../database/knex');
+const knex = require('../../database/knex');
 
 let bookshelf = require('bookshelf')(knex);
 bookshelf.plugin('visibility');

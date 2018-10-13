@@ -5,14 +5,14 @@ const mkdirp = require('mkdirp');
 
 class ThumbnailController {
 	async generate(req, res) {
-		const filePath = path.join(__dirname, `../public/images/${req.params.filename}`);
+		const filePath = path.join(__dirname, `../../../public/images/${req.params.filename}`);
 		if (!fs.existsSync(filePath)) {
 			return res.status(404).json({
 				error: 'Not Found'
 			})
 		}
 
-		const thumbnailsDir = path.join(__dirname, '../public/thumbnails/');
+		const thumbnailsDir = path.join(__dirname, '../../../public/thumbnails/');
 		mkdirp.sync(thumbnailsDir);
 		const thumbnailPath = path.join(thumbnailsDir, req.params.filename);
 		await sharp(filePath).withoutEnlargement().resize(100, 100).max().toFile(thumbnailPath);

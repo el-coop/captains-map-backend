@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const BaseError = require('../errors/BaseError');
+const User = require('../../models/User');
+const BaseError = require('../../errors/BaseError');
 
 class AuthController {
 	async register(req, res) {

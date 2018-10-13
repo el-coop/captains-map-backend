@@ -34,12 +34,10 @@ test.serial('It returns thumbnails when the image is in the images directory', a
 	const thumbnailPath = path.resolve(__dirname, '../../../public/thumbnails/demo.jpg');
 
 	fs.copyFileSync(src, imagePath);
-
 	const response = await request(app).get('/api/thumbnails/demo.jpg');
 
 	t.is(response.status, 200);
 	t.true(response.body instanceof Buffer);
-
 	fs.unlinkSync(imagePath);
 	fs.unlinkSync(thumbnailPath);
 });

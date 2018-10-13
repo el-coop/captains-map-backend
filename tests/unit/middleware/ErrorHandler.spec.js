@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import ErrorHandlerMiddlware from '../../../middleware/ErrorHandlerMiddleware';
+import ErrorHandlerMiddlware from '../../../App/Http/middleware/ErrorHandlerMiddleware';
 import express from 'express';
 
 const errorHandler = new ErrorHandlerMiddlware(express.Router());

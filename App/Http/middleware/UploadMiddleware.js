@@ -2,7 +2,7 @@ const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
 const mime = require('mime');
-const SharpStorage = require('../services/SharpStorage');
+const SharpStorage = require('../../services/SharpStorage');
 
 const imageUpload = multer({
 	fileFilter: (req, file, callback) => {
@@ -17,7 +17,7 @@ const imageUpload = multer({
 		callback(null, false);
 	},
 	storage: SharpStorage({
-		destination: path.join(__dirname, '../public/images'),
+		destination: path.join(__dirname, '../	../../public/images'),
 		filename(req, file, cb) {
 			const name = crypto.randomBytes(16).toString("hex");
 			cb(null, `${name}${Date.now()}.${mime.getExtension(file.mimetype)}`);
