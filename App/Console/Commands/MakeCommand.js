@@ -6,7 +6,7 @@ const path = require('path');
 class MakeCommand extends MakeBase {
 	constructor() {
 		super();
-		this.path = path.resolve(process.cwd(), './Console/Commands');
+		this.path = path.resolve(process.cwd(), './App/Console/Commands');
 		this.stub = 'command';
 	}
 }

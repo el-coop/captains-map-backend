@@ -1,0 +1,10 @@
+import test from 'ava';
+import sinon from 'sinon';
+
+test.afterEach.always('Restore sinon', t => {
+	sinon.restore();
+});
+
+test('example', async t => {
+	t.true(true);
+});

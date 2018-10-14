@@ -3,12 +3,16 @@ const csrfProtection = require('csurf')({cookie: true});
 
 class CSRFMiddleware extends BaseMiddleware {
 	constructor(router) {
-		router.use(csrfProtection);
+		if (process.env.APP_ENV !== 'test') {
+			router.use(csrfProtection);
+		}
 		super(router);
 	}
 
 	handle(req, res, next) {
-		res.header('csrfToken', req.csrfToken());
+		if (process.env.APP_ENV !== 'test') {
+			res.header('csrfToken', req.csrfToken());
+		}
 		next();
 	}
 }

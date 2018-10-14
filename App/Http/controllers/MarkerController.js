@@ -78,8 +78,8 @@ class MarkersController {
 
 			try {
 				if (marker.$media.type == 'image') {
-					fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path}`));
-					fs.unlinkSync(path.join(__dirname, `../public/${marker.$media.path.replace('images', 'thumbnails')}`));
+					fs.unlinkSync(path.join(__dirname, `../../../public/${marker.$media.path}`));
+					fs.unlinkSync(path.join(__dirname, `../../../public/${marker.$media.path.replace('images', 'thumbnails')}`));
 				}
 			} catch (error) {
 				console.log(error);

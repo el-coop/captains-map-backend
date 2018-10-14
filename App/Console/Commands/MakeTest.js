@@ -1,14 +1,21 @@
-const fs = require('fs');
+const MakeBase = require('./BaseClasses/MakeBase');
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
-class MakeBase {
+
+class MakeTest extends MakeBase {
 	constructor() {
-		this.path = '';
-		this.stub = '';
+		super();
+		this.path = path.resolve(process.cwd(), './tests/integration');
+		this.stub = 'test';
 	}
 
-	handle(name) {
+	handle(name, options) {
+		if (typeof options.unit !== "undefined") {
+			this.path = path.resolve(process.cwd(), './tests/unit');
+		}
+
 		console.log(chalk.yellow(`generating ${this.path}/${name}.js`));
 
 		try {
@@ -21,4 +28,10 @@ class MakeBase {
 	}
 }
 
-module.exports = MakeBase;
+MakeTest.signature = "make:test <name>";
+MakeTest.description = "Generate a test file";
+MakeTest.options = {
+	'--unit': 'Generate a unit test'
+};
+
+module.exports = MakeTest;
