@@ -16,14 +16,15 @@ class MakeTest extends MakeBase {
 			this.path = path.resolve(process.cwd(), './tests/unit');
 		}
 
-		console.log(chalk.yellow(`generating ${this.path}/${name}.js`));
+		console.log(chalk.yellow(`generating ${this.path}/${name}.spec.js`));
 
 		try {
 			let stub = fs.readFileSync(path.resolve(__dirname, './Stubs', this.stub)).toString();
-			fs.writeFileSync(`${this.path}/${name}.js`, stub.split('{{name}}').join(name));
-			console.log(chalk.green(`${this.path}/${name}.js created successfully`));
+			fs.writeFileSync(`${this.path}/${name}.spec.js`, stub.split('{{name}}').join(name));
+			console.log(chalk.green(`${this.path}/${name}.spec.js created successfully`));
+			this.open(`${this.path}/${name}.spec.js`);
 		} catch (error) {
-			console.log(chalk.red(`${this.path}/${name}.js creation failed with the following error`, error));
+			console.log(chalk.red(`${this.path}/${name}.spec.js creation failed with the following error`, error));
 		}
 	}
 }

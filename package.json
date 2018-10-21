@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "NODE_ENV=production node ./bin/www",
 		"debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
-		"test": "ava tests/**/Kernel.spec.js --verbose --serial",
+		"test": "ava tests/**/SearchController.spec.js --verbose --serial",
 		"test:unit": "ava tests/unit/**/*.spec.js --verbose --serial",
 		"test:integration": "ava tests/integration/**/*.spec.js --verbose --serial",
 		"test:watch": "ava tests/**/*.spec.js --verbose --watch -- serial"
@@ -15,8 +15,6 @@
 		"bookshelf": "^0.13.3",
 		"bookshelf-schema": "^0.3.6",
 		"bookshelf-secure-password": "^3.1.0",
-		"chalk": "^2.4.1",
-		"commander": "^2.19.0",
 		"cookie-encrypter": "^1.0.1",
 		"cookie-parser": "~1.4.3",
 		"csurf": "^1.9.0",
@@ -43,7 +41,9 @@
 		"moxios": "^0.4.0",
 		"sinon": "^6.3.5",
 		"sqlite3": "^4.0.2",
-		"supertest": "^3.3.0"
+		"supertest": "^3.3.0",
+		"chalk": "^2.4.1",
+		"commander": "^2.19.0"
 	},
 	"ava": {
 		"require": [

@@ -153,7 +153,7 @@ test.serial('It returns false for not found object', async t => {
 	});
 });
 
-test.serial.only('It returns previous page', async t => {
+test.serial('It returns previous page', async t => {
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 9);

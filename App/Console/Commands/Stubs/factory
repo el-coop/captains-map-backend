@@ -1,0 +1,16 @@
+const faker = require('faker');
+const {{model}} = require('../../App/models/{{model}}');
+const BaseFactory = require('./BaseFactory');
+
+class {{name}} extends BaseFactory {
+	model() {
+		return {{model}};
+	}
+
+	define() {
+		return {
+		}
+	}
+};
+
+module.exports = new {{name}}();

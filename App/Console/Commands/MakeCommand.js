@@ -1,6 +1,4 @@
 const MakeBase = require('./BaseClasses/MakeBase');
-const fs = require('fs');
-const chalk = require('chalk');
 const path = require('path');
 
 class MakeCommand extends MakeBase {
