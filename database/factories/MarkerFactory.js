@@ -1,5 +1,5 @@
 const faker = require('faker');
-const Marker = require('../../App/models/Marker');
+const Marker = require('../../App/Models/Marker');
 const BaseFactory = require('./BaseFactory');
 
 class MarkerFactory extends BaseFactory {

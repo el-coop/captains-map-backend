@@ -1,6 +1,7 @@
 let Bookshelf = require('./bookshelf');
 let Fields = require('bookshelf-schema/lib/fields'),
 	StringField = Fields.StringField,
+	FloatField = Fields.FloatField,
 	IntField = Fields.IntField,
 	DateTimeField = Fields.DateTimeField;
 let Relations = require('bookshelf-schema/lib/relations'),
@@ -18,8 +19,8 @@ let Marker = Bookshelf.Model.extend({
 		IntField('user_id', {
 			positive: true
 		}),
-		StringField('lat'),
-		StringField('lng'),
+		FloatField('lat'),
+		FloatField('lng'),
 		StringField('type'),
 		StringField('description'),
 		DateTimeField('time'),

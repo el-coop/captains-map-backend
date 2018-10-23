@@ -1,5 +1,5 @@
 const faker = require('faker');
-const User = require('../../App/models/User');
+const User = require('../../App/Models/User');
 const BaseFactory = require('./BaseFactory');
 
 class UserFactory extends BaseFactory {

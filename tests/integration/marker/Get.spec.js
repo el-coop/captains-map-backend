@@ -196,3 +196,88 @@ test.serial('It returns previous page', async t => {
 	t.is(response.body.pagination.hasNext, null);
 	t.is(response.body.pagination.page, null);
 });
+
+
+test.serial('It returns all markers within boundaries', async t => {
+	const marker0 = await MarkerFactory.create({
+		user_id: 1,
+		lat: 9.23849,
+		lng: -9.4922,
+	});
+	const marker1 = await MarkerFactory.create({
+		user_id: 1,
+		lat: 4.19,
+		lng: -4.24,
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		lat: 14.19,
+		lng: -4.24,
+	});
+
+	const response = await request(app).get(
+		'/api/marker?borders=' + JSON.stringify([{lat: 4, lng: -9.5}, {lat: 9.5, lng: -4}])
+	);
+	t.is(response.body.markers.length, 2);
+	t.is(response.body.markers[1].id, marker0.id);
+	t.is(response.body.markers[0].id, marker1.id);
+	t.false(response.body.pagination.hasNext);
+
+});
+
+test.serial('It returns only markers of specific user in specific boundaries', async t => {
+	await MarkerFactory.create({
+		user_id: 1,
+		lat: 0.5,
+		lng: 0.5
+	}, 4);
+	await MarkerFactory.create({
+		user_id: 2,
+		lat: 0.5,
+		lng: 0.5
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		lat: 1.5,
+		lng: 1.5
+	}, 2);
+
+	const response = await request(app).get(
+		'/api/marker/nur?borders=' + JSON.stringify([{lat: 0, lng: 0}, {lat: 1, lng: 1}])
+	);
+	t.is(response.body.markers.length, 3);
+	t.true(response.body.pagination.hasNext);
+
+});
+
+test.serial('It returns previous page within specific boundaries', async t => {
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+		lat: 0.5,
+		lng: 0.6
+	}, 6);
+
+	await MarkerFactory.create({
+		user_id: 1,
+		lat: 2,
+		lng: -2
+	}, 3);
+
+	const response = await request(app).get(
+		`/api/marker/nur/${markers[2].id}/previous?borders=` + JSON.stringify([{lat: 0, lng: 0}, {lat: 1, lng: 1}])
+	);
+	const responseMarkers = response.body.markers;
+	t.is(responseMarkers.length, 3);
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[3].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[4].id;
+	}));
+	t.not(undefined, responseMarkers.find((item) => {
+		return item.id === markers[5].id;
+	}));
+
+	t.is(response.body.pagination.hasNext, null);
+	t.is(response.body.pagination.page, null);
+});

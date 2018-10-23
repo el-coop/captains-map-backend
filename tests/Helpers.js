@@ -1,4 +1,4 @@
-const User = require('../App/models/User');
+const User = require('../App/Models/User');
 const request = require('supertest');
 const app = require('../app');
 

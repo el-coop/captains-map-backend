@@ -1,5 +1,5 @@
 const faker = require('faker');
-const Media = require('../../App/models/Media');
+const Media = require('../../App/Models/Media');
 const BaseFactory = require('./BaseFactory');
 
 class MediaFactory extends BaseFactory {

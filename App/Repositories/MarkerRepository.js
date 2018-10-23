@@ -1,24 +1,36 @@
-const Marker = require('../models/Marker');
-
+const Marker = require('../Models/Marker');
 const pageSize = parseInt(process.env.PAGE_SIZE);
+
+const buildConditions = Symbol('buildConditions');
+const calculateObjectPage = Symbol('calculateObjectPage');
+const get = Symbol('get');
 
 class MarkerRepository {
 
-	async pageMarkers(startId, user) {
-		let markers = new Marker();
-		if (startId) {
-			markers.where('id', '<', startId);
-		}
+	[buildConditions](query, {user = false, startId = false, borders = false, previous = false}) {
 		if (user) {
-			markers.where('user_id', user);
+			query.where('user_id', user);
+		}
+		if (startId) {
+			if (previous) {
+				query.where('id', '>', startId);
+			} else {
+				query.where('id', '<', startId);
+			}
 		}
 
-		return await this.get(markers, 'DESC', pageSize + 1);
+		if (borders) {
+			query.where('lat', '>', borders[0].lat).where('lng', '>', borders[0].lng)
+				.where('lat', '<', borders[1].lat).where('lng', '<', borders[1].lng);
+		}
+
+		return query;
 	}
 
-	async getPage(startId = false, user = false) {
+	async getPage(conditions = {}) {
 		let hasNext = false;
-		const markers = await this.pageMarkers(startId, user);
+		let markers = this[buildConditions](new Marker(), conditions);
+		markers = await this[get](markers, 'DESC', pageSize + 1);
 
 		if (markers.length > pageSize) {
 			markers.pop();
@@ -33,14 +45,11 @@ class MarkerRepository {
 		}
 	}
 
-	async getPreviousPage(startId, user = false) {
-		let markers = new Marker();
-		markers.where('id', '>', startId);
-		if (user) {
-			markers.where('user_id', user);
-		}
+	async getPreviousPage(conditions = {}) {
+		conditions.previous = true;
+		let markers = this[buildConditions](new Marker(), conditions);
 
-		markers = await this.get(markers, 'ASC', pageSize + 1);
+		markers = await this[get](markers, 'ASC', pageSize + 1);
 
 		return {
 			markers: markers.toJSON().sort((a, b) => {
@@ -58,7 +67,7 @@ class MarkerRepository {
 
 	async getObjectPage(object, user) {
 		let hasNext = false;
-		const data = await this.calculateObjectPage(object, user);
+		const data = await this[calculateObjectPage](object, user);
 		const markers = data.markers;
 		const page = data.page;
 
@@ -75,7 +84,7 @@ class MarkerRepository {
 		}
 	}
 
-	async calculateObjectPage(object, user) {
+	async [calculateObjectPage](object, user) {
 
 		const searchedMarker = await new Marker({
 			id: object,
@@ -95,8 +104,8 @@ class MarkerRepository {
 		const numberMarkersBefore = await markers.where('id', '>', object).count();
 		const page = Math.floor(numberMarkersBefore / pageSize);
 
-		const prevMarkers = await this.get(markers.where('id', '>', object), 'ASC', numberMarkersBefore - page * pageSize);
-		const nextMarkers = await this.get(markers.where('id', '<', object), 'DESC', pageSize - prevMarkers.length);
+		const prevMarkers = await this[get](markers.where('id', '>', object), 'ASC', numberMarkersBefore - page * pageSize);
+		const nextMarkers = await this[get](markers.where('id', '<', object), 'DESC', pageSize - prevMarkers.length);
 
 		nextMarkers.forEach((marker) => {
 			prevMarkers.push(marker);
@@ -114,7 +123,7 @@ class MarkerRepository {
 		};
 	}
 
-	async get(query, order, limit) {
+	async [get](query, order, limit) {
 		return await query.orderBy('id', order).query((qb) => {
 			qb.limit(limit);
 		}).fetchAll({

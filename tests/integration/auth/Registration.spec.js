@@ -1,7 +1,7 @@
 import test from 'ava';
 import app from '../../../app';
 import knex from '../../../database/knex';
-import User from '../../../App/models/User';
+import User from '../../../App/Models/User';
 import request from 'supertest';
 
 

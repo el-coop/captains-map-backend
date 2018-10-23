@@ -1,6 +1,6 @@
-const Media = require('../../models/Media');
-const Marker = require('../../models/Marker');
-const User = require('../../models/User');
+const Media = require('../../Models/Media');
+const Marker = require('../../Models/Marker');
+const User = require('../../Models/User');
 const BaseError = require('../../errors/BaseError');
 
 const models = {

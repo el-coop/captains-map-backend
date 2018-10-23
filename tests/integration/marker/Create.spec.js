@@ -3,7 +3,7 @@ import app from '../../../app';
 import knex from '../../../database/knex';
 import request from 'supertest';
 import helpers from '../../Helpers';
-import Marker from '../../../App/models/Marker';
+import Marker from '../../../App/Models/Marker';
 import path from 'path';
 import fs from 'fs';
 
@@ -41,8 +41,8 @@ test.serial('It creates a marker with instagram', async t => {
 	t.is(response.body.lat, '0');
 	t.is(response.body.lng, '0');
 	t.is(marker.user_id, 1);
-	t.is(marker.lat, '0');
-	t.is(marker.lng, '0');
+	t.is(marker.lat, 0);
+	t.is(marker.lng, 0);
 	t.is(marker.$media.type, 'instagram');
 	t.is(marker.$media.path, 'BlfyEoTDKxi');
 
@@ -89,8 +89,8 @@ test.serial('It uploads a photo and creates a marker', async t => {
 	t.is(response.body.lat, '0');
 	t.is(response.body.lng, '0');
 	t.is(marker.user_id, 1);
-	t.is(marker.lat, '0');
-	t.is(marker.lng, '0');
+	t.is(marker.lat, 0);
+	t.is(marker.lng, 0);
 	t.is(marker.$media.type, 'file');
 	t.true(fs.existsSync(filePath));
 

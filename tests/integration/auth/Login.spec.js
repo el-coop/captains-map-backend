@@ -4,7 +4,7 @@ import knex from '../../../database/knex';
 import sinon from 'sinon';
 import JwtService from '../../../App/services/JwtService';
 import request from 'supertest';
-import User from "../../../App/models/User";
+import User from "../../../App/Models/User";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

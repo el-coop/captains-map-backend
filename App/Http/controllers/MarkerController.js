@@ -1,13 +1,13 @@
 'use strict';
 
-const Marker = require('../../models/Marker');
-const Media = require('../../models/Media');
+const Marker = require('../../Models/Marker');
+const Media = require('../../Models/Media');
 const http = require('../../services/HttpService');
 const BaseError = require('../../errors/BaseError');
 const fs = require('fs');
 const path = require('path');
 const Cache = require('../../services/CacheService');
-const MarkerRepository = require('../../repositories/MarkerRepository');
+const MarkerRepository = require('../../Repositories/MarkerRepository');
 
 class MarkersController {
 	async create(req, res) {
@@ -41,18 +41,33 @@ class MarkersController {
 	}
 
 	async index(req, res) {
-		let markers = await MarkerRepository.getPage(req.query.startingId || false);
+		let borders = false;
+		if (req.query.borders) {
+			borders = JSON.parse(req.query.borders)
+		}
+		let markers = await MarkerRepository.getPage({
+			startId: req.query.startingId || false,
+			borders
+		});
 		res.status(200);
 		res.json(markers);
 	}
 
 	async userMarkers(req, res) {
+		let borders = false;
+		if (req.query.borders) {
+			borders = JSON.parse(req.query.borders)
+		}
 
 		const user = req.objects.user;
 
 		let markers;
 		if (!req.params.markerId) {
-			markers = await MarkerRepository.getPage(req.query.startingId || false, user.id);
+			markers = await MarkerRepository.getPage({
+				startId: req.query.startingId || false,
+				user: user.id,
+				borders
+			});
 		} else {
 			try {
 				markers = await MarkerRepository.getObjectPage(req.params.markerId, user.id);
@@ -66,7 +81,15 @@ class MarkersController {
 	}
 
 	async previousMarkers(req, res) {
-		const markers = await MarkerRepository.getPreviousPage(req.params.markerId, req.objects.user.id);
+		let borders = false;
+		if (req.query.borders) {
+			borders = JSON.parse(req.query.borders)
+		}
+		const markers = await MarkerRepository.getPreviousPage({
+			startId: req.params.markerId,
+			user: req.objects.user.id,
+			borders
+		});
 		res.status(200);
 		res.json(markers);
 	}
