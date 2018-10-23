@@ -5,7 +5,6 @@ import path from 'path';
 import fs from 'fs';
 
 const src = path.resolve(__dirname, 'demo.jpg');
-const timeoutPromise = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
 
 test.serial('It returns 404 for non existing thumbnails without origin image', async t => {
 	const response = await request(app).get('/api/thumbnails/demo.jpg');

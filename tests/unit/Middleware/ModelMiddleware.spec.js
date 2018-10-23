@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import modelMiddleware from '../../../App/Http/middleware/ModelMiddleware';
+import modelMiddleware from '../../../App/Http/Middleware/ModelMiddleware';
 import knex from "../../../database/knex";
 import MarkerFactory from "../../../database/factories/MarkerFactory";
 

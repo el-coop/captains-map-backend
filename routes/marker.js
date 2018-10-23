@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../App/Http/middleware/AuthMiddleware');
-const upload = require('../App/Http/middleware/UploadMiddleware');
-const validation = require('../App/Http/middleware/ValidationMiddleware');
-const modelMiddleware = require('../App/Http/middleware/ModelMiddleware');
+const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
+const upload = require('../App/Http/Middleware/UploadMiddleware');
+const validation = require('../App/Http/Middleware/ValidationMiddleware');
+const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
 const MarkerController = require('../App/Http/controllers/MarkerController');
 
 router.get('/', MarkerController.index);

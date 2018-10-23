@@ -1,10 +1,10 @@
-const BaseMiddleware = require('./middleware/BaseMiddleware');
-const CSRFMiddleware = require('./middleware/CSRFMiddleware');
+const BaseMiddleware = require('./Middleware/BaseMiddleware');
+const CSRFMiddleware = require('./Middleware/CSRFMiddleware');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cookieEncrypter = require('cookie-encrypter');
 const logger = require('morgan');
-const ErrorHandlerMiddleware = require('./middleware/ErrorHandlerMiddleware');
+const ErrorHandlerMiddleware = require('./Middleware/ErrorHandlerMiddleware');
 
 const preMiddleware = [
 	logger('dev'),

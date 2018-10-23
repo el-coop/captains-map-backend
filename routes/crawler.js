@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const modelMiddleware = require('../App/Http/middleware/ModelMiddleware');
+const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
 const CrawlerController = require('../App/Http/controllers/CrawlerController');
 
 router.get('/:user?/:marker?', [

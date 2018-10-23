@@ -117,10 +117,11 @@ test.serial('It validates data', async t => {
 	t.is(response.body.errors[2].param, 'lng');
 	t.is(response.body.errors[3].param, 'lng');
 	t.is(response.body.errors[4].param, 'time');
-	t.is(response.body.errors[5].param, 'type');
+	t.is(response.body.errors[5].param, 'time');
 	t.is(response.body.errors[6].param, 'type');
-	t.is(response.body.errors[7].param, 'media.type');
-	t.is(response.body.errors[8].param, 'media.path');
+	t.is(response.body.errors[7].param, 'type');
+	t.is(response.body.errors[8].param, 'media.type');
 	t.is(response.body.errors[9].param, 'media.path');
+	t.is(response.body.errors[10].param, 'media.path');
 
 });

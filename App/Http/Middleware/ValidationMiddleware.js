@@ -1,11 +1,25 @@
 const {check, validationResult} = require('express-validator/check');
 
 class Validator {
+	validate(rules) {
+		return [
+			this.rules(rules),
+			this.verify
+		]
+	}
+
 	rules(rules) {
-		let validationRules = [];
+		const validationRules = [];
 		for (let fieldName in rules) {
-			let fieldValidation = check(fieldName).trim().optional();
-			rules[fieldName].forEach((item) => {
+			const fieldValidation = check(fieldName).trim();
+			let fieldRules = rules[fieldName];
+			if (!Array.isArray(fieldRules)) {
+				fieldRules = fieldRules.split('|');
+			}
+			if (fieldRules.indexOf('required') < 0) {
+				fieldValidation.optional();
+			}
+			fieldRules.forEach((item) => {
 				const variables = item.split(':');
 				const methodName = variables[0];
 				let args = [];
@@ -44,7 +58,7 @@ class Validator {
 	}
 
 	date() {
-		this.toDate();
+		this.isISO8601().toDate();
 	}
 
 	matches(args) {

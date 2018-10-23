@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import authMiddleware from '../../../App/Http/middleware/AuthMiddleware';
+import authMiddleware from '../../../App/Http/Middleware/AuthMiddleware';
 import knex from "../../../database/knex";
 import User from "../../../App/models/User";
 
