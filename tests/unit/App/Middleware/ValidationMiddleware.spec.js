@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import validationMiddleware from '../../../App/Http/Middleware/ValidationMiddleware';
+import validationMiddleware from '../../../../App/Http/Middleware/ValidationMiddleware';
 import { check, validationResult } from 'express-validator/check';
 
 test.afterEach.always('Restore sinon', t => {
@@ -25,20 +25,17 @@ test('It validates when rule is in string', async t => {
 	const req = {
 		body: {}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
@@ -50,7 +47,7 @@ test('It validates when rule is in string', async t => {
 			value: undefined,
 			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 test('It validates when rule is string with |', async t => {
@@ -63,20 +60,17 @@ test('It validates when rule is string with |', async t => {
 			name: ''
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
@@ -88,7 +82,7 @@ test('It validates when rule is string with |', async t => {
 			value: '',
 			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 
@@ -127,27 +121,23 @@ test('It validates rule in array', async t => {
 			name: 'guest'
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
 			value: 'guest',
 			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 
@@ -161,20 +151,18 @@ test('It validates rules in array', async t => {
 			name: 'guest'
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+	await rules(req, {}, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
@@ -185,8 +173,18 @@ test('It validates rules in array', async t => {
 			param: 'name',
 			value: 'guest',
 			msg: 'Invalid value'
+		}, {
+			location: 'body',
+			param: 'name',
+			value: '@guest',
+			msg: 'Invalid value'
+		}, {
+			location: 'body',
+			param: 'name',
+			value: '@guest',
+			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 
@@ -200,27 +198,24 @@ test('It validates date rule', async t => {
 			name: 'guest'
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
 			value: 'guest',
 			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 test('It lets proper date pass', async t => {
@@ -261,27 +256,24 @@ test('It validates regex', async t => {
 			name: 'guest'
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
 			value: 'guest',
 			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 test('It validates url', async t => {
@@ -294,27 +286,25 @@ test('It validates url', async t => {
 			name: 'guest'
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
 			value: 'guest',
 			msg: 'Invalid value'
 		}]
-	}));
+	});
 });
 
 test('It validates requiredIf', async t => {
@@ -328,25 +318,23 @@ test('It validates requiredIf', async t => {
 			name: ''
 		}
 	};
-	const res = {
-		json: sinon.spy(),
-	};
-	res.status = sinon.stub().returns(res);
 
 	const rules = prep[0][0];
 	const validate = prep[1];
 	await rules(req, {}, sinon.spy());
-	await validate(req, res, sinon.spy());
 
-	t.true(res.status.calledOnce);
-	t.true(res.status.calledWith(422));
-	t.true(res.json.calledOnce);
-	t.true(res.json.calledWith({
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
 		errors: [{
 			location: 'body',
 			param: 'name',
 			value: '',
 			msg: 'Required if test is rest'
 		}]
-	}));
+	});
 });

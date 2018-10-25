@@ -2,11 +2,11 @@
 
 const Marker = require('../../Models/Marker');
 const Media = require('../../Models/Media');
-const http = require('../../services/HttpService');
-const BaseError = require('../../errors/BaseError');
+const http = require('../../Services/HttpService');
+const BaseError = require('../../Errors/BaseError');
 const fs = require('fs');
 const path = require('path');
-const Cache = require('../../services/CacheService');
+const Cache = require('../../Services/CacheService');
 const MarkerRepository = require('../../Repositories/MarkerRepository');
 
 class MarkersController {

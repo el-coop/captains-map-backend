@@ -36,8 +36,7 @@ class ModelMiddleware {
 	valdiateOwnership(object) {
 		return (req, res, next) => {
 			if (!req.user || req.objects[object].user_id !== req.user.id) {
-				res.status(403).json({Error: 'Forbidden'});
-				return false;
+				throw new BaseError('Forbidden', 403);
 			}
 			next();
 		}

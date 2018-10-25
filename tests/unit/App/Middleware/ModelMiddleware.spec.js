@@ -1,8 +1,8 @@
 import test from 'ava';
 import sinon from 'sinon';
-import modelMiddleware from '../../../App/Http/Middleware/ModelMiddleware';
-import knex from "../../../database/knex";
-import MarkerFactory from "../../../database/factories/MarkerFactory";
+import modelMiddleware from '../../../../App/Http/Middleware/ModelMiddleware';
+import knex from "../../../../database/knex";
+import MarkerFactory from "../../../../database/factories/MarkerFactory";
 
 let res;
 let next;
@@ -31,8 +31,11 @@ test.serial('It throws 404 when there is no model', async t => {
 			'marker': 1
 		}
 	};
-
-	await t.throwsAsync(modelMiddleware.inject()(req, res, next));
+	const error = await t.throwsAsync(async () => {
+		await modelMiddleware.inject()(req, res, next);
+	});
+	t.is(error.statusCode, 404);
+	t.is(error.message, 'Not Found');
 
 });
 
@@ -78,11 +81,12 @@ test.serial('Ownership validation returns 403 when no user', async t => {
 		}
 	};
 
-	await modelMiddleware.valdiateOwnership('marker')(req, res, next);
 
-	t.true(res.status.calledWith(403));
-	t.true(res.json.calledWith({'Error': 'Forbidden'}));
-	t.false(next.called);
+	const error = await t.throwsAsync(async () => {
+		await modelMiddleware.valdiateOwnership('marker')(req, res, next);
+	});
+	t.is(error.statusCode, 403);
+	t.is(error.message, 'Forbidden');
 });
 
 test.serial('Ownership validation returns 403 when user doesnt own object', async t => {
@@ -98,10 +102,11 @@ test.serial('Ownership validation returns 403 when user doesnt own object', asyn
 		}
 	};
 
-	await modelMiddleware.valdiateOwnership('marker')(req, res, next);
-
-	t.true(res.status.calledWith(403));
-	t.true(res.json.calledWith({'Error': 'Forbidden'}));
+	const error = await t.throwsAsync(async () => {
+		await modelMiddleware.valdiateOwnership('marker')(req, res, next);
+	});
+	t.is(error.statusCode, 403);
+	t.is(error.message, 'Forbidden');
 	t.false(next.called);
 });
 

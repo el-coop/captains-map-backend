@@ -2,7 +2,7 @@ const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
 const mime = require('mime');
-const SharpStorage = require('../../services/SharpStorage');
+const SharpStorage = require('../../Services/SharpStorage');
 
 const imageUpload = multer({
 	fileFilter: (req, file, callback) => {

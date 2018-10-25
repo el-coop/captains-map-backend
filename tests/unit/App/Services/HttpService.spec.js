@@ -1,5 +1,5 @@
 import test from 'ava';
-import http from '../../../App/services/HttpService';
+import http from '../../../../App/Services/HttpService';
 import axios from 'axios';
 import moxios from 'moxios';
 

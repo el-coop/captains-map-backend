@@ -4,7 +4,7 @@ let Fields = require('bookshelf-schema/lib/fields'),
 	IntField = Fields.IntField,
 	DateTimeField = Fields.DateTimeField,
 	EmailField = Fields.EmailField;
-let jwtService = require('../services/JwtService');
+let jwtService = require('../Services/JwtService');
 
 let Relations = require('bookshelf-schema/lib/relations'),
 	HasMany = Relations.HasMany;

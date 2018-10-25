@@ -4,8 +4,8 @@ import knex from '../../../database/knex';
 import MediaFactory from '../../../database/factories/MediaFactory';
 import request from 'supertest';
 import sinon from 'sinon';
-import httpService from '../../../App/services/HttpService';
-import Cache from '../../../App/services/CacheService';
+import httpService from '../../../App/Services/HttpService';
+import Cache from '../../../App/Services/CacheService';
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

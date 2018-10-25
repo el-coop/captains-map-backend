@@ -15,7 +15,6 @@ test.afterEach.always(async () => {
 
 
 test.serial('Return registration closed message for registration when users exist', async t => {
-	t.plan(2);
 	await knex.seed.run();
 	const response = await request(app).post('/api/auth/register').send({
 		username: 'nur',
@@ -28,7 +27,6 @@ test.serial('Return registration closed message for registration when users exis
 });
 
 test.serial('First user registers successfully', async t => {
-	t.plan(3);
 	const response = await request(app).post('/api/auth/register').send({
 		username: 'nur',
 		password: '123456',

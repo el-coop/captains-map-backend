@@ -2,7 +2,7 @@ import test from 'ava';
 import app from '../../../app';
 import knex from '../../../database/knex';
 import sinon from 'sinon';
-import JwtService from '../../../App/services/JwtService';
+import JwtService from '../../../App/Services/JwtService';
 import request from 'supertest';
 import User from "../../../App/Models/User";
 
@@ -17,7 +17,6 @@ test.afterEach.always(async () => {
 
 
 test.serial('Return invalid credentials when wrong username', async t => {
-	t.plan(3);
 	const response = await request(app).post('/api/auth/login')
 		.send({
 			username: 'bla',
@@ -30,7 +29,6 @@ test.serial('Return invalid credentials when wrong username', async t => {
 });
 
 test.serial('Return invalid credentials when wrong password', async t => {
-	t.plan(3);
 	const response = await request(app).post('/api/auth/login')
 		.send({
 			username: 'nur',

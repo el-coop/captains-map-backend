@@ -1,17 +1,17 @@
-let jwtService = require('../../services/JwtService');
+const jwtService = require('../../Services/JwtService');
+const DataError = require('../../Errors/DataError');
 
 module.exports = function (req, res, next) {
 	const {token} = req.signedCookies;
-	let user = jwtService.verify(token);
+	const user = jwtService.verify(token);
 	if (user) {
 		req.user = user;
 		next();
 	} else {
-		res.status(403)
-			.clearCookie("token")
-			.json({
-				message: "No user.",
-				clearToken: true
-			})
+		res.clearCookie("token");
+		throw new DataError('Forbidden', 403, {
+			message: "No user.",
+			clearToken: true
+		});
 	}
 };

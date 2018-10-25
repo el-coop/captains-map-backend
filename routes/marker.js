@@ -22,7 +22,7 @@ router.get('/:user/:markerId/previous', modelMiddleware.inject({
 router.post('/create', [
 	authMiddleware,
 	upload.image('media[image]'),
-	validation.rules({
+	validation.validate({
 		lat: ['required', 'numeric'],
 		lng: ['required', 'numeric'],
 		time: ['required', 'date'],
@@ -32,7 +32,6 @@ router.post('/create', [
 		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\/\/www\.instagram\.com\/p\/\w*\/.*'],
 		'media.file': ['requiredIf:media.type,image,file']
 	}),
-	validation.verify
 ], MarkerController.create.bind(MarkerController));
 
 router.delete('/:marker', [

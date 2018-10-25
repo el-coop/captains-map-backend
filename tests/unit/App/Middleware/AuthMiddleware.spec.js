@@ -1,8 +1,8 @@
 import test from 'ava';
 import sinon from 'sinon';
-import authMiddleware from '../../../App/Http/Middleware/AuthMiddleware';
-import knex from "../../../database/knex";
-import User from "../../../App/Models/User";
+import authMiddleware from '../../../../App/Http/Middleware/AuthMiddleware';
+import knex from "../../../../database/knex";
+import User from "../../../../App/Models/User";
 
 const res = {
 	status(status) {
@@ -21,19 +21,19 @@ test.afterEach.always('Restore sinon', t => {
 });
 
 test('It return 403 when there is no cookie', async t => {
-	const statusSpy = sinon.spy(res, 'status');
-	const jsonSpy = sinon.spy(res, 'json');
 	const clearCookieSpy = sinon.spy(res, 'clearCookie');
 
-	authMiddleware({signedCookies: {}}, res, () => {
+	const error = t.throws(() => {
+		authMiddleware({signedCookies: {}}, res, {});
 	});
 
-	t.true(statusSpy.calledWith(403));
-	t.true(clearCookieSpy.calledWith('token'));
-	t.true(jsonSpy.calledWith({
+	t.is(error.statusCode, 403);
+	t.deepEqual(error.data, {
 		message: "No user.",
 		clearToken: true
-	}));
+	});
+
+	t.true(clearCookieSpy.calledWith('token'));
 });
 
 test.serial('It calls next and puts user on request when there is user', async t => {
