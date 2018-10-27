@@ -7,9 +7,9 @@ const SharpStorage = require('../../Services/SharpStorage');
 const imageUpload = multer({
 	fileFilter: (req, file, callback) => {
 
-		let filetypes = /jpeg|jpg|png|gif/;
-		let mimetype = filetypes.test(file.mimetype);
-		let extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+		const filetypes = /jpeg|jpg|png|gif/;
+		const mimetype = filetypes.test(file.mimetype);
+		const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
 		if (mimetype && extname) {
 			return callback(null, true);

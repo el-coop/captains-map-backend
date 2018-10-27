@@ -11,7 +11,7 @@ const MarkerRepository = require('../../Repositories/MarkerRepository');
 
 class MarkersController {
 	async create(req, res) {
-		let marker = new Marker();
+		const marker = new Marker();
 		marker.user_id = req.user.id;
 		marker.lat = req.body.lat;
 		marker.lng = req.body.lng;
@@ -20,18 +20,17 @@ class MarkersController {
 		marker.description = req.body.description;
 		await marker.save();
 
-		let media = new Media();
-		let inputMedia = req.body.media;
+		const media = new Media();
+		const inputMedia = req.body.media;
 		media.type = inputMedia.type;
 		if (inputMedia.type === 'instagram') {
 			const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
 			media.path = regex.exec(inputMedia.path)[1];
-		}
-		else {
+		} else {
 			media.path = `/images/${req.file.filename}`;
 		}
-		await media.$marker.assign(marker);
 
+		await media.$marker.assign(marker);
 		await marker.load('media');
 		await marker.load('user');
 
@@ -45,7 +44,7 @@ class MarkersController {
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
-		let markers = await MarkerRepository.getPage({
+		const markers = await MarkerRepository.getPage({
 			startId: req.query.startingId || false,
 			borders
 		});
@@ -96,7 +95,7 @@ class MarkersController {
 
 	async delete(req, res) {
 		try {
-			let marker = req.objects.marker;
+			const marker = req.objects.marker;
 			await marker.load(['media']);
 
 			try {
@@ -121,22 +120,18 @@ class MarkersController {
 				success: true
 			});
 		} catch (error) {
-			console.log(error);
-			res.status(500);
-			res.json({
-				error: 'Error'
-			});
+			throw new BaseError('Action failed');
 		}
 	}
 
 	async getInstagramData(req, res) {
-		let instagramId = req.objects.media.path;
+		const instagramId = req.objects.media.path;
 		const response = await Cache.remember(`instagram.${instagramId}`, async () => {
-			let response = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
-			if (response.status === 200) {
-				return response.data;
+			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
+			if (apiResponse.status === 200) {
+				return apiResponse.data;
 			}
-			throw new BaseError('An error occurred with the Instagram API', 500)
+			throw new BaseError('An error occurred with the Instagram API');
 		}, 60 * 60 * 12);
 		return res.status(200).set('Cache-Control', 'public, max-age=' + (60 * 60 * 6)).json(
 			response

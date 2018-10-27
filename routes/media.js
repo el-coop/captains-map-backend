@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ThumbnailController = require('../App/Http/controllers/ThumbnailController');
+const ThumbnailController = require('../App/Http/Controllers/ThumbnailController');
 
 router.use('/images', express.static('./public/images', {
 	immutable: true,

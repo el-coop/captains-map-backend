@@ -4,7 +4,7 @@ const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
 const upload = require('../App/Http/Middleware/UploadMiddleware');
 const validation = require('../App/Http/Middleware/ValidationMiddleware');
 const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
-const MarkerController = require('../App/Http/controllers/MarkerController');
+const MarkerController = require('../App/Http/Controllers/MarkerController');
 
 router.get('/', MarkerController.index);
 

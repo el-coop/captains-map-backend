@@ -15,13 +15,13 @@ class ModelMiddleware {
 			req.objects = {};
 			for (let prop in req.params) {
 				if (req.params[prop]) {
-					let className = prop.charAt(0).toUpperCase() + prop.substr(1);
+					const className = prop.charAt(0).toUpperCase() + prop.substr(1);
 					if (models[className] !== undefined) {
 						const key = keys[className] || 'id';
 						const condition = {};
 						condition[key] = req.params[prop];
 
-						let model = await new models[className](condition).fetch();
+						const model = await new models[className](condition).fetch();
 						if (!model) {
 							throw new BaseError('Not Found', 404);
 						}

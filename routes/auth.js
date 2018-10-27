@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const validation = require('../App/Http/Middleware/ValidationMiddleware');
-const AuthController = require('../App/Http/controllers/AuthController');
+const AuthController = require('../App/Http/Controllers/AuthController');
 
 router.post('/register', validation.validate({
 	username: 'required',

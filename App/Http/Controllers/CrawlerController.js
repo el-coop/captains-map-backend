@@ -12,7 +12,6 @@ class CrawlerController {
 		}
 		if (req.objects.marker) {
 			await req.objects.marker.load('media');
-			console.log(req.objects.marker.media);
 			description = req.objects.marker.description;
 			type = 'article';
 			url += `/${req.objects.marker.id}`;
