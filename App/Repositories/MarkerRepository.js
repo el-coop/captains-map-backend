@@ -100,17 +100,16 @@ class MarkerRepository {
 				}]
 		});
 
-		let markers = new Marker().where('user_id', user);
-		const numberMarkersBefore = await markers.where('id', '>', object).count();
+		const numberMarkersBefore = await new Marker().where('user_id', user).where('id', '>', object).count();
 		const page = Math.floor(numberMarkersBefore / pageSize);
 
-		const prevMarkers = await this[get](markers.where('id', '>', object), 'ASC', numberMarkersBefore - page * pageSize);
-		const nextMarkers = await this[get](markers.where('id', '<', object), 'DESC', pageSize - prevMarkers.length);
+		const prevMarkers = await this[get](new Marker().where('user_id', user).where('id', '>', object), 'ASC', numberMarkersBefore - page * pageSize);
+		const nextMarkers = await this[get](new Marker().where('user_id', user).where('id', '<', object), 'DESC', pageSize - prevMarkers.length);
 
 		nextMarkers.forEach((marker) => {
 			prevMarkers.push(marker);
 		});
-		markers = prevMarkers.push(searchedMarker).toJSON().sort((a, b) => {
+		const markers = prevMarkers.push(searchedMarker).toJSON().sort((a, b) => {
 			if (a.id > b.id) {
 				return -1;
 			}

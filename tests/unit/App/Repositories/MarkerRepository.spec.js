@@ -85,6 +85,35 @@ test.serial('It returns user page', async t => {
 	t.false(result.pagination.hasNext);
 });
 
+test.serial('It returns user page starting at marker', async t => {
+	const userMarkers = await MarkerFactory.create({
+		user_id: 1,
+	}, 2);
+	await MarkerFactory.create({
+		user_id: 2,
+	}, 2);
+
+	const userMarkers2 = await MarkerFactory.create({
+		user_id: 1,
+	}, 2);
+
+	const result = await MarkerRepository.getPage({
+		user: 1,
+		startId: userMarkers2[1].id
+	});
+
+	t.is(3, result.markers.length);
+	userMarkers.forEach((marker) => {
+		t.not(undefined, result.markers.find((item) => {
+			return item.id === marker.id;
+		}))
+	});
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === userMarkers2[0].id;
+	}));
+	t.false(result.pagination.hasNext);
+});
+
 test.serial('It returns page with specific marker in it', async t => {
 	const markers = await MarkerFactory.create({
 		user_id: 1,
@@ -104,6 +133,39 @@ test.serial('It returns page with specific marker in it', async t => {
 	}));
 	t.true(result.pagination.hasNext);
 	t.is(result.pagination.page, 1);
+});
+
+test.serial('It returns page with specific marker in for specific user', async t => {
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+	}, 2);
+	await MarkerFactory.create({
+		user_id: 2,
+	}, 5);
+	const pivotMarker = await MarkerFactory.create({
+		user_id: 1,
+	});
+	await MarkerFactory.create({
+		user_id: 2,
+	}, 2);
+	const nextMarker = await MarkerFactory.create({
+		user_id: 1,
+	});
+
+	const result = await MarkerRepository.getObjectPage(pivotMarker.id, 1);
+
+	t.is(3, result.markers.length);
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === nextMarker.id;
+	}));
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === markers[1].id;
+	}));
+	t.not(undefined, result.markers.find((item) => {
+		return item.id === pivotMarker.id;
+	}));
+	t.true(result.pagination.hasNext);
+	t.is(result.pagination.page, 0);
 });
 
 test.serial('It returns last page with hasNext false', async t => {
