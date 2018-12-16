@@ -33,6 +33,10 @@ test.serial('It returns fresh geocode response when not cached', async t => {
 	sinon.stub(Cache, 'exists').callsFake(() => {
 		return false;
 	});
+
+	sinon.stub(Cache, 'remember').callsFake(async (key, value, seconds) => {
+		return await value.call();
+	});
 	const response = await GeocoderService.geocodeCached('Hayarden 10 haifa');
 
 	t.deepEqual(response, {

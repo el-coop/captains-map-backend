@@ -4,6 +4,7 @@ const pageSize = parseInt(process.env.PAGE_SIZE);
 const buildConditions = Symbol('buildConditions');
 const calculateObjectPage = Symbol('calculateObjectPage');
 const get = Symbol('get');
+const count = Symbol('count');
 
 class MarkerRepository {
 
@@ -100,7 +101,7 @@ class MarkerRepository {
 				}]
 		});
 
-		const numberMarkersBefore = await new Marker().where('user_id', user).where('id', '>', object).count();
+		const numberMarkersBefore = await new Marker().where('user_id', user).where('id', '>', object).count('user_id');
 		const page = Math.floor(numberMarkersBefore / pageSize);
 
 		const prevMarkers = await this[get](new Marker().where('user_id', user).where('id', '>', object), 'ASC', numberMarkersBefore - page * pageSize);
@@ -134,6 +135,10 @@ class MarkerRepository {
 					}
 				}]
 		});
+	}
+
+	async [count](query, column = '') {
+		return await query.count(column);
 	}
 }
 

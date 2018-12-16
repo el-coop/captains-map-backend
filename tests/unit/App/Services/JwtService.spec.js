@@ -8,7 +8,7 @@ test('Generates a valid jwt token', t => {
 		data: 'data'
 	});
 
-	let data = JSON.parse(new Buffer(jwt.split('.')[1], 'base64').toString('ascii'));
+	let data = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64').toString('ascii'));
 
 	t.is(data.data, 'data');
 	t.true(data.hasOwnProperty('exp'));
