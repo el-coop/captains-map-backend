@@ -19,8 +19,6 @@ const postMiddleware = [
 	ErrorHandlerMiddleware
 ];
 
-let instance = null;
-
 class Kernel {
 	constructor(app) {
 		this.app = app;
@@ -46,7 +44,6 @@ class Kernel {
 }
 
 module.exports = {
-	instance,
 	boot(app) {
 		return new Kernel(app);
 	}
