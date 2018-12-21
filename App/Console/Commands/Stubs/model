@@ -1,0 +1,17 @@
+const Bookshelf = require('./bookshelf');
+const Fields = require('bookshelf-schema/lib/fields'),
+	IntField = Fields.IntField,
+	DateTimeField = Fields.DateTimeField;
+
+const {{name}} = Bookshelf.Model.extend({
+	tableName: '{{name}}s',
+	hasTimestamps: true,
+}, {
+	schema: [
+		IntField('id'),
+		DateTimeField('created_at'),
+		DateTimeField('updated_at'),
+	]
+});
+
+module.exports = Bookshelf.model('{{name}}', {{name}});
