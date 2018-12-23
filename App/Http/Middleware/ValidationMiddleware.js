@@ -46,6 +46,10 @@ class Validator {
 		this.isLength({min: args[0]})
 	}
 
+	string() {
+		this.isString();
+	}
+
 	required() {
 		this.exists().not().isEmpty();
 	}

@@ -1,6 +1,7 @@
 const Bookshelf = require('./bookshelf');
 const Fields = require('bookshelf-schema/lib/fields'),
 	IntField = Fields.IntField,
+	StringField = Fields.StringField,
 	DateTimeField = Fields.DateTimeField;
 let Relations = require('bookshelf-schema/lib/relations'),
 	belongsTo = Relations.BelongsTo;

@@ -33,7 +33,7 @@ const User = Bookshelf.Model.extend({
 		DateTimeField('created_at'),
 		DateTimeField('updated_at'),
 
-		HasMany('Marker', {onDestroy: 'cascade'})
+		HasMany('Marker', {onDestroy: 'cascade'}),
 		HasOne('Bio', {onDestroy: 'cascade'})
 	]
 });

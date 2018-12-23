@@ -21,7 +21,7 @@ router.get('/:user/:markerId/previous', modelMiddleware.inject({
 
 router.post('/create', [
 	authMiddleware,
-	upload.image('media[image]'),
+	upload.image('media[image]','images'),
 	validation.validate({
 		lat: ['required', 'numeric'],
 		lng: ['required', 'numeric'],

@@ -15,57 +15,54 @@ function getFilename(req, file, cb) {
 	})
 }
 
-function SharpStorage(opts) {
-	this.getFilename = (opts.filename || getFilename);
+class SharpStorage {
+	constructor(opts) {
+		this.getFilename = (opts.filename || getFilename);
 
-	if (typeof opts.destination === 'string') {
-		mkdirp.sync(opts.destination);
-		this.getDestination = function ($0, $1, cb) {
-			cb(null, opts.destination);
+		if (typeof opts.destination === 'string') {
+			mkdirp.sync(opts.destination);
+			this.getDestination = function ($0, $1, cb) {
+				cb(null, opts.destination);
+			}
+		} else {
+			this.getDestination = (opts.destination || getDestination);
 		}
-	} else {
-		this.getDestination = (opts.destination || getDestination);
 	}
-}
 
-SharpStorage.prototype._handleFile = function (req, file, cb) {
-
-	this.getDestination(req, file, (err, destination) => {
-		if (err) return cb(err);
-
-		this.getFilename(req, file, async (err, filename) => {
+	_handleFile(req, file, cb) {
+		this.getDestination(req, file, (err, destination) => {
 			if (err) return cb(err);
 
-			const finalPath = path.join(destination, filename);
-			const transform = sharp().withoutEnlargement().resize(1000, 800).max();
+			this.getFilename(req, file, async (err, filename) => {
+				if (err) return cb(err);
 
-			try {
-				const outputFile = await file.stream.pipe(transform).toFile(finalPath);
+				const finalPath = path.join(destination, filename);
+				const transform = sharp().withoutEnlargement().resize(this.width, this.height).max();
 
-				cb(null, {
-					destination: destination,
-					filename: filename,
-					path: finalPath,
-					size: outputFile.size
-				});
-			} catch (error) {
-				return cb(error);
-			}
+				try {
+					const outputFile = await file.stream.pipe(transform).toFile(finalPath);
+
+					cb(null, {
+						destination: destination,
+						filename: filename,
+						path: finalPath,
+						size: outputFile.size
+					});
+				} catch (error) {
+					return cb(error);
+				}
+			})
 		})
-	})
-};
+	};
 
-SharpStorage.prototype._removeFile = function (req, file, cb) {
-	const path = file.path;
+	_removeFile(req, file, cb) {
+		const path = file.path;
+		delete file.destination;
+		delete file.filename;
+		delete file.path;
+		fs.unlink(path, cb);
+	};
+}
 
-	delete file.destination;
-	delete file.filename;
-	delete file.path;
 
-
-	fs.unlink(path, cb);
-};
-
-module.exports = function (opts) {
-	return new SharpStorage(opts);
-};
+module.exports = SharpStorage;
