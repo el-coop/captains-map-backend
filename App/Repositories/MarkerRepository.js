@@ -91,12 +91,23 @@ class MarkerRepository {
 			id: object,
 			user_id: user
 		}).fetch({
+			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'time', 'description'],
 			require: true,
 			withRelated: [
-				'media',
+				{
+					media(query) {
+						return query.select('marker_id', 'type', 'path');
+					},
+				},
+
 				{
 					user(query) {
 						return query.select('id', 'username');
+					},
+				},
+				{
+					'user.bio'(query) {
+						return query.select('user_id', 'path');
 					}
 				}]
 		});
@@ -127,11 +138,22 @@ class MarkerRepository {
 		return await query.orderBy('id', order).query((qb) => {
 			qb.limit(limit);
 		}).fetchAll({
+			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'time', 'description'],
 			withRelated: [
-				'media',
+				{
+					media(query) {
+						return query.select('marker_id', 'type', 'path');
+					},
+				},
+
 				{
 					user(query) {
 						return query.select('id', 'username');
+					},
+				},
+				{
+					'user.bio'(query) {
+						return query.select('user_id', 'path');
 					}
 				}]
 		});

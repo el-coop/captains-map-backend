@@ -2,6 +2,7 @@ node_modules
 .idea
 .env
 /public/images/*
+/public/bios/*
 /public/thumbnails/*
 !/public/images/globe-icon.png
 /database/test.sqlite3

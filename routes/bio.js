@@ -8,7 +8,7 @@ const BioController = require('../App/Http/Controllers/BioController');
 
 router.get('/:user', modelMiddleware.inject({
 	User: 'username'
-}), BioController.get);
+}), BioController.get.bind(BioController));
 
 
 router.post('/:user', [
@@ -16,18 +16,11 @@ router.post('/:user', [
 	modelMiddleware.inject({
 		User: 'username'
 	}),
-	modelMiddleware.valdiateOwnership('user','id'),
+	modelMiddleware.valdiateOwnership('user', 'id'),
+	upload.image('image', 'bios', 200, 200),
 	validation.validate({
 		'description': 'string'
 	}),
 ], BioController.update.bind(BioController));
-
-
-router.post('/images/:user/', [
-	modelMiddleware.inject({
-		User: 'username'
-	}),
-	upload.image('bio', 'bios'),
-], BioController.image.bind(BioController));
 
 module.exports = router;

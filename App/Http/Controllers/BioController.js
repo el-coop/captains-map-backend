@@ -1,31 +1,30 @@
 const Bio = require('../../Models/Bio');
+const fs = require('fs');
+const path = require('path');
 
 const getUserBio = Symbol('getUserBio');
+const formatBio = Symbol('formatBio');
 
 class BioController {
 	async get(req, res) {
 		const user = await req.objects.user.load('bio');
-		return res.send(user.$bio);
+		return res.send(this[formatBio](user.$bio));
 	};
 
 	async update(req, res) {
 		const user = await req.objects.user.load('bio');
 		const bio = this[getUserBio](user);
-
-		console.log(req);
-
 		bio.description = req.body.description;
-		await bio.save();
-		return res.send(bio);
-	}
+		if (req.file) {
+			const oldImage = bio.path;
+			bio.path = `/bios/${req.file.filename}`;
 
-	async image(req, res) {
-		const user = await req.objects.user.load('bio');
-		const bio = this[getUserBio](user);
-		bio.path = `/bios/${req.file.filename}`;
-
+			if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
+				fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
+			}
+		}
 		await bio.save();
-		return res.send(bio);
+		return res.send(this[formatBio](bio));
 	}
 
 	[getUserBio](user) {
@@ -36,6 +35,13 @@ class BioController {
 		}
 
 		return bio;
+	}
+
+	[formatBio](bio) {
+		return {
+			path: bio.path,
+			description: bio.description
+		};
 	}
 }
 
