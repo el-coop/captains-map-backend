@@ -72,7 +72,7 @@ test.serial('No user gets a forbidden error', async t => {
 test.serial('It uploads a photo and creates a marker', async t => {
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
-		.attach('media[image]', path.resolve(__dirname, 'demo.jpg'))
+		.attach('media[image]', path.resolve(__dirname, '../../demo.jpg'))
 		.field('lat', '0')
 		.field('lng', '0')
 		.field('time', (new Date()).toISOString())

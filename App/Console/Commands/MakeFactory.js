@@ -14,8 +14,9 @@ class MakeFactory extends MakeBase {
 		console.log(chalk.yellow(`generating ${this.path}/${name}.js`));
 
 		try {
+			this.ensureDirExistence(name);
 			let stub = fs.readFileSync(path.resolve(__dirname, './Stubs', this.stub)).toString();
-			fs.writeFileSync(`${this.path}/${name}.js`, stub.split('{{name}}').join(name).split('{{model}}').join(model));
+			fs.writeFileSync(`${this.path}/${name}.js`, stub.split('{{name}}').join(name.substr(name.lastIndexOf('/') + 1)).split('{{model}}').join(model));
 			console.log(chalk.green(`${this.path}/${name}.js created successfully`));
 			this.open(`${this.path}/${name}.js`);
 		} catch (error) {

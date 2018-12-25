@@ -39,7 +39,7 @@ class BioController {
 
 	[formatBio](bio) {
 		return {
-			path: bio.path,
+			path: bio.path || null,
 			description: bio.description
 		};
 	}

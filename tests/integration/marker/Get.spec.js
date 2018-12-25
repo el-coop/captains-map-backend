@@ -281,3 +281,5 @@ test.serial('It returns previous page within specific boundaries', async t => {
 	t.is(response.body.pagination.hasNext, null);
 	t.is(response.body.pagination.page, null);
 });
+
+test.todo('test delete markers');
