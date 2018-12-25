@@ -24,7 +24,10 @@ test.afterEach.always('Restore sinon', async () => {
 test('It returns empty when the user has no bio', async t => {
 	const response = await request(app).get('/api/bio/nur');
 
-	t.deepEqual(response.body, {});
+	t.deepEqual(response.body, {
+		description: '',
+		path: null
+	});
 });
 
 test('It returns 404 for non existent user get', async t => {
@@ -124,12 +127,13 @@ test('It updates only description when only description is given', async t => {
 });
 
 
-test.only('It updates bio and deletes old iamge', async t => {
+test('It updates bio and deletes old iamge', async t => {
 	const oldBio = await BioFactory.create({
 		user_id: 1
 	});
 	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
 	const oldFilePath = path.resolve(__dirname, `../../../public${oldBio.path}`);
+	fs.copyFileSync(demoFilePath, oldFilePath);
 
 	const response = await request(app).post('/api/bio/nur')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
