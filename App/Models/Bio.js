@@ -9,7 +9,7 @@ let Relations = require('bookshelf-schema/lib/relations'),
 require('./User');
 
 const Bio = Bookshelf.Model.extend({
-	tableName: 'Bios',
+	tableName: 'bios',
 	hasTimestamps: true,
 }, {
 	schema: [
