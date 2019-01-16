@@ -20,13 +20,17 @@ class MakeTest extends MakeBase {
 
 		try {
 			this.ensureDirExistence(name);
-			let stub = fs.readFileSync(path.resolve(__dirname, './Stubs', this.stub)).toString();
-			fs.writeFileSync(`${this.path}/${name}.spec.js`, stub.split('{{name}}').join(name.substr(name.lastIndexOf('/') + 1)));
+			this.writeToFile(name);
 			console.log(chalk.green(`${this.path}/${name}.spec.js created successfully`));
 			this.open(`${this.path}/${name}.spec.js`);
 		} catch (error) {
 			console.log(chalk.red(`${this.path}/${name}.spec.js creation failed with the following error`, error));
 		}
+	}
+
+	writeToFile(name) {
+		let stub = fs.readFileSync(path.resolve(__dirname, './Stubs', this.stub)).toString();
+		fs.writeFileSync(`${this.path}/${name}.spec.js`, stub.split('{{name}}').join(name.substr(name.lastIndexOf('/') + 1)));
 	}
 }
 

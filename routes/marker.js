@@ -6,22 +6,22 @@ const validation = require('../App/Http/Middleware/ValidationMiddleware');
 const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
 const MarkerController = require('../App/Http/Controllers/MarkerController');
 
-router.get('/', MarkerController.index);
+router.get('/', MarkerController.index.bind(MarkerController));
 
 router.get('/instagram/:media', modelMiddleware.inject(), MarkerController.getInstagramData);
 
 router.get('/:user/:markerId?', modelMiddleware.inject({
 	User: 'username'
-}), MarkerController.userMarkers);
+}), MarkerController.userMarkers.bind(MarkerController));
 
 router.get('/:user/:markerId/previous', modelMiddleware.inject({
 	User: 'username'
-}), MarkerController.previousMarkers);
+}), MarkerController.previousMarkers.bind(MarkerController));
 
 
 router.post('/create', [
 	authMiddleware,
-	upload.image('media[image]','images'),
+	upload.image('media[image]', 'images'),
 	validation.validate({
 		lat: ['required', 'numeric'],
 		lng: ['required', 'numeric'],

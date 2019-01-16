@@ -9,6 +9,8 @@ import helpers from "../../Helpers";
 import fs from 'fs';
 import path from 'path';
 import Marker from "../../../App/Models/Marker";
+import cache from '../../../App/Services/CacheService';
+import sinon from "sinon";
 
 
 test.beforeEach(async () => {
@@ -18,6 +20,7 @@ test.beforeEach(async () => {
 
 test.afterEach.always(async () => {
 	await knex.migrate.rollback();
+	sinon.restore();
 });
 
 test('It prevents guests from deleting users marker', async t => {
@@ -56,7 +59,12 @@ test('It gives 404 for user trying to non-existing marker', async t => {
 });
 
 
-test('It allows user to delete marker and deletes image', async t => {
+test('It allows user to delete marker, deletes image and flushes cached data', async t => {
+	const flushStub = sinon.stub();
+	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
+		flush: flushStub
+	});
+
 	const marker = await MarkerFactory.create({
 		user_id: 1,
 	});
@@ -83,4 +91,7 @@ test('It allows user to delete marker and deletes image', async t => {
 	const markersCount = await (new Marker).count();
 
 	t.is(markersCount, 0);
+	t.true(taggedCacheStub.calledOnce);
+	t.true(taggedCacheStub.calledWith(['markers','markers_user:1']));
+	t.true(flushStub.calledOnce);
 });

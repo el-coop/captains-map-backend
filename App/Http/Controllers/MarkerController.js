@@ -9,6 +9,8 @@ const path = require('path');
 const Cache = require('../../Services/CacheService');
 const MarkerRepository = require('../../Repositories/MarkerRepository');
 
+const generateQueryKey = Symbol('generateQueryKey');
+
 class MarkersController {
 	async create(req, res) {
 		const marker = new Marker();
@@ -33,6 +35,7 @@ class MarkersController {
 		await media.$marker.assign(marker);
 		await marker.load('media');
 		await marker.load('user');
+		await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
 		res.status(200);
 		res.json(marker)
@@ -40,55 +43,68 @@ class MarkersController {
 	}
 
 	async index(req, res) {
+		const queryKey = this[generateQueryKey](req, 'markers');
 		let borders = false;
 		if (req.query.borders) {
-			borders = JSON.parse(req.query.borders)
+			borders = JSON.parse(req.query.borders);
 		}
-		const markers = await MarkerRepository.getPage({
-			startId: req.query.startingId || false,
-			borders
+
+		const markers = await Cache.tag(['markers']).rememberForever(queryKey, async () => {
+			return await MarkerRepository.getPage({
+				startId: req.query.startingId || false,
+				borders
+			});
 		});
 		res.status(200);
 		res.json(markers);
 	}
 
 	async userMarkers(req, res) {
+		const user = req.objects.user;
+		const queryKey = this[generateQueryKey](req, `markers_user:${user.id}`);
+
 		let borders = false;
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
 
-		const user = req.objects.user;
-
-		let markers;
-		if (!req.params.markerId) {
-			markers = await MarkerRepository.getPage({
-				startId: req.query.startingId || false,
-				user: user.id,
-				borders
-			});
-		} else {
-			try {
-				markers = await MarkerRepository.getObjectPage(req.params.markerId, user.id);
-			} catch (error) {
-				throw new BaseError('Not Found', 404);
+		const markers = await Cache.tag([`markers_user:${user.id}`]).rememberForever(queryKey, async () => {
+			if (!req.params.markerId) {
+				return await MarkerRepository.getPage({
+					startId: req.query.startingId || false,
+					user: user.id,
+					borders
+				});
+			} else {
+				try {
+					return await MarkerRepository.getObjectPage(req.params.markerId, user.id);
+				} catch (error) {
+					throw new BaseError('Not Found', 404);
+				}
 			}
-		}
+		});
 
 		res.status(200);
 		res.json(markers);
 	}
 
 	async previousMarkers(req, res) {
+		const user = req.objects.user;
+		const queryKey = this[generateQueryKey](req, `markers_prevUser:${user.id}`);
+
 		let borders = false;
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
-		const markers = await MarkerRepository.getPreviousPage({
-			startId: req.params.markerId,
-			user: req.objects.user.id,
-			borders
+
+		const markers = await Cache.tag([`markers_user:${user.id}`]).rememberForever(queryKey, async () => {
+			return await MarkerRepository.getPreviousPage({
+				startId: req.params.markerId,
+				user: user.id,
+				borders
+			});
 		});
+
 		res.status(200);
 		res.json(markers);
 	}
@@ -99,7 +115,7 @@ class MarkersController {
 			await marker.load(['media']);
 
 			try {
-				if (marker.$media.type == 'image') {
+				if (marker.$media.type === 'image') {
 					fs.unlinkSync(path.join(__dirname, `../../../public/${marker.$media.path}`));
 					fs.unlinkSync(path.join(__dirname, `../../../public/${marker.$media.path.replace('images', 'thumbnails')}`));
 				}
@@ -115,6 +131,8 @@ class MarkersController {
 				console.log(error);
 			}
 			await marker.destroy();
+			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
+
 			res.status(200);
 			res.json({
 				success: true
@@ -126,7 +144,7 @@ class MarkersController {
 
 	async getInstagramData(req, res) {
 		const instagramId = req.objects.media.path;
-		const response = await Cache.remember(`instagram.${instagramId}`, async () => {
+		const response = await Cache.remember(`instagram:${instagramId}`, async () => {
 			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
 			if (apiResponse.status === 200) {
 				return apiResponse.data;
@@ -136,6 +154,21 @@ class MarkersController {
 		return res.status(200).set('Cache-Control', 'public, max-age=' + (60 * 60 * 6)).json(
 			response
 		);
+	}
+
+	[generateQueryKey](req, pref) {
+		let key = pref;
+		if (req.query.borders) {
+			key += `_borders:${req.query.borders}`;
+		}
+		if (req.query.startingId) {
+			key += `_starting:${req.query.startingId}`;
+		}
+		if (req.params.markerId) {
+			key += `_marker:${req.params.markerId}`;
+		}
+
+		return key;
 	}
 }
 

@@ -37,7 +37,10 @@ class SharpStorage {
 				if (err) return cb(err);
 
 				const finalPath = path.join(destination, filename);
-				const transform = sharp().withoutEnlargement().resize(this.width, this.height).max();
+				const transform = sharp().resize(this.width, this.height, {
+					withoutEnlargement: true,
+					fit: 'inside'
+				});
 
 				try {
 					const outputFile = await file.stream.pipe(transform).toFile(finalPath);

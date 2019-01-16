@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 class {{name}} {
 	constructor() {
 	}

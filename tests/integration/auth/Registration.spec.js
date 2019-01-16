@@ -3,6 +3,8 @@ import app from '../../../app';
 import knex from '../../../database/knex';
 import User from '../../../App/Models/User';
 import request from 'supertest';
+import sinon from "sinon";
+import cache from "../../../App/Services/CacheService";
 
 
 test.beforeEach(async () => {
@@ -11,6 +13,7 @@ test.beforeEach(async () => {
 
 test.afterEach.always(async () => {
 	await knex.migrate.rollback();
+	sinon.restore();
 });
 
 
@@ -26,7 +29,12 @@ test.serial('Return registration closed message for registration when users exis
 	t.is(response.body.message, 'Registration is closed');
 });
 
-test.serial('First user registers successfully', async t => {
+test.serial('First user registers successfully and flushes users', async t => {
+	const flushStub = sinon.stub();
+	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
+		flush: flushStub
+	});
+
 	const response = await request(app).post('/api/auth/register').send({
 		username: 'nur',
 		password: '123456',
@@ -38,6 +46,9 @@ test.serial('First user registers successfully', async t => {
 
 	let user = await new User().fetch({id: 1});
 	t.is(user.username, 'nur');
+	t.true(taggedCacheStub.calledOnce);
+	t.true(taggedCacheStub.calledWith(['user_search']));
+	t.true(flushStub.calledOnce);
 });
 
 test.serial('Validates user data before registration', async t => {

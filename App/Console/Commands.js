@@ -19,9 +19,12 @@ class Commands {
 			const command = new commandClass();
 			let prog = program.command(commandClass.signature)
 				.description(commandClass.description)
-				.action(command.handle.bind(command));
-			if(commandClass.options){
-				for(let prop in commandClass.options){
+				.action(async (...args) => {
+					await command.handle.call(command, ...args);
+					process.exit();
+				});
+			if (commandClass.options) {
+				for (let prop in commandClass.options) {
 					prog.option(prop, commandClass.options[prop]);
 				}
 			}

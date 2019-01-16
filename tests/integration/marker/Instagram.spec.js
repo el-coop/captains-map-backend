@@ -17,10 +17,10 @@ test.afterEach.always(async () => {
 	await knex.migrate.rollback();
 });
 
-test.serial('It returns Instagram data results from api', async t => {
-	sinon.stub(Cache, 'exists').callsFake(() => {
-		return false;
-	});
+test.serial('It returns and caches Instagram data results from api', async t => {
+	sinon.stub(Cache, 'exists').returns(false);
+	const cacheStub = sinon.stub(Cache.store, 'setex');
+
 	const httpStub = sinon.stub(httpService, 'get').callsFake(() => {
 		return {
 			status: 200,
@@ -34,16 +34,19 @@ test.serial('It returns Instagram data results from api', async t => {
 	const response = await request(app).get(`/api/marker/instagram/${media.id}`);
 	t.is(response.status, 200);
 	t.is(response.body.message, 'fake data');
-	t.true(httpStub.calledOnce)
+	t.true(httpStub.calledOnce);
+	t.true(cacheStub.calledOnce);
+	t.true(cacheStub.firstCall.calledWith(`instagram:${media.path}`, 60 * 60 * 12, JSON.stringify({
+		message: 'fake data'
+	})));
 });
 
 test.serial('It returns data from cache', async t => {
+	sinon.stub(Cache, 'exists').returns(true);
 	const httpStub = sinon.stub(httpService, 'get');
-	const cacheStub = sinon.stub(Cache, 'remember').callsFake(() => {
-		return {
-			message: 'fake data'
-		}
-	});
+	sinon.stub(Cache.store, 'get').returns(JSON.stringify({
+		message: 'fake data'
+	}));
 
 	const media = await MediaFactory.create();
 
@@ -51,7 +54,6 @@ test.serial('It returns data from cache', async t => {
 	t.is(response.status, 200);
 	t.is(response.body.message, 'fake data');
 	t.false(httpStub.called);
-	t.true(cacheStub.called);
 });
 
 test.serial('It throws error when httpService fails', async t => {
@@ -66,7 +68,6 @@ test.serial('It throws error when httpService fails', async t => {
 	sinon.stub(Cache, 'exists').callsFake(() => {
 		return false;
 	});
-
 
 	const media = await MediaFactory.create();
 

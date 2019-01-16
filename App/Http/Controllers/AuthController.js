@@ -1,4 +1,6 @@
-const User = require('../../Models/User');
+const User = require('../../Models/User')
+const Cache = require('../../Services/CacheService');
+
 const BaseError = require('../../Errors/BaseError');
 
 class AuthController {
@@ -13,6 +15,7 @@ class AuthController {
 		user.password = req.body.password;
 
 		await user.save();
+		await Cache.tag(['user_search']).flush();
 
 		return res.status(200).json({
 			success: true

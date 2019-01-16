@@ -6,6 +6,8 @@ import helpers from '../../Helpers';
 import Marker from '../../../App/Models/Marker';
 import path from 'path';
 import fs from 'fs';
+import sinon from "sinon";
+import cache from "../../../App/Services/CacheService";
 
 
 test.beforeEach(async () => {
@@ -15,9 +17,14 @@ test.beforeEach(async () => {
 
 test.afterEach.always(async () => {
 	await knex.migrate.rollback();
+	sinon.restore();
 });
 
-test.serial('It creates a marker with instagram', async t => {
+test.serial('It creates a marker with instagram and flushes cache', async t => {
+	const flushStub = sinon.stub();
+	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
+		flush: flushStub
+	});
 
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
@@ -46,6 +53,10 @@ test.serial('It creates a marker with instagram', async t => {
 	t.is(marker.$media.type, 'instagram');
 	t.is(marker.$media.path, 'BlfyEoTDKxi');
 
+	t.true(taggedCacheStub.calledOnce);
+	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
+	t.true(flushStub.calledOnce);
+
 });
 
 test.serial('No user gets a forbidden error', async t => {
@@ -69,7 +80,11 @@ test.serial('No user gets a forbidden error', async t => {
 	});
 });
 
-test.serial('It uploads a photo and creates a marker', async t => {
+test.serial('It uploads a photo and creates a marker and flushes caches', async t => {
+	const flushStub = sinon.stub();
+	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
+		flush: flushStub
+	});
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.attach('media[image]', path.resolve(__dirname, '../../demo.jpg'))
@@ -95,6 +110,10 @@ test.serial('It uploads a photo and creates a marker', async t => {
 	t.true(fs.existsSync(filePath));
 
 	fs.unlinkSync(filePath);
+
+	t.true(taggedCacheStub.calledOnce);
+	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
+	t.true(flushStub.calledOnce);
 });
 
 test.serial('It validates data', async t => {

@@ -1,4 +1,5 @@
 const Bio = require('../../Models/Bio');
+const Cache = require('../../Services/CacheService');
 const fs = require('fs');
 const path = require('path');
 
@@ -7,8 +8,10 @@ const formatBio = Symbol('formatBio');
 
 class BioController {
 	async get(req, res) {
-		const user = await req.objects.user.load('bio');
-		return res.send(this[formatBio](user.$bio));
+		const user = await Cache.rememberForever(`bio:${req.objects.user.id}`, async () => {
+			return await req.objects.user.load('bio');
+		});
+		return res.send(this[formatBio](user.$bio || user.bio));
 	};
 
 	async update(req, res) {
@@ -24,6 +27,7 @@ class BioController {
 			}
 		}
 		await bio.save();
+		await Cache.forget(`bio:${req.objects.user.id}`);
 		return res.send(this[formatBio](bio));
 	}
 

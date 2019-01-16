@@ -15,7 +15,10 @@ class ThumbnailController {
 		const thumbnailsDir = path.join(__dirname, '../../../public/thumbnails/');
 		mkdirp.sync(thumbnailsDir);
 		const thumbnailPath = path.join(thumbnailsDir, req.params.filename);
-		await sharp(filePath).withoutEnlargement().resize(100, 100).max().toFile(thumbnailPath);
+		await sharp(filePath).resize(100, 100, {
+			withoutEnlargement: true,
+			fit: 'inside'
+		}).toFile(thumbnailPath);
 		sharp.cache(false);
 		return res.status(200).set('Cache-Control', 'public, max-age=31536000').sendFile(thumbnailPath);
 	}
