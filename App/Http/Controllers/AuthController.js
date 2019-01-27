@@ -39,7 +39,8 @@ class AuthController {
 					httpOnly: true,
 					signed: true,
 					maxAge: parseInt(process.env.LOGIN_DURATION),
-					secure: process.env.APP_ENV === 'production'
+					secure: process.env.APP_ENV === 'production',
+					sameSite: true
 				})
 				.json({
 					user: {
