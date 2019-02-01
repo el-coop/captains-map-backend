@@ -96,7 +96,7 @@ class MarkerRepository {
 			withRelated: [
 				{
 					media(query) {
-						return query.select('marker_id', 'type', 'path');
+						return query.select('id', 'marker_id', 'type', 'path');
 					},
 				},
 
@@ -142,7 +142,7 @@ class MarkerRepository {
 			withRelated: [
 				{
 					media(query) {
-						return query.select('marker_id', 'type', 'path');
+						return query.select('id','marker_id', 'type', 'path');
 					},
 				},
 
