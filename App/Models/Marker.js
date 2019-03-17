@@ -23,6 +23,7 @@ let Marker = Bookshelf.Model.extend({
 		FloatField('lng'),
 		StringField('type'),
 		StringField('description'),
+		StringField('location'),
 		DateTimeField('time'),
 		DateTimeField('created_at'),
 		DateTimeField('updated_at'),

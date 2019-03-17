@@ -91,7 +91,7 @@ class MarkerRepository {
 			id: object,
 			user_id: user
 		}).fetch({
-			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'time', 'description'],
+			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
 			require: true,
 			withRelated: [
 				{
@@ -138,11 +138,11 @@ class MarkerRepository {
 		return await query.orderBy('id', order).query((qb) => {
 			qb.limit(limit);
 		}).fetchAll({
-			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'time', 'description'],
+			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
 			withRelated: [
 				{
 					media(query) {
-						return query.select('id','marker_id', 'type', 'path');
+						return query.select('id', 'marker_id', 'type', 'path');
 					},
 				},
 

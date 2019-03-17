@@ -21,6 +21,19 @@ class GeocoderService {
 		return await this.geocoders[Math.floor(Math.random() * this.geocoders.length)].geocode(query);
 	}
 
+	async reverseGeocode(lat, lon) {
+		return await this.geocoders[Math.floor(Math.random() * this.geocoders.length)].reverse({
+			lat,
+			lon
+		});
+	}
+
+	async reverseGeocodeCached(lat, lon) {
+		return await Cache.remember(`reverseGeocode.${lat}.${lon}`, async () => {
+			return await this.reverseGeocode(lat, lon);
+		}, 60 * 60 * 12);
+	}
+
 	async geocodeCached(query) {
 		return await Cache.remember(`geocode.${query}`, async () => {
 			return await this.geocode(query);

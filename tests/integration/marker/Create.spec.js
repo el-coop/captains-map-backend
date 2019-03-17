@@ -33,6 +33,7 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 			time: new Date(),
 			type: 'Visited',
 			description: 'test',
+			location: 'test',
 			media: {
 				type: 'instagram',
 				path: 'https://www.instagram.com/p/BlfyEoTDKxi/?utm_source=ig_web_copy_link'
@@ -50,6 +51,7 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 	t.is(marker.user_id, 1);
 	t.is(marker.lat, 0);
 	t.is(marker.lng, 0);
+	t.is(marker.location, 'test');
 	t.is(marker.$media.type, 'instagram');
 	t.is(marker.$media.path, 'BlfyEoTDKxi');
 
@@ -92,6 +94,7 @@ test.serial('It uploads a photo and creates a marker and flushes caches', async 
 		.field('lng', '0')
 		.field('time', (new Date()).toISOString())
 		.field('type', 'Visited')
+		.field('location', 'test')
 		.field('description', 'test')
 		.field('media[type]', 'file');
 
@@ -106,6 +109,7 @@ test.serial('It uploads a photo and creates a marker and flushes caches', async 
 	t.is(marker.user_id, 1);
 	t.is(marker.lat, 0);
 	t.is(marker.lng, 0);
+	t.is(marker.location, 'test');
 	t.is(marker.$media.type, 'file');
 	t.true(fs.existsSync(filePath));
 

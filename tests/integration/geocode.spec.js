@@ -41,3 +41,18 @@ test.serial('It returns geocoder service response', async t => {
 		data: 'data'
 	});
 });
+
+
+test.serial('It returns reverse geocode service response', async t => {
+	sinon.stub(GeocoderService, 'reverseGeocodeCached').callsFake(() => {
+		return {
+			data: 'data'
+		}
+	});
+	const response = await request(app)
+		.get(`/api/geocode/0/0`)
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
+	t.deepEqual(response.body, {
+		data: 'data'
+	});
+});

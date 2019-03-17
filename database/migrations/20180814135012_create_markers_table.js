@@ -6,6 +6,7 @@ exports.up = function (knex, Promise) {
 		table.double('lat');
 		table.double('lng');
 		table.string('type');
+		table.string('location');
 		table.dateTime('time');
 		table.text('description');
 		table.timestamps();

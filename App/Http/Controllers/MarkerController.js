@@ -20,6 +20,7 @@ class MarkersController {
 		marker.time = req.body.time;
 		marker.type = req.body.type;
 		marker.description = req.body.description;
+		marker.location = req.body.location;
 		await marker.save();
 
 		const media = new Media();
