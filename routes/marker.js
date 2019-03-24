@@ -18,7 +18,6 @@ router.get('/:user/:markerId/previous', modelMiddleware.inject({
 	User: 'username'
 }), MarkerController.previousMarkers.bind(MarkerController));
 
-
 router.post('/create', [
 	authMiddleware,
 	upload.image('media[image]', 'images'),

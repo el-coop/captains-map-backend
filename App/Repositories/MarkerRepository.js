@@ -50,14 +50,14 @@ class MarkerRepository {
 		conditions.previous = true;
 		let markers = this[buildConditions](new Marker(), conditions);
 
-		markers = await this[get](markers, 'ASC', pageSize + 1);
+		markers = await this[get](markers, 'ASC', pageSize);
 
 		return {
 			markers: markers.toJSON().sort((a, b) => {
 				if (a.id > b.id) {
-					return -1;
+					return 1;
 				}
-				return 1;
+				return -1;
 			}),
 			pagination: {
 				hasNext: null,
