@@ -8,14 +8,18 @@ test.afterEach.always(() => {
 });
 
 test.serial('exists return true when key exists in redis', async t => {
-	sinon.stub(Cache.store, 'exists').callsFake(() => {
-		return true;
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
 	});
+	sinon.stub(Cache.store, 'exists').returns(true);
 
 	t.true(await Cache.exists('key'));
 });
 
 test.serial('exists return false when key exists in redis', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return false;
 	});
@@ -24,6 +28,9 @@ test.serial('exists return false when key exists in redis', async t => {
 });
 
 test.serial('get return value when key exists in redis', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return true;
 	});
@@ -36,6 +43,9 @@ test.serial('get return value when key exists in redis', async t => {
 
 
 test.serial('get return default value when key doesnt exists in redis', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return false;
 	});
@@ -45,6 +55,9 @@ test.serial('get return default value when key doesnt exists in redis', async t 
 
 
 test.serial('get return null when key doesnt exists in redis and no default value', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return false;
 	});
@@ -54,6 +67,9 @@ test.serial('get return null when key doesnt exists in redis and no default valu
 
 
 test.serial('Remember return value when key exists in redis', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return true;
 	});
@@ -65,6 +81,9 @@ test.serial('Remember return value when key exists in redis', async t => {
 });
 
 test.serial('Remember default return value when key doesnt exists in redis and remembers', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return false;
 	});
@@ -77,6 +96,9 @@ test.serial('Remember default return value when key doesnt exists in redis and r
 
 
 test.serial('Remember forever return value when key exists in redis', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return true;
 	});
@@ -88,6 +110,9 @@ test.serial('Remember forever return value when key exists in redis', async t =>
 });
 
 test.serial('Remember forever default return value when key doesnt exists in redis and remembers', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache.store, 'exists').callsFake(() => {
 		return false;
 	});
@@ -99,6 +124,9 @@ test.serial('Remember forever default return value when key doesnt exists in red
 });
 
 test.serial('forget calls delete on redis', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	const deleteStub = sinon.stub(Cache.store, 'del');
 
 	await Cache.forget('key');
@@ -107,12 +135,45 @@ test.serial('forget calls delete on redis', async t => {
 	t.true(deleteStub.calledWith('key'));
 });
 
-test.serial('Tags returns new tagged cacge',t => {
-	const taggedCache = Cache.tag(['tag1','tag2']);
+test.serial('Tags returns new tagged cacge', t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
+	const taggedCache = Cache.tag(['tag1', 'tag2']);
 
 	t.true(taggedCache instanceof TaggedCacheService);
-	t.deepEqual(taggedCache.tags,[
+	t.deepEqual(taggedCache.tags, [
 		'tag1',
 		'tag2'
 	]);
+});
+
+test.serial('exists return false when redis not connected', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'connecting'
+	});
+
+	t.false(await Cache.exists('key'));
+});
+
+
+test.serial('get returns default value when not connected', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'connecting'
+	});
+
+	t.is(await Cache.get('key', 2), 2);
+});
+
+
+test.serial('Remember returns default value when key doesnt exists in redis and remembers', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'connecting'
+	});
+
+	const setexStub = sinon.stub(Cache.store, 'setex');
+
+	t.is(await Cache.remember('key', 1, 30), 1);
+	t.true(setexStub.calledOnce);
+	t.true(setexStub.calledWith('key', 30, JSON.stringify(1)));
 });

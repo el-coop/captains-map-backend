@@ -4,22 +4,33 @@ const redis = new Redis({
 	host: process.env.CACHE_HOST,   // Redis host
 	password: process.env.CACHE_PASSWORD,
 	keyPrefix: `${process.env.CACHE_PREFIX}_`,
-	db: process.env.CACHE_DB || 0
+	db: process.env.CACHE_DB || 0,
+	enableOfflineQueue: true
 });
+redis.on('error', function (error) {
+	if (error.code !== 'ETIMEDOUT') {
+		console.log(error);
+	}
+});
+
 const TaggedCacheService = require('./TaggedCacheService');
 
 class Cache {
 
 	async exists(key) {
+		if (this.status !== 'ready') {
+			return false;
+		}
 		return await redis.exists(key);
 	}
 
 	async get(key, defaultValue = null) {
 		try {
-			if (await this.exists(key)) {
+			if (this.status === 'ready' && await this.exists(key)) {
 				return await redis.get(key);
 			}
 		} catch (e) {
+			console.log('catch', e);
 		}
 		if (typeof defaultValue === 'function') {
 			defaultValue = await defaultValue.call();
@@ -29,7 +40,7 @@ class Cache {
 
 	async remember(key, value, seconds) {
 		try {
-			if (await this.exists(key)) {
+			if (this.status === 'ready' && await this.exists(key)) {
 				return JSON.parse(await redis.get(key));
 			}
 		} catch (e) {
@@ -40,9 +51,9 @@ class Cache {
 		}
 		try {
 			if (seconds) {
-				await redis.setex(key, seconds, JSON.stringify(value));
+				redis.setex(key, seconds, JSON.stringify(value));
 			} else {
-				await redis.set(key, JSON.stringify(value));
+				redis.set(key, JSON.stringify(value));
 			}
 		} catch (error) {
 			console.log(error);
@@ -55,8 +66,12 @@ class Cache {
 	}
 
 	async forget(key) {
-		await redis.del(key);
+		redis.del(key);
 		return true;
+	}
+
+	get status() {
+		return redis.status;
 	}
 
 	get store() {

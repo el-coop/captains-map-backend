@@ -43,6 +43,9 @@ test.serial('It caches then returns all existing markers with 1 pagination data 
 });
 
 test.serial('It returns all existing markers from cache with 1 pagination data sorted desc by id ', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
@@ -110,6 +113,9 @@ test.serial('It returns data and caches after id when there id is specified', as
 });
 
 test.serial('It returns data from cache after id when there id is specified', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
@@ -164,6 +170,9 @@ test.serial('It returns and caches only markers of specific user with hasNext fa
 
 
 test.serial('It returns from cache only markers of specific user with hasNext false when one page', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -230,6 +239,9 @@ test.serial('It returns and caches only markers of specific user after specific 
 });
 
 test.serial('It returns from cache only markers of specific user after specific id when specified', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -322,6 +334,9 @@ test.serial('It returns and caches specific marker page with has next when neede
 });
 
 test.serial('It returns from cache specific marker page with has next when needed', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -441,6 +456,9 @@ test.serial('It returns and caches previous page', async t => {
 });
 
 test.serial('It returns from cache previous page', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -517,6 +535,9 @@ test.serial('It returns and caches all markers within boundaries', async t => {
 });
 
 test.serial('It returns from cache all markers within boundaries', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -599,7 +620,10 @@ test.serial('It returns and caches only markers of specific user in specific bou
 	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_user:1_borders:${borders}`));
 });
 
-test.serial('It returns from cache only markers of specific user in specific boundaries', async t => {
+test.serial('It returns from cache only markers of specific user in specific boundaries', async t =>{
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready';
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -688,6 +712,9 @@ test.serial('It returns and caches previous page within specific boundaries', as
 
 
 test.serial('It returns from cache previous page within specific boundaries', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');

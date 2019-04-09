@@ -63,6 +63,9 @@ test.serial('It returns search with the similar answers and caches results', asy
 });
 
 test.serial('It returns search from cache with the similar answers', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');

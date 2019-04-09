@@ -63,6 +63,9 @@ test('It returns bio for getting existing user with bio and caches', async t => 
 });
 
 test('It returns bio from cache for getting existing user with bio', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(cache, 'exists').returns(true);
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 

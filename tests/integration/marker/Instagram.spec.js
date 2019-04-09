@@ -42,6 +42,9 @@ test.serial('It returns and caches Instagram data results from api', async t => 
 });
 
 test.serial('It returns data from cache', async t => {
+	sinon.stub(Cache, 'status').get(() => {
+		return 'ready'
+	});
 	sinon.stub(Cache, 'exists').returns(true);
 	const httpStub = sinon.stub(httpService, 'get');
 	sinon.stub(Cache.store, 'get').returns(JSON.stringify({
