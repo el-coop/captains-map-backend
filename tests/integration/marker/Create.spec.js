@@ -4,6 +4,7 @@ import knex from '../../../database/knex';
 import request from 'supertest';
 import helpers from '../../Helpers';
 import Marker from '../../../App/Models/Marker';
+import Media from '../../../App/Models/Media';
 import path from 'path';
 import fs from 'fs';
 import sinon from "sinon";
@@ -146,5 +147,29 @@ test.serial('It validates data', async t => {
 	t.is(response.body.errors[8].param, 'media.type');
 	t.is(response.body.errors[9].param, 'media.path');
 	t.is(response.body.errors[10].param, 'media.path');
+
+});
+
+test.serial('It deletes created marker and media when error thrown after creation', async t => {
+
+	sinon.stub(Marker.prototype, 'load').throws('test');
+
+	const response = await request(app).post('/api/marker/create')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
+			lat: '0',
+			lng: '0',
+			time: new Date(),
+			type: 'Visited',
+			description: 'test',
+			location: 'test',
+			media: {
+				type: 'instagram',
+				path: 'https://www.instagram.com/p/BlfyEoTDKxi/?utm_source=ig_web_copy_link'
+			}
+		});
+
+	t.is(response.status, 500);
+	t.is(0, await Marker.count());
+	t.is(0, await Media.count());
 
 });

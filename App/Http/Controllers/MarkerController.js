@@ -23,23 +23,33 @@ class MarkersController {
 		marker.location = req.body.location;
 		await marker.save();
 
-		const media = new Media();
-		const inputMedia = req.body.media;
-		media.type = inputMedia.type;
-		if (inputMedia.type === 'instagram') {
-			const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
-			media.path = regex.exec(inputMedia.path)[1];
-		} else {
-			media.path = `/images/${req.file.filename}`;
+		let media;
+
+		try {
+			media = new Media();
+			const inputMedia = req.body.media;
+			media.type = inputMedia.type;
+			if (inputMedia.type === 'instagram') {
+				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
+				media.path = regex.exec(inputMedia.path)[1];
+			} else {
+				media.path = `/images/${req.file.filename}`;
+			}
+
+			await media.$marker.assign(marker);
+			await marker.load('media');
+			await marker.load('user');
+			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
+
+			res.status(200);
+			res.json(marker)
+		} catch (e) {
+			await marker.destroy();
+			if (media.id) {
+				await media.destroy();
+			}
+			throw e;
 		}
-
-		await media.$marker.assign(marker);
-		await marker.load('media');
-		await marker.load('user');
-		await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
-
-		res.status(200);
-		res.json(marker)
 
 	}
 
@@ -125,8 +135,7 @@ class MarkersController {
 			}
 			try {
 				if (marker.$media) {
-					await
-						marker.$media.destroy();
+					await marker.$media.destroy();
 				}
 			} catch (error) {
 				console.log(error);
