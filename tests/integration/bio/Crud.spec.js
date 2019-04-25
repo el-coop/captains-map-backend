@@ -111,6 +111,10 @@ test('It prevents other user from editing users bio', async t => {
 
 test('It uploads photo and creates bio when non is present and deletes cached data', async t => {
 	const forgetCacheStub = sinon.stub(cache, 'forget');
+	const flushStub = sinon.stub();
+	const tagCacheStub = sinon.stub(cache, 'tag').returns({
+		flush: flushStub
+	});
 
 	const response = await request(app).post('/api/bio/nur')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
@@ -131,6 +135,11 @@ test('It uploads photo and creates bio when non is present and deletes cached da
 	fs.unlinkSync(filePath);
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
+
+	t.true(tagCacheStub.calledOnce);
+	t.true(tagCacheStub.calledWith(['markers', `markers_user:1`]));
+	t.true(flushStub.calledOnce);
+
 });
 
 test('It saves only description when only description is given and deletes cached data', async t => {
@@ -179,6 +188,10 @@ test('It updates only description when only description is given and flushes ild
 
 test('It updates bio and deletes old image and deletes old data', async t => {
 	const forgetCacheStub = sinon.stub(cache, 'forget');
+	const flushStub = sinon.stub();
+	const tagCacheStub = sinon.stub(cache, 'tag').returns({
+		flush: flushStub
+	});
 
 	const oldBio = await BioFactory.create({
 		user_id: 1
@@ -206,4 +219,9 @@ test('It updates bio and deletes old image and deletes old data', async t => {
 	fs.unlinkSync(filePath);
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
+
+	t.true(tagCacheStub.calledOnce);
+	t.true(tagCacheStub.calledWith(['markers', `markers_user:1`]));
+	t.true(flushStub.calledOnce);
+
 });

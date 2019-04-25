@@ -25,6 +25,7 @@ class BioController {
 			if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
 				fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
 			}
+			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 		}
 		await bio.save();
 		await Cache.forget(`bio:${req.objects.user.id}`);
