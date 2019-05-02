@@ -38,7 +38,7 @@ class MarkersController {
 
 			await media.$marker.assign(marker);
 			await marker.load('media');
-			await marker.load('user');
+			await marker.load('user.bio');
 			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
 			res.status(200);
