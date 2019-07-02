@@ -22,10 +22,10 @@ class Validator {
 			}
 			fieldRules.forEach((item) => {
 				const variables = item.split(':');
-				const methodName = variables[0];
+				const methodName = variables.shift();
 				let args = [];
-				if (variables.length > 1) {
-					args = variables[1].split(',');
+				if (variables.length) {
+					args = variables.join(':').split(',');
 				}
 				this[methodName].call(fieldValidation, args, this);
 			});
