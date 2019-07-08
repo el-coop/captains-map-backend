@@ -18,7 +18,7 @@ class ThumbnailController {
 		await sharp(filePath).resize(100, 100, {
 			withoutEnlargement: true,
 			fit: 'inside'
-		}).toFile(thumbnailPath);
+		}).jpeg({progressive: true}).toFile(thumbnailPath);
 		sharp.cache(false);
 		return res.status(200).set('Cache-Control', 'public, max-age=31536000').sendFile(thumbnailPath);
 	}

@@ -43,7 +43,7 @@ class SharpStorage {
 				});
 
 				try {
-					const outputFile = await file.stream.pipe(transform).toFile(finalPath);
+					const outputFile = await file.stream.pipe(transform).jpeg({progressive: true}).toFile(finalPath);
 
 					cb(null, {
 						destination: destination,
