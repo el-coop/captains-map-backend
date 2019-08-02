@@ -39,12 +39,7 @@ test('It validates when rule is in string', async t => {
 		errors: [{
 			location: 'body',
 			param: 'name',
-			value: undefined,
-			msg: 'Invalid value'
-		}, {
-			location: 'body',
-			param: 'name',
-			value: undefined,
+			value: '',
 			msg: 'Invalid value'
 		}]
 	});
@@ -212,7 +207,7 @@ test('It validates date rule', async t => {
 		errors: [{
 			location: 'body',
 			param: 'name',
-			value: 'guest',
+			value: null,
 			msg: 'Invalid value'
 		}]
 	});

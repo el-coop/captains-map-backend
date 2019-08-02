@@ -75,7 +75,6 @@ test.serial('No user gets a forbidden error', async t => {
 		}
 	});
 
-	t.true(response.headers.hasOwnProperty('set-cookie'));
 	t.is(response.status, 403);
 	t.deepEqual(response.body, {
 		message: "No user.",

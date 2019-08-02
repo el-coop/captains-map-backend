@@ -1,5 +1,5 @@
 const DataError = require('../../Errors/DataError');
-const {check, validationResult} = require('express-validator/check');
+const {check, validationResult} = require('express-validator');
 
 class Validator {
 	validate(rules) {
@@ -63,7 +63,7 @@ class Validator {
 	}
 
 	date() {
-		this.isISO8601().toDate();
+		this.toDate().isISO8601();
 	}
 
 	matches(args) {

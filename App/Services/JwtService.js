@@ -2,9 +2,9 @@ const jwt = require('jsonwebtoken');
 
 class JwtService {
 
-	generate(data) {
+	generate(data, duration) {
 		return jwt.sign(data, process.env.APP_SECRET, {
-			expiresIn: process.env.LOGIN_DURATION
+			expiresIn: duration || process.env.LOGIN_DURATION
 		});
 	}
 

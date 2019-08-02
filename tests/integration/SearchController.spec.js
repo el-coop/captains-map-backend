@@ -20,7 +20,6 @@ test.afterEach.always('Restore sinon', async t => {
 test.serial('It rejects unauthorized user', async t => {
 	const response = await request(app).get('/api/search/users/test');
 
-	t.true(response.headers.hasOwnProperty('set-cookie'));
 	t.is(response.status, 403);
 	t.deepEqual(response.body, {
 		message: "No user.",

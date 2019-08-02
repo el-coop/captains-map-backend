@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const cookieEncrypter = require('cookie-encrypter');
 const logger = require('morgan');
 const ErrorHandlerMiddleware = require('./Middleware/ErrorHandlerMiddleware');
+const InjectUserMiddleware = require('./Middleware/InjectUserMiddleware');
 
 const preMiddleware = [
 	logger('dev'),
@@ -12,7 +13,8 @@ const preMiddleware = [
 	express.urlencoded({extended: false}),
 	cookieParser(process.env.COOKIE_SECRET),
 	cookieEncrypter(process.env.COOKIE_SECRET),
-	CSRFMiddleware
+	CSRFMiddleware,
+	InjectUserMiddleware,
 ];
 
 const postMiddleware = [

@@ -4,7 +4,7 @@ const path = require('path');
 class MakeController extends MakeBase {
 	constructor() {
 		super();
-		this.path = path.resolve(process.cwd(), './App/Http/controllers');
+		this.path = path.resolve(process.cwd(), './App/Http/Controllers');
 		this.stub = 'controller';
 	}
 }

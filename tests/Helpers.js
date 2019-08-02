@@ -9,7 +9,6 @@ class Helpers {
 				username: username,
 				password: password
 			});
-
 		return response.headers['set-cookie'];
 	}
 }
