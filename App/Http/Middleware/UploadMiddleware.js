@@ -31,16 +31,24 @@ const makeStorage = function (dir) {
 	})
 };
 
+function getImageFolder(path, width, height) {
+	let imageUpload = storages[`${path}_${width}_${height}`];
+	if (!imageUpload) {
+		imageUpload = makeStorage(path);
+		imageUpload.storage.width = width;
+		imageUpload.storage.height = height;
+		storages[path] = imageUpload;
+	}
+	return imageUpload;
+}
 
 module.exports = {
 	image(fieldName, path, width = 1000, height = 800) {
-		let imageUpload = storages[`${path}_${width}_${height}`];
-		if (!imageUpload) {
-			imageUpload = makeStorage(path);
-			imageUpload.storage.width = width;
-			imageUpload.storage.height = height;
-			storages[`${path}_${width}_${height}`] = imageUpload;
-		}
+		const imageUpload = getImageFolder(path, width, height);
 		return imageUpload.single(fieldName);
+	},
+	images(fieldName, path, width = 1000, height = 800) {
+		const imageUpload = getImageFolder(path, width, height);
+		return imageUpload.array(fieldName);
 	}
 };

@@ -309,8 +309,7 @@ test('It validates requiredIf', async t => {
 
 	const req = {
 		body: {
-			test: 'rest',
-			name: ''
+			test: 'rest'
 		}
 	};
 
@@ -330,6 +329,89 @@ test('It validates requiredIf', async t => {
 			param: 'name',
 			value: '',
 			msg: 'Required if test is rest'
+		}]
+	});
+});
+
+
+test('It doesnt validate requiredIf when not', async t => {
+	const prep = validationMiddleware.validate({
+		name: ['requiredIf:test,rest']
+	});
+
+	const req = {
+		body: {
+			test: 'res'
+		}
+	};
+
+	const rules = prep[0][0];
+	const validate = prep[1];
+	await rules(req, {}, sinon.spy());
+
+	t.notThrows(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+});
+
+test('It validates requiredIf when no files on request', async t => {
+	const prep = validationMiddleware.validate({
+		name: ['requiredIf:test,rest,file']
+	});
+
+	const req = {
+		body: {
+			test: 'rest',
+		}
+	};
+
+	const rules = prep[0][0];
+	const validate = prep[1];
+	await rules(req, {}, sinon.spy());
+
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
+		errors: [{
+			location: 'body',
+			param: 'name',
+			value: '',
+			msg: 'Must upload a file'
+		}]
+	});
+});
+
+test('It validates requiredIf when files are empty, but on request', async t => {
+	const prep = validationMiddleware.validate({
+		name: ['requiredIf:test,rest,file']
+	});
+
+	const req = {
+		body: {
+			test: 'rest',
+		},
+		files: []
+	};
+
+	const rules = prep[0][0];
+	const validate = prep[1];
+	await rules(req, {}, sinon.spy());
+
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
+		errors: [{
+			location: 'body',
+			param: 'name',
+			value: '',
+			msg: 'Must upload a file'
 		}]
 	});
 });

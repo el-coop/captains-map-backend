@@ -23,31 +23,42 @@ class MarkersController {
 		marker.location = req.body.location;
 		await marker.save();
 
-		let media;
+		const medias = [];
 
 		try {
-			media = new Media();
-			const inputMedia = req.body.media;
-			media.type = inputMedia.type;
-			if (inputMedia.type === 'instagram') {
+			if (req.body.media.type === 'instagram') {
+				const media = new Media();
 				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
-				media.path = regex.exec(inputMedia.path)[1];
+				media.path = regex.exec(req.body.media.path)[1];
+				media.type = req.body.media.type;
+				await media.$marker.assign(marker);
+				medias.push(media);
 			} else {
-				media.path = `/images/${req.file.filename}`;
-			}
+				for (let i = 0; i < req.files.length; i++) {
+					const file = req.files[i];
+					const media = new Media();
+					media.type = req.body.media.type;
+					media.path = `/images/${file.filename}`;
 
-			await media.$marker.assign(marker);
+					await media.$marker.assign(marker);
+					medias.push(media);
+				}
+			}
 			await marker.load('media');
 			await marker.load('user.bio');
+
 			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
 			res.status(200);
 			res.json(marker)
 		} catch (e) {
 			await marker.destroy();
-			if (media.id) {
-				await media.destroy();
+			for (let i = 0; i < medias.length; i++) {
+				await medias[i].destroy();
 			}
+			req.files.forEach((file) => {
+				fs.unlinkSync(file.path)
+			});
 			throw e;
 		}
 
@@ -126,20 +137,20 @@ class MarkersController {
 			await marker.load(['media']);
 
 			try {
-				if (marker.$media.type === 'image') {
-					fs.unlinkSync(path.join(__dirname, `../../../public/${marker.$media.path}`));
-					fs.unlinkSync(path.join(__dirname, `../../../public/${marker.$media.path.replace('images', 'thumbnails')}`));
+				const medias = marker.$media;
+				for(let i = 0; i < medias.length; i++){
+					const media = medias.at(i);
+					if (media.type === 'image') {
+						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path}`));
+						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`));
+					}
+					await media.destroy()
 				}
+
 			} catch (error) {
 				console.log(error);
 			}
-			try {
-				if (marker.$media) {
-					await marker.$media.destroy();
-				}
-			} catch (error) {
-				console.log(error);
-			}
+
 			await marker.destroy();
 			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 

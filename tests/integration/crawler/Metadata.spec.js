@@ -51,7 +51,6 @@ test.serial('It returns metadata for image marker', async t => {
 	});
 
 	const response = await request(app).get('/api/crawler/nur/1');
-
 	t.is(response.status, 200);
 	t.true(response.text.indexOf('<meta property="og:title" content="nur | Captains Map"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.description + '"/>') > -1);

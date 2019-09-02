@@ -20,7 +20,7 @@ router.get('/:user/:markerId/previous', modelMiddleware.inject({
 
 router.post('/create', [
 	authMiddleware,
-	upload.image('media[image]', 'images'),
+	upload.images('media[files]', 'images'),
 	validation.validate({
 		lat: ['required', 'numeric'],
 		lng: ['required', 'numeric'],
@@ -30,7 +30,7 @@ router.post('/create', [
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
 		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\\/\\/www\\.instagram\\.com\\/p\\/\\w*\\/.*'],
-		'media.file': ['requiredIf:media.type,image,file']
+		'media.files': ['requiredIf:media.type,image,file']
 	}),
 ], MarkerController.create.bind(MarkerController));
 

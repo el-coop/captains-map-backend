@@ -15,10 +15,10 @@ class CrawlerController {
 			description = req.objects.marker.description;
 			type = 'article';
 			url += `/${req.objects.marker.id}`;
-			if (req.objects.marker.$media.type === 'image') {
-				image = `https://map.elcoop.io/api${req.objects.marker.$media.path}`;
+			if (req.objects.marker.$media.at(0).type === 'image') {
+				image = `https://map.elcoop.io/api${req.objects.marker.$media.at(0).path}`;
 			} else {
-				image = `https://instagram.com/p/${req.objects.marker.$media.path}/media/`;
+				image = `https://instagram.com/p/${req.objects.marker.$media.at(0).path}/media/`;
 
 			}
 		}
