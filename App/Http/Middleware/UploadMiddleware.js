@@ -27,7 +27,10 @@ const makeStorage = function (dir) {
 				const name = crypto.randomBytes(16).toString("hex");
 				cb(null, `${name}${Date.now()}.${mime.getExtension(file.mimetype)}`);
 			}
-		})
+		}),
+		limits: {
+			fieldSize: 25000000,
+		}
 	})
 };
 
@@ -47,8 +50,8 @@ module.exports = {
 		const imageUpload = getImageFolder(path, width, height);
 		return imageUpload.single(fieldName);
 	},
-	images(fieldName, path, width = 1000, height = 800) {
+	images(fieldName, path, maxCount = 1000, width = 1000, height = 800) {
 		const imageUpload = getImageFolder(path, width, height);
-		return imageUpload.array(fieldName);
+		return imageUpload.array(fieldName, maxCount);
 	}
 };

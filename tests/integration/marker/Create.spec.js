@@ -125,6 +125,29 @@ test.serial('It uploads a photos and creates a marker and flushes caches', async
 	t.true(flushStub.calledOnce);
 });
 
+test.serial('It throws error on more than 5 images', async t => {
+
+	const response = await request(app).post('/api/marker/create')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.field('lat', '0')
+		.field('lng', '0')
+		.field('time', (new Date()).toISOString())
+		.field('type', 'Visited')
+		.field('location', 'test')
+		.field('description', 'test')
+		.field('media[type]', 'file');
+
+	t.is(response.status, 500);
+	t.is(response.body.name,'MulterError');
+
+});
+
 test.serial('It validates data', async t => {
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
