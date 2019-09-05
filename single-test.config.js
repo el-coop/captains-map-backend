@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/ValidationMiddleware.spec.js"
+		"tests/**/MetaData.spec.js"
 	]
 }

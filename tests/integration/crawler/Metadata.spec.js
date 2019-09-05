@@ -45,10 +45,13 @@ test.serial('It returns metadata for image marker', async t => {
 	const marker = await MarkerFactory.create({
 		user_id: 1,
 	});
-	const media = await MediaFactory.create({
-		type: 'image',
-		path: '/path'
-	});
+	const medias = [];
+	for(let i = 0; i < 3; i++){
+		medias.push(await MediaFactory.create({
+			type: 'image',
+			path: `/path${i}`
+		}));
+	}
 
 	const response = await request(app).get('/api/crawler/nur/1');
 	t.is(response.status, 200);
@@ -56,7 +59,10 @@ test.serial('It returns metadata for image marker', async t => {
 	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.description + '"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:type" content="article"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:url" content="https://map.elcoop.io/nur/1"/>') > -1);
-	t.true(response.text.indexOf('<meta property="og:image" content="https://map.elcoop.io/api' + media.path + '"/>') > -1);
+	medias.forEach((media) => {
+		t.true(response.text.indexOf(`<meta property="og:image" content="https://map.elcoop.io/api${media.path}"/>`) > -1);
+	});
+	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://map.elcoop.io/api${medias[0].path}"/>`) > -1);
 
 });
 
@@ -73,6 +79,8 @@ test.serial('It returns metadata for instagram marker', async t => {
 	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.description + '"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:type" content="article"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:url" content="https://map.elcoop.io/nur/1"/>') > -1);
-	t.true(response.text.indexOf('<meta property="og:image" content="https://instagram.com/p/' + media.path + '/media/"/>') > -1);
+	t.true(response.text.indexOf(`<meta property="og:image" content="https://instagram.com/p/${media.path}/media/"/>`) > -1);
+	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://instagram.com/p/${media.path}/media/"/>`) > -1);
+
 
 });
