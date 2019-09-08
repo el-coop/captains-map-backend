@@ -11,6 +11,7 @@ import path from 'path';
 import Marker from "../../../App/Models/Marker";
 import cache from '../../../App/Services/CacheService';
 import sinon from "sinon";
+import Media from "../../../App/Models/Media";
 
 
 test.beforeEach(async () => {
@@ -68,30 +69,37 @@ test('It allows user to delete marker, deletes image and flushes cached data', a
 	const marker = await MarkerFactory.create({
 		user_id: 1,
 	});
-	const media = await MediaFactory.create({
-		marker_id: marker.id,
-		type: 'image',
-		path: '/images/blabla'
-	});
 	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
-	const filePath = path.resolve(__dirname, `../../../public${media.path}`);
-	const thumbPath = path.resolve(__dirname, `../../../public/thumbnails/blabla`);
-	fs.copyFileSync(demoFilePath, filePath);
-	fs.copyFileSync(demoFilePath, thumbPath);
+	const medias = [];
 
+	for (let i = 0; i < 3; i++) {
+		medias.push(await MediaFactory.create({
+			marker_id: marker.id,
+			type: 'image',
+			path: `/images/blabla${i}`
+		}));
+		const filePath = path.resolve(__dirname, `../../../public/images/blabla${i}`);
+		const thumbPath = path.resolve(__dirname, `../../../public/thumbnails/blabla${i}`);
+		fs.copyFileSync(demoFilePath, filePath);
+		fs.copyFileSync(demoFilePath, thumbPath);
+	}
 
 	const response = await request(app).delete(`/api/marker/${marker.id}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.send();
 
 	t.is(response.status, 200);
-	t.false(fs.existsSync(filePath));
-	t.false(fs.existsSync(thumbPath));
+	medias.forEach((media, index) => {
+		const filePath = path.resolve(__dirname, `../../../public/images/blabla${index}`);
+		const thumbPath = path.resolve(__dirname, `../../../public/thumbnails/blabla${index}`);
+		t.false(fs.existsSync(filePath));
+		t.false(fs.existsSync(thumbPath));
+	});
 
-	const markersCount = await (new Marker).count();
+	t.is(0, await Marker.count());
+	t.is(0, await Media.count());
 
-	t.is(markersCount, 0);
 	t.true(taggedCacheStub.calledOnce);
-	t.true(taggedCacheStub.calledWith(['markers','markers_user:1']));
+	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
 	t.true(flushStub.calledOnce);
 });

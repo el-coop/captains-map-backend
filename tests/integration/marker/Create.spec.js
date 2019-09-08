@@ -53,8 +53,8 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 	t.is(marker.lat, 0);
 	t.is(marker.lng, 0);
 	t.is(marker.location, 'test');
-	t.is(marker.$media.type, 'instagram');
-	t.is(marker.$media.path, 'BlfyEoTDKxi');
+	t.is(marker.$media.at(0).type, 'instagram');
+	t.is(marker.$media.at(0).path, 'BlfyEoTDKxi');
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
@@ -82,14 +82,15 @@ test.serial('No user gets a forbidden error', async t => {
 	});
 });
 
-test.serial('It uploads a photo and creates a marker and flushes caches', async t => {
+test.serial('It uploads a photos and creates a marker and flushes caches', async t => {
 	const flushStub = sinon.stub();
 	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
 		flush: flushStub
 	});
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
-		.attach('media[image]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
 		.field('lat', '0')
 		.field('lng', '0')
 		.field('time', (new Date()).toISOString())
@@ -101,7 +102,8 @@ test.serial('It uploads a photo and creates a marker and flushes caches', async 
 	const marker = await new Marker().fetch({
 		withRelated: ['media']
 	});
-	const filePath = path.resolve(__dirname, `../../../public${response.body.media.path}`);
+	const filePath = path.resolve(__dirname, `../../../public${response.body.media[0].path}`);
+	const filePath1 = path.resolve(__dirname, `../../../public${response.body.media[1].path}`);
 	t.is(response.status, 200);
 	t.is(response.body.user_id, 1);
 	t.is(response.body.lat, '0');
@@ -110,14 +112,40 @@ test.serial('It uploads a photo and creates a marker and flushes caches', async 
 	t.is(marker.lat, 0);
 	t.is(marker.lng, 0);
 	t.is(marker.location, 'test');
-	t.is(marker.$media.type, 'file');
+	t.is(marker.$media.at(0).type, 'file');
+	t.is(marker.$media.at(1).type, 'file');
 	t.true(fs.existsSync(filePath));
+	t.true(fs.existsSync(filePath1));
 
 	fs.unlinkSync(filePath);
+	fs.unlinkSync(filePath1);
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
 	t.true(flushStub.calledOnce);
+});
+
+test.serial('It throws error on more than 5 images', async t => {
+
+	const response = await request(app).post('/api/marker/create')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.attach('media[files]', path.resolve(__dirname, '../../demo.jpg'))
+		.field('lat', '0')
+		.field('lng', '0')
+		.field('time', (new Date()).toISOString())
+		.field('type', 'Visited')
+		.field('location', 'test')
+		.field('description', 'test')
+		.field('media[type]', 'file');
+
+	t.is(response.status, 500);
+	t.is(response.body.name,'MulterError');
+
 });
 
 test.serial('It validates data', async t => {
@@ -129,7 +157,7 @@ test.serial('It validates data', async t => {
 			type: '',
 			description: '',
 			media: {
-				type: '',
+				type: 'image',
 				path: ''
 			}
 		});
@@ -143,9 +171,7 @@ test.serial('It validates data', async t => {
 	t.is(response.body.errors[5].param, 'time');
 	t.is(response.body.errors[6].param, 'type');
 	t.is(response.body.errors[7].param, 'type');
-	t.is(response.body.errors[8].param, 'media.type');
-	t.is(response.body.errors[9].param, 'media.path');
-	t.is(response.body.errors[10].param, 'media.path');
+	t.is(response.body.errors[8].param, 'media.files');
 
 });
 

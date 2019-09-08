@@ -7,6 +7,7 @@ exports.up = function (knex, Promise) {
 		table.timestamps();
 
 		table.unique('username');
+		table.unique('email');
 	});
 };
 

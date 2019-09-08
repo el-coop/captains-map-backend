@@ -17,7 +17,9 @@ class Validator {
 			if (!Array.isArray(fieldRules)) {
 				fieldRules = fieldRules.split('|');
 			}
-			if (fieldRules.indexOf('required') < 0) {
+			if (!fieldRules.find((value) => {
+				return value.indexOf('required') > -1;
+			})) {
 				fieldValidation.optional();
 			}
 			fieldRules.forEach((item) => {
@@ -75,15 +77,21 @@ class Validator {
 	}
 
 	requiredIf(args, self) {
-		this.custom((value, {req}) => {
-			if (self.findFieldValue(req.body, args[0]) === args[1]) {
-				if ((args[2] || 'body') === 'file') {
-					if (!req.file) {
-						return Promise.reject('Must upload a file');
-					}
-				} else if (!value) {
-					return Promise.reject(`Required if ${args[0]} is ${args[1]}`);
+
+		this.if((value, {req}) => {
+			let conditionValue = req.body;
+			args[0].split('.').forEach((key) => {
+				conditionValue = conditionValue[key];
+			});
+
+			return conditionValue === args[1];
+		}).custom((value, {req}) => {
+			if ((args[2] || 'body') === 'file') {
+				if (!req.file && (!req.files || ! req.files.length)) {
+					return Promise.reject('Must upload a file');
 				}
+			} else if (!value) {
+				return Promise.reject(`Required if ${args[0]} is ${args[1]}`);
 			}
 			return Promise.resolve();
 		});
@@ -91,6 +99,10 @@ class Validator {
 
 	email() {
 		this.isEmail().normalizeEmail();
+	}
+
+	debug() {
+		console.log(this.builder);
 	}
 
 	findFieldValue(src, path) {

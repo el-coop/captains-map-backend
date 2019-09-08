@@ -2,6 +2,7 @@ import test from 'ava';
 import sinon from 'sinon';
 import ErrorHandlerMiddlware from '../../../../App/Http/Middleware/ErrorHandlerMiddleware';
 import express from 'express';
+import Multer from 'multer';
 
 const errorHandler = new ErrorHandlerMiddlware(express.Router());
 const res = {
@@ -42,6 +43,23 @@ test.serial('It sends the error name and message', t => {
 	errorHandler.handle(error, {}, res, {});
 	t.is(jsonSpy.returnValues[0].name, error.name);
 	t.is(jsonSpy.returnValues[0].message, error.message);
+});
+
+test.serial('It converts multer error for size to 422', t => {
+	const error = new Multer.MulterError('LIMIT_FIELD_VALUE');
+	const jsonSpy = sinon.spy(res, 'json');
+	const statusSpy = sinon.spy(res, 'status');
+
+	errorHandler.handle(error, {}, res, {});
+
+	t.true(statusSpy.calledWith(422));
+	t.true(jsonSpy.calledWith({
+		errors: [{
+			param: 'media.files',
+			location: 'body',
+			msg: 'Files are too big'
+		}]
+	}));
 });
 
 

@@ -4,7 +4,7 @@ class CrawlerController {
 		let title = 'Home';
 		let url = 'https://map.elcoop.io';
 		let description = 'Map your life, share it with your friends.';
-		let image = 'https://map.elcoop.io/api/images/globe-icon.png';
+		let images = ['https://map.elcoop.io/api/images/globe-icon.png'];
 		if (req.objects.user) {
 			type = 'profile';
 			title = req.objects.user.username;
@@ -15,19 +15,19 @@ class CrawlerController {
 			description = req.objects.marker.description;
 			type = 'article';
 			url += `/${req.objects.marker.id}`;
-			if (req.objects.marker.$media.type === 'image') {
-				image = `https://map.elcoop.io/api${req.objects.marker.$media.path}`;
-			} else {
-				image = `https://instagram.com/p/${req.objects.marker.$media.path}/media/`;
-
-			}
+			images = req.objects.marker.$media.map((media) => {
+				if(media.type === 'image'){
+					return `https://map.elcoop.io/api${media.path}`;
+				}
+				return `https://instagram.com/p/${media.path}/media/`;
+			});
 		}
 		return res.status(200).render('crawler.html', {
 			type,
 			title,
 			url,
 			description,
-			image
+			images
 		});
 	}
 }

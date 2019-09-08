@@ -6,11 +6,13 @@
 	<meta property="og:description" content="{{ description }}"/>
 	<meta property="og:type" content="{{ type }}"/>
 	<meta property="og:url" content="{{ url }}"/>
-	<meta property="og:image" content="{{ image}}"/>
+	{% for image in images %}
+	<meta property="og:image" content="{{ image }}"/>
+	{% endfor %}
 	<meta name="twitter:card" content="summary"/>
 	<meta name="twitter:title" content="{{ title }} | Captains Map"/>
 	<meta name="twitter:description" content="{{ description }}"/>
-	<meta name="twitter:image" content="{{ image }}"/>
+	<meta name="twitter:image" content="{{ images[0] }}"/>
 </head>
 <body>
 </body>

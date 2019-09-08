@@ -6,6 +6,8 @@ exports.up = function (knex, Promise) {
 		table.string('path');
 		table.text('description');
 		table.timestamps();
+
+		table.unique('user_id');
 	});
 };
 
