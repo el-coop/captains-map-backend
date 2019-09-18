@@ -138,11 +138,13 @@ class MarkersController {
 
 			try {
 				const medias = marker.$media;
-				for(let i = 0; i < medias.length; i++){
+				for (let i = 0; i < medias.length; i++) {
 					const media = medias.at(i);
 					if (media.type === 'image') {
 						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path}`));
-						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`));
+						if (fs.existsSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`))) {
+							fs.unlinkSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`));
+						}
 					}
 					await media.destroy()
 				}
