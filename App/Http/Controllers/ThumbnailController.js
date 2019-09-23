@@ -15,7 +15,7 @@ class ThumbnailController {
 		const thumbnailsDir = path.join(__dirname, '../../../public/thumbnails/');
 		mkdirp.sync(thumbnailsDir);
 		const thumbnailPath = path.join(thumbnailsDir, req.params.filename);
-		await sharp(filePath).resize(100, 100, {
+		await sharp(filePath).resize(200, 200, {
 			withoutEnlargement: true,
 			fit: 'inside'
 		}).jpeg({progressive: true}).toFile(thumbnailPath);

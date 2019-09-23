@@ -25,7 +25,7 @@ class AuthController {
 	async login(req, res) {
 
 		try {
-			let user = await new User({
+			const user = await new User({
 				username: req.body.username
 			}).fetch({
 				require: true
