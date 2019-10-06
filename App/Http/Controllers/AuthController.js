@@ -33,7 +33,7 @@ class AuthController {
 
 			await user.authenticate(req.body.password);
 
-			let token = user.generateJwt();
+			const token = user.generateJwt();
 			res.status(200)
 				.cookie('token', token, {
 					httpOnly: true,
@@ -53,6 +53,11 @@ class AuthController {
 		} catch (error) {
 			throw new BaseError('Invalid Credentials', 403, 'Authorization Error');
 		}
+	}
+
+	logout(req, res) {
+		res.clearCookie("token");
+		res.status(200).json({status: 'success'})
 	}
 }
 

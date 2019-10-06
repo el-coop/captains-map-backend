@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/ErrorHandler.spec.js"
+		"tests/**/AuthFlows.spec.js"
 	]
 }

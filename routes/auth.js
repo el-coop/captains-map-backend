@@ -13,5 +13,7 @@ router.post('/login', validation.validate({
 	password: 'required'
 }), AuthController.login.bind(AuthController));
 
+router.get('/logout', AuthController.logout);
+
 
 module.exports = router;

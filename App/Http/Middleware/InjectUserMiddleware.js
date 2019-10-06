@@ -21,7 +21,8 @@ class InjectUserMiddleware extends BaseMiddleware {
 					maxAge: parseInt(process.env.LOGIN_DURATION),
 					secure: process.env.APP_ENV === 'production',
 					sameSite: true
-				})
+				});
+				res.header('userextend', Date.now() + parseInt(process.env.LOGIN_DURATION));
 			}
 			req.user = user;
 		} else if (token) {

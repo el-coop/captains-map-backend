@@ -13,6 +13,9 @@ const res = {
 	},
 	cookie(name, data, settings) {
 		return this;
+	},
+	header(name, value) {
+		return this;
 	}
 };
 
@@ -81,6 +84,7 @@ test.serial('it extends users login duration when under 2 days', async t => {
 	await knex.migrate.latest();
 	await knex.seed.run();
 	const cookieSpy = sinon.spy(res, 'cookie');
+	const headerSpy = sinon.spy(res, 'header');
 	const user = await new User().fetch();
 
 	const nextSpy = sinon.spy();
@@ -97,6 +101,8 @@ test.serial('it extends users login duration when under 2 days', async t => {
 
 	t.true(cookieSpy.called);
 	t.true(cookieSpy.calledWith('token'));
+	t.true(headerSpy.called);
+	t.true(headerSpy.calledWith('userextend'));
 	t.is(req.user.id, user.id);
 	t.true(nextSpy.calledOnce);
 });
