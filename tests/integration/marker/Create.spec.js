@@ -8,7 +8,9 @@ import Media from '../../../App/Models/Media';
 import path from 'path';
 import fs from 'fs';
 import sinon from "sinon";
+import webpush from "web-push";
 import cache from "../../../App/Services/CacheService";
+import FollowerFactory from "../../../database/factories/FollowerFactory";
 
 
 test.beforeEach(async () => {
@@ -60,6 +62,46 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
 	t.true(flushStub.calledOnce);
 
+});
+
+test.serial('It creates a marker and notifies followers', async t => {
+	const followers = await FollowerFactory.create({
+		user_id: 1,
+	}, 2);
+	sinon.stub(cache, 'rememberForever').callsArg(1);
+	const webpushStub = sinon.stub(webpush, 'sendNotification');
+	sinon.stub(cache, 'tag').returns({
+		flush: sinon.stub()
+	});
+
+	const response = await request(app).post('/api/marker/create')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
+			lat: '0',
+			lng: '0',
+			time: new Date(),
+			type: 'Visited',
+			description: 'test',
+			location: 'test',
+			media: {
+				type: 'instagram',
+				path: 'https://www.instagram.com/p/BlfyEoTDKxi/?utm_source=ig_web_copy_link'
+			}
+		});
+
+
+	const payload = JSON.stringify({
+		username: 'nur',
+		image: 'BlfyEoTDKxi'
+	});
+
+
+	t.is(response.status, 200);
+
+	await helpers.sleep(5000);
+
+	t.true(webpushStub.calledTwice);
+	t.true(webpushStub.firstCall.calledWith(followers[0].subscription, payload));
+	t.true(webpushStub.secondCall.calledWith(followers[1].subscription, payload));
 });
 
 test.serial('No user gets a forbidden error', async t => {
@@ -144,7 +186,7 @@ test.serial('It throws error on more than 5 images', async t => {
 		.field('media[type]', 'file');
 
 	t.is(response.status, 500);
-	t.is(response.body.name,'MulterError');
+	t.is(response.body.name, 'MulterError');
 
 });
 

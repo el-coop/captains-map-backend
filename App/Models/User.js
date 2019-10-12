@@ -12,6 +12,7 @@ const Relations = require('bookshelf-schema/lib/relations'),
 
 require('./Marker');
 require('./Bio');
+require('./Follower');
 
 const User = Bookshelf.Model.extend({
 	tableName: 'users',
@@ -34,6 +35,7 @@ const User = Bookshelf.Model.extend({
 		DateTimeField('updated_at'),
 
 		HasMany('Marker', {onDestroy: 'cascade'}),
+		HasMany('Follower', {onDestroy: 'cascade'}),
 		HasOne('Bio', {onDestroy: 'cascade'})
 	]
 });

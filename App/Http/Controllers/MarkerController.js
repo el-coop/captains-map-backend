@@ -1,5 +1,12 @@
 'use strict';
 
+const webPush = require('web-push');
+webPush.setVapidDetails(
+	'https://map.elcoop.io',
+	process.env.VAPID_PUBLIC_KEY,
+	process.env.VAPID_PRIVATE_KEY
+);
+
 const Marker = require('../../Models/Marker');
 const Media = require('../../Models/Media');
 const http = require('../../Services/HttpService');
@@ -8,8 +15,10 @@ const fs = require('fs');
 const path = require('path');
 const Cache = require('../../Services/CacheService');
 const MarkerRepository = require('../../Repositories/MarkerRepository');
+const Follower = require('../../Models/Follower');
 
 const generateQueryKey = Symbol('generateQueryKey');
+const notifyFollowers = Symbol('notifyFollowers');
 
 class MarkersController {
 	async create(req, res) {
@@ -50,7 +59,9 @@ class MarkersController {
 			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
 			res.status(200);
-			res.json(marker)
+			res.json(marker);
+
+			this[notifyFollowers](req.user, marker);
 		} catch (e) {
 			await marker.destroy();
 			for (let i = 0; i < medias.length; i++) {
@@ -83,6 +94,7 @@ class MarkersController {
 
 	async userMarkers(req, res) {
 		const user = req.objects.user;
+
 		const queryKey = this[generateQueryKey](req, `markers_user:${user.id}`);
 
 		let borders = false;
@@ -192,6 +204,29 @@ class MarkersController {
 		}
 
 		return key;
+	}
+
+	async [notifyFollowers](user, marker) {
+		try {
+			const followers = await Cache.rememberForever(`followers_${user.id}`, async () => {
+				return await new Follower().where('user_id', user.id).fetchAll({
+					columns: ['subscription', 'user_id'],
+				});
+			});
+
+			const payload = {
+				username: user.username,
+				image: marker.$media.at(0).path,
+
+			};
+
+			followers.forEach((follower) => {
+				webPush.sendNotification(follower.subscription, JSON.stringify(payload));
+			});
+		} catch (e) {
+			console.log(e);
+		}
+
 	}
 }
 

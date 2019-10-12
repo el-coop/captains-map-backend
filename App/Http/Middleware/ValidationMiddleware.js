@@ -12,10 +12,15 @@ class Validator {
 	rules(rules) {
 		const validationRules = [];
 		for (let fieldName in rules) {
-			const fieldValidation = check(fieldName).trim();
+			const fieldValidation = check(fieldName);
 			let fieldRules = rules[fieldName];
 			if (!Array.isArray(fieldRules)) {
 				fieldRules = fieldRules.split('|');
+			}
+			if (!fieldRules.find((value) => {
+				return value.indexOf('object') > -1;
+			})) {
+				fieldValidation.trim()
 			}
 			if (!fieldRules.find((value) => {
 				return value.indexOf('required') > -1;
@@ -76,6 +81,12 @@ class Validator {
 		this.isURL();
 	}
 
+	object() {
+		this.custom((value) => {
+			return typeof value === 'object';
+		});
+	}
+
 	requiredIf(args, self) {
 
 		this.if((value, {req}) => {
@@ -87,7 +98,7 @@ class Validator {
 			return conditionValue === args[1];
 		}).custom((value, {req}) => {
 			if ((args[2] || 'body') === 'file') {
-				if (!req.file && (!req.files || ! req.files.length)) {
+				if (!req.file && (!req.files || !req.files.length)) {
 					return Promise.reject('Must upload a file');
 				}
 			} else if (!value) {
