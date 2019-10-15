@@ -88,23 +88,9 @@ test('It returns bio from cache for getting existing user with bio', async t => 
 });
 
 test('It prevents guests from editing users bio', async t => {
-	const response = await request(app).post('/api/bio/nur').send({
+	const response = await request(app).post('/api/bio').send({
 		description: 'testdesc'
 	});
-
-	t.is(response.status, 403);
-});
-
-
-test('It prevents other user from editing users bio', async t => {
-	const otherUser = await UserFactory.create({
-		password: '123456'
-	});
-	const response = await request(app).post('/api/bio/nur')
-		.set('Cookie', await helpers.authorizedCookie(otherUser.username, '123456'))
-		.send({
-			description: 'testdesc'
-		});
 
 	t.is(response.status, 403);
 });
@@ -116,7 +102,7 @@ test('It uploads photo and creates bio when non is present and deletes cached da
 		flush: flushStub
 	});
 
-	const response = await request(app).post('/api/bio/nur')
+	const response = await request(app).post('/api/bio')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.attach('image', path.resolve(__dirname, '../../demo.jpg'))
 		.field('description', 'testdesc');
@@ -145,7 +131,7 @@ test('It uploads photo and creates bio when non is present and deletes cached da
 test('It saves only description when only description is given and deletes cached data', async t => {
 	const forgetCacheStub = sinon.stub(cache, 'forget');
 
-	const response = await request(app).post('/api/bio/nur')
+	const response = await request(app).post('/api/bio')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.field('description', 'testdesc');
 
@@ -168,7 +154,7 @@ test('It updates only description when only description is given and flushes ild
 	const oldBio = await BioFactory.create({
 		user_id: 1
 	});
-	const response = await request(app).post('/api/bio/nur')
+	const response = await request(app).post('/api/bio')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.field('description', 'testdesc');
 
@@ -200,7 +186,7 @@ test('It updates bio and deletes old image and deletes old data', async t => {
 	const oldFilePath = path.resolve(__dirname, `../../../public${oldBio.path}`);
 	fs.copyFileSync(demoFilePath, oldFilePath);
 
-	const response = await request(app).post('/api/bio/nur')
+	const response = await request(app).post('/api/bio')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.attach('image', demoFilePath)
 		.field('description', 'testdesc');
@@ -224,4 +210,19 @@ test('It updates bio and deletes old image and deletes old data', async t => {
 	t.true(tagCacheStub.calledWith(['markers', `markers_user:1`]));
 	t.true(flushStub.calledOnce);
 
+});
+
+
+test('It deletes the uploaded image if creation fails', async t => {
+	sinon.stub(cache, 'forget').throws();
+	const fileCount = fs.readdirSync(path.resolve(__dirname, '../../../public/bios')).length;
+
+	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
+
+	await request(app).post('/api/bio')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
+		.attach('image', demoFilePath)
+		.field('description', 'testdesc');
+
+	t.is(fileCount,fs.readdirSync(path.resolve(__dirname, '../../../public/bios')).length);
 });

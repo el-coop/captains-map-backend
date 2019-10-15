@@ -15,28 +15,35 @@ class BioController {
 	};
 
 	async update(req, res) {
-		const user = await req.objects.user.load('bio');
-		const bio = this[getUserBio](user);
-		bio.description = req.body.description;
-		if (req.file) {
-			const oldImage = bio.path;
-			bio.path = `/bios/${req.file.filename}`;
+		try {
+			const user = req.user;
+			const bio = await this[getUserBio](user);
+			bio.description = req.body.description;
+			if (req.file) {
+				const oldImage = bio.path;
+				bio.path = `/bios/${req.file.filename}`;
 
-			if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
-				fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
+				if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
+					fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
+				}
+				await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 			}
-			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
+			await bio.save();
+			await Cache.forget(`bio:${req.user.id}`);
+			return res.send(this[formatBio](bio));
+		} catch (e) {
+			fs.unlinkSync(req.file.path);
+			throw e;
 		}
-		await bio.save();
-		await Cache.forget(`bio:${req.objects.user.id}`);
-		return res.send(this[formatBio](bio));
+
 	}
 
-	[getUserBio](user) {
+	async [getUserBio](user) {
+		await user.load('bio');
 		let bio = user.$bio;
 		if (!bio) {
 			bio = new Bio();
-			bio.user_id = req.objects.user.id;
+			bio.user_id = user.id;
 		}
 
 		return bio;

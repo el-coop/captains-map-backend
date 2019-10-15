@@ -11,15 +11,11 @@ router.get('/:user', modelMiddleware.inject({
 }), BioController.get.bind(BioController));
 
 
-router.post('/:user', [
+router.post('/', [
 	authMiddleware,
-	modelMiddleware.inject({
-		User: 'username'
-	}),
-	modelMiddleware.valdiateOwnership('user', 'id'),
 	upload.image('image', 'bios', 200, 200),
 	validation.validate({
-		'description': 'string'
+		'description': 'required|string',
 	}),
 ], BioController.update.bind(BioController));
 
