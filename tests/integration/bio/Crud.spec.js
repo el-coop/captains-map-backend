@@ -5,12 +5,12 @@ import request from "supertest";
 
 import app from "../../../app";
 import knex from "../../../database/knex";
-import UserFactory from '../../../database/factories/UserFactory';
 import BioFactory from '../../../database/factories/BioFactory';
 import helpers from "../../Helpers";
 import Bio from "../../../App/Models/Bio";
 import fs from 'fs';
 import cache from "../../../App/Services/CacheService";
+import Marker from "../../../App/Models/Marker";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();
@@ -54,8 +54,8 @@ test('It returns bio for getting existing user with bio and caches', async t => 
 
 
 	t.deepEqual(response.body, {
-		path: bio.path,
-		description: bio.description,
+		path: bio.get('path'),
+		description: bio.get('description'),
 	});
 
 	t.true(cacheSetStub.calledOnce);
@@ -74,14 +74,15 @@ test('It returns bio from cache for getting existing user with bio', async t => 
 	});
 
 	sinon.stub(cache.store, 'get').returns(JSON.stringify({
-		bio
+		path: bio.get('path'),
+		description: bio.get('description')
 	}));
 	const response = await request(app).get('/api/bio/nur');
 
 
 	t.deepEqual(response.body, {
-		path: bio.path,
-		description: bio.description,
+		path: bio.get('path'),
+		description: bio.get('description'),
 	});
 
 	t.false(cacheSetStub.called);
@@ -114,9 +115,9 @@ test('It uploads photo and creates bio when non is present and deletes cached da
 	t.is(response.body.description, 'testdesc');
 	t.true(fs.existsSync(filePath));
 
-	t.is(bio.user_id, 1);
-	t.is(bio.path, response.body.path);
-	t.is(bio.description, 'testdesc');
+	t.is(bio.get('user_id'), 1);
+	t.is(bio.get('path'), response.body.path);
+	t.is(bio.get('description'), 'testdesc');
 
 	fs.unlinkSync(filePath);
 	t.true(forgetCacheStub.calledOnce);
@@ -141,9 +142,9 @@ test('It saves only description when only description is given and deletes cache
 	t.is(response.body.description, 'testdesc');
 	t.is(response.body.path, null);
 
-	t.is(bio.user_id, 1);
-	t.is(bio.path, null);
-	t.is(bio.description, 'testdesc');
+	t.is(bio.get('user_id'), 1);
+	t.is(bio.get('path'), null);
+	t.is(bio.get('description'), 'testdesc');
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
 });
@@ -162,11 +163,11 @@ test('It updates only description when only description is given and flushes ild
 
 	t.is(response.status, 200);
 	t.is(response.body.description, 'testdesc');
-	t.is(response.body.path, oldBio.path);
+	t.is(response.body.path, oldBio.get('path'));
 
-	t.is(bio.user_id, 1);
-	t.is(bio.path, oldBio.path);
-	t.is(bio.description, 'testdesc');
+	t.is(bio.get('user_id'), 1);
+	t.is(bio.get('path'), oldBio.get('path'));
+	t.is(bio.get('description'), 'testdesc');
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
 });
@@ -183,7 +184,7 @@ test('It updates bio and deletes old image and deletes old data', async t => {
 		user_id: 1
 	});
 	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
-	const oldFilePath = path.resolve(__dirname, `../../../public${oldBio.path}`);
+	const oldFilePath = path.resolve(__dirname, `../../../public${oldBio.get('path')}`);
 	fs.copyFileSync(demoFilePath, oldFilePath);
 
 	const response = await request(app).post('/api/bio')
@@ -199,9 +200,9 @@ test('It updates bio and deletes old image and deletes old data', async t => {
 	t.true(fs.existsSync(filePath));
 	t.false(fs.existsSync(oldFilePath));
 
-	t.is(bio.user_id, 1);
-	t.is(bio.path, response.body.path);
-	t.is(bio.description, 'testdesc');
+	t.is(bio.get('user_id'), 1);
+	t.is(bio.get('path'), response.body.path);
+	t.is(bio.get('description'), 'testdesc');
 	fs.unlinkSync(filePath);
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
@@ -213,16 +214,18 @@ test('It updates bio and deletes old image and deletes old data', async t => {
 });
 
 
-test('It deletes the uploaded image if creation fails', async t => {
-	sinon.stub(cache, 'forget').throws();
+test.serial('It deletes the uploaded image if creation fails', async t => {
+	sinon.stub(Bio.prototype, 'save').throws('test');
+
 	const fileCount = fs.readdirSync(path.resolve(__dirname, '../../../public/bios')).length;
 
 	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
 
-	await request(app).post('/api/bio')
+	const response = await request(app).post('/api/bio')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.attach('image', demoFilePath)
 		.field('description', 'testdesc');
 
-	t.is(fileCount,fs.readdirSync(path.resolve(__dirname, '../../../public/bios')).length);
+	t.is(response.status, 500);
+	t.is(fileCount, fs.readdirSync(path.resolve(__dirname, '../../../public/bios')).length);
 });

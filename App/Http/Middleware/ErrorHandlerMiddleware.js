@@ -27,7 +27,7 @@ class ErrorHandlerMiddleware extends BaseMiddleware {
 		if (process.env.NODE_ENV === 'production') {
 			delete data.stack;
 		}
-		res.status(err.statusCode || 500).json(data)
+		res.status(err.statusCode || 500).json(data);
 	}
 }
 

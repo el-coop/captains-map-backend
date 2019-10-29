@@ -43,7 +43,7 @@ test('It gives 403 for user trying to delete others marker', async t => {
 	});
 
 	const response = await request(app).delete(`/api/marker/${marker.id}`)
-		.set('Cookie', await helpers.authorizedCookie(otherUser.username, '123456'))
+		.set('Cookie', await helpers.authorizedCookie(otherUser.get('username'), '123456'))
 		.send();
 
 	t.is(response.status, 403);
@@ -60,7 +60,7 @@ test('It gives 404 for user trying to non-existing marker', async t => {
 });
 
 
-test('It allows user to delete marker, deletes image and flushes cached data', async t => {
+test.serial('It allows user to delete marker, deletes image and flushes cached data', async t => {
 	const flushStub = sinon.stub();
 	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
 		flush: flushStub
@@ -74,7 +74,7 @@ test('It allows user to delete marker, deletes image and flushes cached data', a
 
 	for (let i = 0; i < 3; i++) {
 		medias.push(await MediaFactory.create({
-			marker_id: marker.id,
+			marker_id: marker.get('id'),
 			type: 'image',
 			path: `/images/blabla${i}`
 		}));
@@ -84,7 +84,7 @@ test('It allows user to delete marker, deletes image and flushes cached data', a
 		fs.copyFileSync(demoFilePath, thumbPath);
 	}
 
-	const response = await request(app).delete(`/api/marker/${marker.id}`)
+	const response = await request(app).delete(`/api/marker/${marker.get('id')}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.send();
 

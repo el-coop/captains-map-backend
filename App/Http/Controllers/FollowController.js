@@ -18,7 +18,7 @@ class FollowController {
 			});
 
 			return result.map((following) => {
-				return following.$user.username;
+				return following.related('user').get('username');
 			});
 		});
 
@@ -35,9 +35,11 @@ class FollowController {
 		const user = req.objects.user;
 
 		const subscription = await new Follower({
-			user_id: user.id,
+			user_id: user.get('id'),
 			endpoint: req.body.subscription.endpoint
-		}).fetch();
+		}).fetch({
+			require: false
+		});
 
 		let status = 200;
 		if (subscription) {
@@ -48,7 +50,7 @@ class FollowController {
 		}
 
 		await Cache.forget(req.body.subscription.endpoint);
-		await Cache.forget(`followers_${user.id}`);
+		await Cache.forget(`followers_${user.get('id')}`);
 
 		return res.status(status)
 			.json({
@@ -58,10 +60,11 @@ class FollowController {
 
 	async [follow](subscriptionData, user) {
 		const subscription = new Follower();
-		subscription.user_id = user.id;
-		subscription.endpoint = subscriptionData.endpoint;
-		subscription.subscription = subscriptionData;
+		subscription.set('user_id', user.get('id'));
+		subscription.set('endpoint', subscriptionData.endpoint);
+		subscription.set('subscription', subscriptionData);
 		await subscription.save();
+
 	}
 
 }

@@ -67,7 +67,7 @@ test.serial('It injects the model based on different keys', async t => {
 		User: 'username'
 	})(req, res, next);
 
-	t.is(req.objects.user.username, 'nur');
+	t.is(req.objects.user.get('username'), 'nur');
 	t.true(next.called);
 });
 

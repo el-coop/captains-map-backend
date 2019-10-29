@@ -1,4 +1,3 @@
-const Bio = require('../../Models/Bio');
 const Cache = require('../../Services/CacheService');
 const fs = require('fs');
 const path = require('path');
@@ -8,20 +7,21 @@ const formatBio = Symbol('formatBio');
 
 class BioController {
 	async get(req, res) {
-		const user = await Cache.rememberForever(`bio:${req.objects.user.id}`, async () => {
-			return await req.objects.user.load('bio');
+		const bio = await Cache.rememberForever(`bio:${req.objects.user.id}`, async () => {
+			const bio = await this[getUserBio](req.objects.user);
+			return this[formatBio](bio);
 		});
-		return res.send(this[formatBio](user.$bio || user.bio));
+		return res.send(bio);
 	};
 
 	async update(req, res) {
 		try {
 			const user = req.user;
 			const bio = await this[getUserBio](user);
-			bio.description = req.body.description;
+			bio.set('description', req.body.description);
 			if (req.file) {
-				const oldImage = bio.path;
-				bio.path = `/bios/${req.file.filename}`;
+				const oldImage = bio.get('path');
+				bio.set('path', `/bios/${req.file.filename}`);
 
 				if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
 					fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
@@ -40,7 +40,7 @@ class BioController {
 
 	async [getUserBio](user) {
 		await user.load('bio');
-		let bio = user.$bio;
+		let bio = user.related('bio');
 		if (!bio) {
 			bio = new Bio();
 			bio.user_id = user.id;
@@ -51,8 +51,8 @@ class BioController {
 
 	[formatBio](bio) {
 		return {
-			path: bio.path || null,
-			description: bio.description || ''
+			path: bio.get('path') || null,
+			description: bio.get('description') || ''
 		};
 	}
 }

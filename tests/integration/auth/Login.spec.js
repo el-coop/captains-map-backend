@@ -59,7 +59,7 @@ test.serial('Generates token and a cookie', async t => {
 		username: 'nur',
 		password: '123456'
 	});
-	let user = await new User().fetch({id: 1});
+	const user = await new User().fetch({id: 1});
 	t.is(response.status, 200);
 	t.true(response.headers.hasOwnProperty('set-cookie'));
 	t.true(jwtSpy.calledWith({

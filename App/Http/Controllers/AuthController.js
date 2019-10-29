@@ -10,9 +10,9 @@ class AuthController {
 		}
 		let user = new User();
 
-		user.username = req.body.username;
-		user.email = req.body.email;
-		user.password = req.body.password;
+		user.set('username', req.body.username);
+		user.set('email', req.body.email);
+		user.set('password', req.body.password);
 
 		await user.save();
 		await Cache.tag(['user_search']).flush();
@@ -27,9 +27,7 @@ class AuthController {
 		try {
 			const user = await new User({
 				username: req.body.username
-			}).fetch({
-				require: true
-			});
+			}).fetch();
 
 			await user.authenticate(req.body.password);
 
