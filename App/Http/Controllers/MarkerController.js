@@ -8,6 +8,7 @@ webPush.setVapidDetails(
 );
 
 const Marker = require('../../Models/Marker');
+const Follower = require('../../Models/Follower');
 const Media = require('../../Models/Media');
 const http = require('../../Services/HttpService');
 const BaseError = require('../../Errors/BaseError');
@@ -15,7 +16,6 @@ const fs = require('fs');
 const path = require('path');
 const Cache = require('../../Services/CacheService');
 const MarkerRepository = require('../../Repositories/MarkerRepository');
-const Follower = require('../../Models/Follower');
 
 const generateQueryKey = Symbol('generateQueryKey');
 const notifyFollowers = Symbol('notifyFollowers');
@@ -23,13 +23,13 @@ const notifyFollowers = Symbol('notifyFollowers');
 class MarkersController {
 	async create(req, res) {
 		const marker = new Marker();
-		marker.user_id = req.user.id;
-		marker.lat = req.body.lat;
-		marker.lng = req.body.lng;
-		marker.time = req.body.time;
-		marker.type = req.body.type;
-		marker.description = req.body.description;
-		marker.location = req.body.location;
+		marker.set('user_id', req.user.id);
+		marker.set('lat', req.body.lat);
+		marker.set('lng', req.body.lng);
+		marker.set('time', req.body.time);
+		marker.set('type', req.body.type);
+		marker.set('description', req.body.description);
+		marker.set('location', req.body.location);
 		await marker.save();
 
 		const medias = [];
@@ -38,18 +38,21 @@ class MarkersController {
 			if (req.body.media.type === 'instagram') {
 				const media = new Media();
 				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
-				media.path = regex.exec(req.body.media.path)[1];
-				media.type = req.body.media.type;
-				await media.$marker.assign(marker);
+				media.set('path', regex.exec(req.body.media.path)[1]);
+				media.set('type', req.body.media.type);
+				media.set('marker_id', marker.get('id'));
+				await media.save();
+
 				medias.push(media);
 			} else {
 				for (let i = 0; i < req.files.length; i++) {
 					const file = req.files[i];
 					const media = new Media();
-					media.type = req.body.media.type;
-					media.path = `/images/${file.filename}`;
+					media.set('type', req.body.media.type);
+					media.set('path', `/images/${file.filename}`);
+					media.set('marker_id', marker.get('id'));
+					await media.save();
 
-					await media.$marker.assign(marker);
 					medias.push(media);
 				}
 			}
@@ -67,12 +70,13 @@ class MarkersController {
 			for (let i = 0; i < medias.length; i++) {
 				await medias[i].destroy();
 			}
-			req.files.forEach((file) => {
-				fs.unlinkSync(file.path)
-			});
+			if (req.files) {
+				req.files.forEach((file) => {
+					fs.unlinkSync(file.path)
+				});
+			}
 			throw e;
 		}
-
 	}
 
 	async index(req, res) {
@@ -149,13 +153,13 @@ class MarkersController {
 			await marker.load(['media']);
 
 			try {
-				const medias = marker.$media;
+				const medias = marker.related('media');
 				for (let i = 0; i < medias.length; i++) {
 					const media = medias.at(i);
-					if (media.type === 'image') {
-						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path}`));
-						if (fs.existsSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`))) {
-							fs.unlinkSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`));
+					if (media.get('type') === 'image') {
+						fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path')}`));
+						if (fs.existsSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`))) {
+							fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`));
 						}
 					}
 					await media.destroy()
@@ -215,13 +219,13 @@ class MarkersController {
 			});
 
 			const payload = {
-				username: user.username,
-				image: marker.$media.at(0).path,
+				username: user.get('username'),
+				image: marker.related('media').at(0).get('path'),
 
 			};
 
 			followers.forEach((follower) => {
-				webPush.sendNotification(follower.subscription, JSON.stringify(payload));
+				webPush.sendNotification(follower.get('subscription'), JSON.stringify(payload));
 			});
 		} catch (e) {
 			console.log(e);
