@@ -26,10 +26,10 @@ class BioController {
 				if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
 					fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
 				}
-				await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
+				await Cache.tag(['markers', `markers_user:${req.user.get('id')}`]).flush();
 			}
 			await bio.save();
-			await Cache.forget(`bio:${req.user.id}`);
+			await Cache.forget(`bio:${req.user.get('id')}`);
 			return res.send(this[formatBio](bio));
 		} catch (e) {
 			fs.unlinkSync(req.file.path);
@@ -45,7 +45,6 @@ class BioController {
 			bio = new Bio();
 			bio.user_id = user.id;
 		}
-
 		return bio;
 	}
 

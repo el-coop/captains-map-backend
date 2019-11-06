@@ -23,7 +23,8 @@ const notifyFollowers = Symbol('notifyFollowers');
 class MarkersController {
 	async create(req, res) {
 		const marker = new Marker();
-		marker.set('user_id', req.user.id);
+		console.log(req.user);
+		marker.set('user_id', req.user.get('id'));
 		marker.set('lat', req.body.lat);
 		marker.set('lng', req.body.lng);
 		marker.set('time', req.body.time);
@@ -59,7 +60,7 @@ class MarkersController {
 			await marker.load('media');
 			await marker.load('user.bio');
 
-			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
+			await Cache.tag(['markers', `markers_user:${req.user.get('id')}`]).flush();
 
 			res.status(200);
 			res.json(marker);
@@ -99,23 +100,23 @@ class MarkersController {
 	async userMarkers(req, res) {
 		const user = req.objects.user;
 
-		const queryKey = this[generateQueryKey](req, `markers_user:${user.id}`);
+		const queryKey = this[generateQueryKey](req, `markers_user:${user.get('id')}`);
 
 		let borders = false;
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
 
-		const markers = await Cache.tag([`markers_user:${user.id}`]).rememberForever(queryKey, async () => {
+		const markers = await Cache.tag([`markers_user:${user.get('id')}`]).rememberForever(queryKey, async () => {
 			if (!req.params.markerId) {
 				return await MarkerRepository.getPage({
 					startId: req.query.startingId || false,
-					user: user.id,
+					user: user.get('id'),
 					borders
 				});
 			} else {
 				try {
-					return await MarkerRepository.getObjectPage(req.params.markerId, user.id);
+					return await MarkerRepository.getObjectPage(req.params.markerId, user.get('id'));
 				} catch (error) {
 					throw new BaseError('Not Found', 404);
 				}
@@ -128,17 +129,17 @@ class MarkersController {
 
 	async previousMarkers(req, res) {
 		const user = req.objects.user;
-		const queryKey = this[generateQueryKey](req, `markers_prevUser:${user.id}`);
+		const queryKey = this[generateQueryKey](req, `markers_prevUser:${user.get('id')}`);
 
 		let borders = false;
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
 
-		const markers = await Cache.tag([`markers_user:${user.id}`]).rememberForever(queryKey, async () => {
+		const markers = await Cache.tag([`markers_user:${user.get('id')}`]).rememberForever(queryKey, async () => {
 			return await MarkerRepository.getPreviousPage({
 				startId: req.params.markerId,
-				user: user.id,
+				user: user.get('id'),
 				borders
 			});
 		});
@@ -170,7 +171,7 @@ class MarkersController {
 			}
 
 			await marker.destroy();
-			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
+			await Cache.tag(['markers', `markers_user:${req.user.get('id')}`]).flush();
 
 			res.status(200);
 			res.json({
@@ -182,7 +183,7 @@ class MarkersController {
 	}
 
 	async getInstagramData(req, res) {
-		const instagramId = req.objects.media.path;
+		const instagramId = req.objects.media.get('path');
 		const response = await Cache.remember(`instagram:${instagramId}`, async () => {
 			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
 			if (apiResponse.status === 200) {
@@ -212,8 +213,8 @@ class MarkersController {
 
 	async [notifyFollowers](user, marker) {
 		try {
-			const followers = await Cache.rememberForever(`followers_${user.id}`, async () => {
-				return await new Follower().where('user_id', user.id).fetchAll({
+			const followers = await Cache.rememberForever(`followers_${user.get('id')}`, async () => {
+				return await new Follower().where('user_id', user.get('id')).fetchAll({
 					columns: ['subscription', 'user_id'],
 				});
 			});
