@@ -3,6 +3,9 @@ import sinon from 'sinon';
 import modelMiddleware from '../../../../App/Http/Middleware/ModelMiddleware';
 import knex from "../../../../database/knex";
 import MarkerFactory from "../../../../database/factories/MarkerFactory";
+import InjectUserMiddleware from "../../../../App/Http/Middleware/InjectUserMiddleware";
+import express from "express";
+import User from "../../../../App/Models/User";
 
 let res;
 let next;
@@ -90,17 +93,22 @@ test.serial('Ownership validation returns 403 when no user', async t => {
 });
 
 test.serial('Ownership validation returns 403 when user doesnt own object', async t => {
+	const injectUserMiddleware = new InjectUserMiddleware(express.Router());
 	const marker = await MarkerFactory.create({
 		user_id: 2,
 	});
+	const user = await new User().fetch();
+
 	const req = {
 		objects: {
 			marker
 		},
-		user: {
-			id: 1
+		signedCookies: {
+			token: user.generateJwt()
 		}
 	};
+
+	await injectUserMiddleware.handle(req, res, ()=>{});
 
 	const error = await t.throwsAsync(async () => {
 		await modelMiddleware.valdiateOwnership('marker')(req, res, next);
@@ -112,17 +120,23 @@ test.serial('Ownership validation returns 403 when user doesnt own object', asyn
 
 
 test.serial('Onwership validation passes when user is the owner', async t => {
+	const injectUserMiddleware = new InjectUserMiddleware(express.Router());
+
 	const marker = await MarkerFactory.create({
 		user_id: 1,
 	});
+	const user = await new User().fetch();
+
 	const req = {
 		objects: {
 			marker
 		},
-		user: {
-			id: 1
+		signedCookies: {
+			token: user.generateJwt()
 		}
 	};
+
+	await injectUserMiddleware.handle(req, res, ()=>{});
 
 	await modelMiddleware.valdiateOwnership('marker')(req, res, next);
 

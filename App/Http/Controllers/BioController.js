@@ -7,8 +7,10 @@ const formatBio = Symbol('formatBio');
 
 class BioController {
 	async get(req, res) {
-		const bio = await Cache.rememberForever(`bio:${req.objects.user.id}`, async () => {
-			const bio = await this[getUserBio](req.objects.user);
+		const user = req.objects.user;
+
+		const bio = await Cache.rememberForever(`bio:${user.get('id')}`, async () => {
+			const bio = await this[getUserBio](user);
 			return this[formatBio](bio);
 		});
 		return res.send(bio);
@@ -26,10 +28,10 @@ class BioController {
 				if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
 					fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
 				}
-				await Cache.tag(['markers', `markers_user:${req.user.get('id')}`]).flush();
+				await Cache.tag(['markers', `markers_user:${user.get('id')}`]).flush();
 			}
 			await bio.save();
-			await Cache.forget(`bio:${req.user.get('id')}`);
+			await Cache.forget(`bio:${user.get('id')}`);
 			return res.send(this[formatBio](bio));
 		} catch (e) {
 			fs.unlinkSync(req.file.path);

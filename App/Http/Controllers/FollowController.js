@@ -64,7 +64,6 @@ class FollowController {
 		subscription.set('endpoint', subscriptionData.endpoint);
 		subscription.set('subscription', subscriptionData);
 		await subscription.save();
-
 	}
 
 }

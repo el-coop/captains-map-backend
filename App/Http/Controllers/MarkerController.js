@@ -23,7 +23,6 @@ const notifyFollowers = Symbol('notifyFollowers');
 class MarkersController {
 	async create(req, res) {
 		const marker = new Marker();
-		console.log(req.user);
 		marker.set('user_id', req.user.get('id'));
 		marker.set('lat', req.body.lat);
 		marker.set('lng', req.body.lng);
