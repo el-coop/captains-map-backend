@@ -22,7 +22,7 @@ module.exports = class {
 
 	async createOne(data) {
 		data = Object.assign(this.define(), data);
-		let object = new (this.model())(data);
+		const object = new (this.model())(data);
 		await object.save();
 		return object;
 	}

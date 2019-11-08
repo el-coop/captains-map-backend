@@ -11,7 +11,7 @@ class SearchController {
 			});
 
 			return result.map((user) => {
-				return user.username;
+				return user.get('username');
 			});
 		});
 

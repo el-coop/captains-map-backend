@@ -44,8 +44,8 @@ test.serial('First user registers successfully and flushes users', async t => {
 	t.is(response.status, 200);
 	t.is(response.body.success, true);
 
-	let user = await new User().fetch({id: 1});
-	t.is(user.username, 'nur');
+	const user = await new User().fetch({id: 1});
+	t.is(user.get('username'), 'nur');
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['user_search']));
 	t.true(flushStub.calledOnce);

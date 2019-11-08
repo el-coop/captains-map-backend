@@ -31,6 +31,7 @@ test.serial('It caches then returns all existing markers with 1 pagination data 
 	});
 
 	const response = await request(app).get('/api/marker');
+
 	t.is(response.body.markers.length, 3);
 	t.is(response.body.markers[2].id, marker0.id);
 	t.is(response.body.markers[1].id, marker1.id);

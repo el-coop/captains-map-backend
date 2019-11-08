@@ -49,14 +49,14 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 
 	t.is(response.status, 200);
 	t.is(response.body.user_id, 1);
-	t.is(response.body.lat, '0');
-	t.is(response.body.lng, '0');
-	t.is(marker.user_id, 1);
-	t.is(marker.lat, 0);
-	t.is(marker.lng, 0);
-	t.is(marker.location, 'test');
-	t.is(marker.$media.at(0).type, 'instagram');
-	t.is(marker.$media.at(0).path, 'BlfyEoTDKxi');
+	t.is(response.body.lat, 0);
+	t.is(response.body.lng, 0);
+	t.is(marker.get('user_id'), 1);
+	t.is(marker.get('lat'), 0);
+	t.is(marker.get('lng'), 0);
+	t.is(marker.get('location'), 'test');
+	t.is(marker.related('media').at(0).get('type'), 'instagram');
+	t.is(marker.related('media').at(0).get('path'), 'BlfyEoTDKxi');
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
@@ -100,8 +100,8 @@ test.serial('It creates a marker and notifies followers', async t => {
 	await helpers.sleep(5000);
 
 	t.true(webpushStub.calledTwice);
-	t.true(webpushStub.firstCall.calledWith(followers[0].subscription, payload));
-	t.true(webpushStub.secondCall.calledWith(followers[1].subscription, payload));
+	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload));
+	t.true(webpushStub.calledWith(followers[1].get('subscription'), payload));
 });
 
 test.serial('No user gets a forbidden error', async t => {
@@ -148,14 +148,14 @@ test.serial('It uploads a photos and creates a marker and flushes caches', async
 	const filePath1 = path.resolve(__dirname, `../../../public${response.body.media[1].path}`);
 	t.is(response.status, 200);
 	t.is(response.body.user_id, 1);
-	t.is(response.body.lat, '0');
-	t.is(response.body.lng, '0');
-	t.is(marker.user_id, 1);
-	t.is(marker.lat, 0);
-	t.is(marker.lng, 0);
-	t.is(marker.location, 'test');
-	t.is(marker.$media.at(0).type, 'file');
-	t.is(marker.$media.at(1).type, 'file');
+	t.is(response.body.lat, 0);
+	t.is(response.body.lng, 0);
+	t.is(marker.get('user_id'), 1);
+	t.is(marker.get('lat'), 0);
+	t.is(marker.get('lng'), 0);
+	t.is(marker.get('location'), 'test');
+	t.is(marker.related('media').at(0).get('type'), 'file');
+	t.is(marker.related('media').at(1).get('type'), 'file');
 	t.true(fs.existsSync(filePath));
 	t.true(fs.existsSync(filePath1));
 

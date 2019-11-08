@@ -7,7 +7,6 @@ import cache from "../../App/Services/CacheService";
 import UserFactory from "../../database/factories/UserFactory";
 import FollowFactory from "../../database/factories/FollowerFactory";
 import Follower from "../../App/Models/Follower";
-import helpers from "../Helpers";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();
@@ -27,7 +26,10 @@ test.serial('It returns public key', async t => {
 
 });
 
-test.serial('It returns users followed', async t => {
+test('It returns users followed and caches', async t => {
+	sinon.stub(cache, 'exists').returns(false);
+	const cacheSetStub = sinon.stub(cache.store, 'set');
+
 	const endpoint = 'endpoint';
 	const user1 = await UserFactory.create({
 		username: 'test',
@@ -51,6 +53,11 @@ test.serial('It returns users followed', async t => {
 	t.deepEqual(response.body, [
 		'test', 'testa'
 	]);
+
+	t.true(cacheSetStub.calledOnce);
+	t.true(cacheSetStub.calledWith(endpoint, JSON.stringify([
+		'test', 'testa'
+	])));
 
 });
 
@@ -92,8 +99,8 @@ test.serial('It toggles following on', async t => {
 
 	const follower = await new Follower().where('endpoint', endpoint).fetch();
 
-	t.is(follower.endpoint, endpoint);
-	t.deepEqual(follower.subscription, subscription);
+	t.is(follower.get('endpoint'), endpoint);
+	t.deepEqual(follower.get('subscription'), subscription);
 	t.true(cacheStub.calledTwice);
 	t.true(cacheStub.firstCall.calledWith(endpoint));
 	t.true(cacheStub.secondCall.calledWith(`followers_1`));
@@ -125,7 +132,9 @@ test.serial('It toggles following off', async t => {
 		success: true
 	});
 
-	const follower = await new Follower().where('endpoint', endpoint).fetch();
+	const follower = await new Follower().where('endpoint', endpoint).fetch({
+		require: false
+	});
 
 	t.is(follower, null);
 	t.true(cacheStub.calledTwice);

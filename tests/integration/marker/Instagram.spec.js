@@ -31,12 +31,12 @@ test.serial('It returns and caches Instagram data results from api', async t => 
 	});
 	const media = await MediaFactory.create();
 
-	const response = await request(app).get(`/api/marker/instagram/${media.id}`);
+	const response = await request(app).get(`/api/marker/instagram/${media.get('id')}`);
 	t.is(response.status, 200);
 	t.is(response.body.message, 'fake data');
 	t.true(httpStub.calledOnce);
 	t.true(cacheStub.calledOnce);
-	t.true(cacheStub.firstCall.calledWith(`instagram:${media.path}`, 60 * 60 * 12, JSON.stringify({
+	t.true(cacheStub.firstCall.calledWith(`instagram:${media.get('path')}`, 60 * 60 * 12, JSON.stringify({
 		message: 'fake data'
 	})));
 });

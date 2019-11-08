@@ -21,11 +21,11 @@ class ModelMiddleware {
 						const condition = {};
 						condition[key] = req.params[prop];
 
-						const model = await new models[className](condition).fetch();
-						if (!model) {
+						try {
+							req.objects[prop] = await new models[className](condition).fetch();
+						} catch (e) {
 							throw new BaseError('Not Found', 404);
 						}
-						req.objects[prop] = await new models[className](condition).fetch();
 					}
 				}
 			}
@@ -35,8 +35,7 @@ class ModelMiddleware {
 
 	valdiateOwnership(object, key = 'user_id') {
 		return (req, res, next) => {
-
-			if (!req.user || req.objects[object][key] !== req.user.id) {
+			if (!req.user || req.objects[object].get(key) !== req.user.get('id')) {
 				throw new BaseError('Forbidden', 403);
 			}
 			next();
