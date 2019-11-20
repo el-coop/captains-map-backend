@@ -1,30 +1,25 @@
-const Geocoder = require('node-geocoder');
+const VirtualEarthGeocoder = require('./VirtualEarthGeocoder');
+const OpenStreetMapGeocoder = require('./OpenStreetMapGeocoder');
 const Cache = require('./CacheService');
 
 class GeocoderService {
 
 	constructor() {
 		this.geocoders = [
-			Geocoder({
-				provider: "virtualearth",
-				apiKey: process.env.BING_ACCESS_TOKEN
-			}),
-			Geocoder({
-				provider: "openstreetmap",
-				language: 'en'
-			})
+			OpenStreetMapGeocoder,
+			VirtualEarthGeocoder,
 		]
 
 	}
 
-	async geocode(query) {
-		return await this.geocoders[Math.floor(Math.random() * this.geocoders.length)].geocode(query);
+	async geocode(query, mapBox) {
+		return await this.geocoders[Math.floor(Math.random() * this.geocoders.length)].geocode(query, mapBox);
 	}
 
-	async reverseGeocode(lat, lon) {
+	async reverseGeocode(lat, lng) {
 		return await this.geocoders[Math.floor(Math.random() * this.geocoders.length)].reverse({
 			lat,
-			lon
+			lng
 		});
 	}
 
@@ -34,9 +29,9 @@ class GeocoderService {
 		}, 60 * 60 * 12);
 	}
 
-	async geocodeCached(query) {
-		return await Cache.remember(`geocode.${query}`, async () => {
-			return await this.geocode(query);
+	async geocodeCached(query, mapBox) {
+		return await Cache.remember(`geocode.${query}.${mapBox}`, async () => {
+			return await this.geocode(query, mapBox);
 		}, 60 * 60 * 12);
 	}
 }

@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/ModelMiddleware.spec.js"
+		"tests/**/VirtualEarthGeocoder.spec.js"
 	]
 }
