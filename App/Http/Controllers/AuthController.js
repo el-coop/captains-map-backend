@@ -5,9 +5,9 @@ const BaseError = require('../../Errors/BaseError');
 
 class AuthController {
 	async register(req, res) {
-		if (await User.count() > 0) {
-			throw new BaseError('Registration is closed', 403, 'Registration Error');
-		}
+		// if (await User.count() > 0) {
+		// 	throw new BaseError('Registration is closed', 403, 'Registration Error');
+		// }
 		let user = new User();
 
 		user.set('username', req.body.username);
