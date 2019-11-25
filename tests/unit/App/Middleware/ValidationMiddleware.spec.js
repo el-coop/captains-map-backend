@@ -1,7 +1,9 @@
 import test from 'ava';
 import sinon from 'sinon';
 import validationMiddleware from '../../../../App/Http/Middleware/ValidationMiddleware';
-import { check, validationResult } from 'express-validator/check';
+import path from "path";
+import fs from "fs";
+import NodeClam from 'clamscan';
 
 test.afterEach.always('Restore sinon', t => {
 	sinon.restore();
@@ -468,4 +470,39 @@ test('It validates requiredIf when files are empty, but on request', async t => 
 			msg: 'Must upload a file'
 		}]
 	});
+});
+
+test('It deletes files when validation fails', async t => {
+	const prep = validationMiddleware.validate({
+		name: ['required']
+	});
+
+	const demoFilePath = path.resolve(__dirname, '../../../demo.jpg');
+	const filesPath = path.resolve(__dirname, '../../../../public/images/demo.jpg');
+	const filePath = path.resolve(__dirname, '../../../../public/images/demo1.jpg');
+	fs.copyFileSync(demoFilePath, filesPath);
+	fs.copyFileSync(demoFilePath, filePath);
+
+
+	const req = {
+		body: {
+		},
+		files: [{
+			path: filesPath
+		}],
+		file: {
+			path: filePath
+		},
+	};
+
+	const rules = prep[0][0];
+	const validate = prep[1];
+	await rules(req, {}, sinon.spy());
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+	t.is(error.statusCode, 422);
+	t.false(fs.existsSync(filesPath));
+	t.false(fs.existsSync(filePath));
 });

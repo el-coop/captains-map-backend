@@ -30,7 +30,7 @@ router.post('/create', [
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
 		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\\/\\/www\\.instagram\\.com\\/p\\/\\w*\\/.*'],
-		'media.files': ['requiredIf:media.type,image,file']
+		'media.files': ['requiredIf:media.type,image,file','clamav']
 	}),
 ], MarkerController.create.bind(MarkerController));
 

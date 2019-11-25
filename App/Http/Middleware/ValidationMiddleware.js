@@ -1,5 +1,7 @@
 const DataError = require('../../Errors/DataError');
 const {check, validationResult} = require('express-validator');
+const NodeClam = require('clamscan');
+const fs = require('fs');
 
 class Validator {
 	validate(rules) {
@@ -44,6 +46,14 @@ class Validator {
 	verify(req, res, next) {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
+			if (req.file) {
+				fs.unlinkSync(req.file.path);
+			}
+			if (req.files) {
+				req.files.forEach((file) => {
+					fs.unlinkSync(file.path);
+				});
+			}
 			throw new DataError('Validation Failed', 422, {errors: errors.array()}, 'Validation Error');
 		}
 		next();
@@ -87,8 +97,40 @@ class Validator {
 		});
 	}
 
-	requiredIf(args, self) {
+	clamav() {
+		this.custom(async (value, {req}) => {
+			if (process.env.IGNORE_CLAM_SCAN === 'true') {
+				return Promise.resolve();
+			}
+			const clamscan = await new NodeClam().init({
+				remove_infected: true
+			});
+			let virus = false;
+			if (req.file) {
+				const response = await clamscan.is_infected(req.file);
+				if (response.is_infected) {
+					virus = true;
+				}
+			} else if (req.files) {
+				for (const file of req.files) {
+					const response = await clamscan.is_infected(file.path);
 
+					if (response.is_infected) {
+						virus = true;
+					}
+				}
+
+			}
+
+			if (virus) {
+				return Promise.reject('A virus detected in upload');
+			}
+
+			return Promise.resolve()
+		});
+	}
+
+	requiredIf(args, self) {
 		this.if((value, {req}) => {
 			let conditionValue = req.body;
 			args[0].split('.').forEach((key) => {

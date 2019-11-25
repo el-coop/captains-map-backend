@@ -15,7 +15,7 @@ router.post('/', [
 	authMiddleware,
 	upload.image('image', 'bios', 200, 200),
 	validation.validate({
-		'description': 'required|string',
+		description: ['required','string','clamav'],
 	}),
 ], BioController.update.bind(BioController));
 

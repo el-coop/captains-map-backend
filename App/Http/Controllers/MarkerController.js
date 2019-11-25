@@ -227,8 +227,8 @@ class MarkersController {
 			followers.forEach((follower) => {
 				webPush.sendNotification(follower.get('subscription'), JSON.stringify(payload));
 			});
-		} catch (e) {
-			console.log(e);
+		} catch (error) {
+			console.log(error);
 		}
 
 	}

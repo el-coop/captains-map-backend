@@ -1,4 +1,4 @@
-const User = require('../../Models/User')
+const User = require('../../Models/User');
 const Cache = require('../../Services/CacheService');
 
 const BaseError = require('../../Errors/BaseError');

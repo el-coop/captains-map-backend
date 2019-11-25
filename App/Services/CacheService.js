@@ -29,8 +29,8 @@ class Cache {
 			if (this.status === 'ready' && await this.exists(key)) {
 				return await redis.get(key);
 			}
-		} catch (e) {
-			console.log('catch', e);
+		} catch (error) {
+			console.log('catch', error);
 		}
 		if (typeof defaultValue === 'function') {
 			defaultValue = await defaultValue.call();

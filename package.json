@@ -14,6 +14,7 @@
 		"bookshelf": "^1.0.1",
 		"bookshelf-secure-password": "^4.0.0",
 		"bookshelf-virtuals-plugin": "^0.1.1",
+		"clamscan": "^1.1.0",
 		"cookie-encrypter": "^1.0.1",
 		"cookie-parser": "1.4.4",
 		"csurf": "^1.10.0",
