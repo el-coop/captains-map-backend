@@ -11,6 +11,7 @@ import sinon from "sinon";
 import webpush from "web-push";
 import cache from "../../../App/Services/CacheService";
 import FollowerFactory from "../../../database/factories/FollowerFactory";
+import errorLogger from '../../../App/Services/ErrorLogger';
 
 
 test.beforeEach(async () => {
@@ -239,4 +240,52 @@ test.serial('It deletes created marker and media when error thrown after creatio
 	t.is(0, await Marker.count());
 	t.is(0, await Media.count());
 
+});
+
+
+test.serial('It creates a marker and logs follower notification error', async t => {
+	const error = {
+		bla: 'gla'
+	};
+	const followers = await FollowerFactory.create({
+		user_id: 1,
+	}, 2);
+	sinon.stub(cache, 'rememberForever').callsArg(1);
+	const webpushStub = sinon.stub(webpush, 'sendNotification').throws(error);
+	const loggerStub = sinon.stub(errorLogger, 'log');
+	sinon.stub(cache, 'tag').returns({
+		flush: sinon.stub()
+	});
+
+	const response = await request(app).post('/api/marker/create')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
+			lat: '0',
+			lng: '0',
+			time: new Date(),
+			type: 'Visited',
+			description: 'test',
+			location: 'test',
+			media: {
+				type: 'instagram',
+				path: 'https://www.instagram.com/p/BlfyEoTDKxi/?utm_source=ig_web_copy_link'
+			}
+		});
+
+
+	const payload = JSON.stringify({
+		username: 'nur',
+		image: 'BlfyEoTDKxi'
+	});
+
+
+	t.is(response.status, 200);
+
+	await helpers.sleep(5000);
+
+	t.true(webpushStub.calledOnce);
+	t.deepEqual(webpushStub.firstCall.args[0], followers[0].get('subscription'));
+	t.deepEqual(webpushStub.firstCall.args[1], payload);
+	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload));
+	t.true(loggerStub.calledOnce);
+	t.true(loggerStub.calledWith(error));
 });

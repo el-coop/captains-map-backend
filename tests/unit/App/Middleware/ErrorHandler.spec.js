@@ -1,6 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import ErrorHandlerMiddlware from '../../../../App/Http/Middleware/ErrorHandlerMiddleware';
+import errorLogger from '../../../../App/Services/ErrorLogger';
 import express from 'express';
 import Multer from 'multer';
 
@@ -19,21 +20,27 @@ test.afterEach.always('Restore sinon', t => {
 });
 
 
-test.serial('It uses existing http status', t => {
+test.serial('It uses existing http status and doesnt log 403', t => {
+	const loggerStub  = sinon.stub(errorLogger, 'log');
 	const error = new Error('message');
 	const statusSpy = sinon.spy(res, 'status');
 	error.statusCode = 403;
 
 	errorHandler.handle(error, {}, res, {});
 	t.true(statusSpy.calledWith(403));
+	t.false(loggerStub.called);
+
 });
 
-test.serial('It sets status 500 when not supplied', t => {
+test.serial('It sets status 500 when not supplied and logs', t => {
+	const loggerStub  = sinon.stub(errorLogger, 'log');
 	const error = new Error('message');
 	const statusSpy = sinon.spy(res, 'status');
 
 	errorHandler.handle(error, {}, res, {});
 	t.true(statusSpy.calledWith(500));
+	t.true(loggerStub.calledOnce);
+	t.true(loggerStub.calledWith(error,{}));
 });
 
 test.serial('It sends the error name and message', t => {

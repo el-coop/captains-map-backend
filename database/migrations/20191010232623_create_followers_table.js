@@ -1,6 +1,8 @@
 exports.up = function (knex) {
 	return knex.schema.createTable('followers', (table) => {
-		table.engine('InnoDB');
+		if(process.env.APP_ENV !== 'test'){
+			table.engine('InnoDB');
+		}
 		table.increments();
 		table.integer('user_id').unsigned();
 		table.string('endpoint');

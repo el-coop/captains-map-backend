@@ -14,5 +14,7 @@ router.use('/search', require('./search'));
 router.use('/crawler', require('./crawler'));
 router.use('/follow', require('./follow'));
 
+router.use('/errors',require('./errors'));
+
 
 module.exports = router;

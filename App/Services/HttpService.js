@@ -8,6 +8,14 @@ class HttpService {
 			return error.response;
 		}
 	}
+
+	async post(url, data, headers = {}) {
+		try {
+			return await axios.post(url, data, headers);
+		} catch (error) {
+			return error.response;
+		}
+	}
 }
 
 module.exports = new HttpService();

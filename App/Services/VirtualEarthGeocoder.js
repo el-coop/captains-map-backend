@@ -5,9 +5,6 @@ const endpoint = 'https://dev.virtualearth.net/REST/v1/Locations';
 const formatResults = Symbol('formatResult');
 
 class VirtualEarthGeocoder {
-	constructor() {
-	}
-
 	async geocode(query, mapBox) {
 		const response = await Http.get(endpoint, {
 			params: {

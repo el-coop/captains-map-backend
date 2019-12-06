@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const Cache = require('../../Services/CacheService');
 const MarkerRepository = require('../../Repositories/MarkerRepository');
+const errorLogger = require('../../Services/ErrorLogger');
 
 const generateQueryKey = Symbol('generateQueryKey');
 const notifyFollowers = Symbol('notifyFollowers');
@@ -64,7 +65,7 @@ class MarkersController {
 			res.status(200);
 			res.json(marker);
 
-			this[notifyFollowers](req.user, marker);
+			this[notifyFollowers](req.user, marker, req);
 		} catch (e) {
 			await marker.destroy();
 			for (let i = 0; i < medias.length; i++) {
@@ -210,7 +211,7 @@ class MarkersController {
 		return key;
 	}
 
-	async [notifyFollowers](user, marker) {
+	async [notifyFollowers](user, marker, req) {
 		try {
 			const followers = await Cache.rememberForever(`followers_${user.get('id')}`, async () => {
 				return await new Follower().where('user_id', user.get('id')).fetchAll({
@@ -228,6 +229,7 @@ class MarkersController {
 				webPush.sendNotification(follower.get('subscription'), JSON.stringify(payload));
 			});
 		} catch (error) {
+			await errorLogger.log(error, req);
 			console.log(error);
 		}
 
