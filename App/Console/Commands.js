@@ -33,7 +33,7 @@ class Commands {
 
 	execute() {
 		program.parse(process.argv);
-		if (program.args.length === 0) {
+		if (program.rawArgs.length < 3) {
 			program.help();
 		}
 	}

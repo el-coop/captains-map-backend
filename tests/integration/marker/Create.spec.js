@@ -283,9 +283,7 @@ test.serial('It creates a marker and logs follower notification error', async t 
 	await helpers.sleep(5000);
 
 	t.true(webpushStub.calledOnce);
-	t.deepEqual(webpushStub.firstCall.args[0], followers[0].get('subscription'));
-	t.deepEqual(webpushStub.firstCall.args[1], payload);
-	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload));
+	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload) || webpushStub.calledWith(followers[1].get('subscription'), payload));
 	t.true(loggerStub.calledOnce);
 	t.true(loggerStub.calledWith(error));
 });
