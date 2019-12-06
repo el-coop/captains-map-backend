@@ -227,7 +227,7 @@ class MarkersController {
 
 			followers.forEach((follower) => {
 				let subscription;
-				if (typeof follower.get !== 'function') {
+				if (follower.get && typeof follower.get === 'function') {
 					subscription = follower.get('subscription');
 				} else {
 					subscription = follower.subscription;
