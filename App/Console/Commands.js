@@ -1,6 +1,7 @@
 const program = require('commander');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 class Commands {
 	constructor() {
