@@ -226,8 +226,13 @@ class MarkersController {
 			};
 
 			followers.forEach((follower) => {
-				console.log(follower);
-				webPush.sendNotification(follower.get('subscription'), JSON.stringify(payload));
+				let subscription;
+				if (typeof follower.get !== 'function') {
+					subscription = follower.get('subscription');
+				} else {
+					subscription = follower.subscription;
+				}
+				webPush.sendNotification(subscription, JSON.stringify(payload));
 			});
 		} catch (error) {
 			await errorLogger.log(error, req);
