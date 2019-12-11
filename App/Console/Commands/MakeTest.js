@@ -30,7 +30,7 @@ class MakeTest extends MakeBase {
 
 	writeToFile(name) {
 		let stub = fs.readFileSync(path.resolve(__dirname, './Stubs', this.stub)).toString();
-		fs.writeFileSync(`${this.path}/${name}.spec.js`, stub.split('{{name}}').join(name.substr(name.lastIndexOf('/') + 1)));
+		fs.writeFileSync(`${this.path}/${name}.spec.js`, stub.split('{{name}}').join(name.substring(name.lastIndexOf('/') + 1)));
 	}
 }
 

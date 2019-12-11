@@ -103,7 +103,8 @@ test.serial('It logs errors from client', async t => {
 		},
 		user,
 		extra: {
-			userAgent: 'agent',
+			"Full url": 'https://host/path',
+			"User Agent": 'agent',
 			vm: {}
 		}
 	}));

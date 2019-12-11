@@ -13,7 +13,7 @@ class ErrorLogger {
 
 		const response = await http.post(`${logUrl}/${key}`, {
 			type,
-			url: req.body.url,
+			url: req.body.url.split('?', 1)[0],
 			message: error.message,
 			exception: {
 				name: error.name,
@@ -22,7 +22,8 @@ class ErrorLogger {
 			},
 			user,
 			extra: {
-				userAgent: req.body.userAgent,
+				"Full url": req.body.url,
+				"User Agent": req.body.userAgent,
 				vm: req.body.vm
 			}
 		});

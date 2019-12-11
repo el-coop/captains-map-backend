@@ -33,12 +33,12 @@ class MakeBase {
 
 	writeToFile(name) {
 		let stub = fs.readFileSync(path.resolve(__dirname, '../Stubs', this.stub)).toString();
-		fs.writeFileSync(`${this.path}/${name}.js`, stub.split('{{name}}').join(name.substr(name.lastIndexOf('/') + 1)));
+		fs.writeFileSync(`${this.path}/${name}.js`, stub.split('{{name}}').join(name.substring(name.lastIndexOf('/') + 1)));
 	}
 
 	ensureDirExistence(name) {
 		const filename = `${this.path}/${name}.js`;
-		const path = filename.substr(0, filename.lastIndexOf('/'));
+		const path = filename.substring(0, filename.lastIndexOf('/'));
 		if (!fs.existsSync(path)) {
 			fs.mkdirSync(path, {
 				recursive: true,

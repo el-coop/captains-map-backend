@@ -49,7 +49,7 @@ class TaggedCacheService {
 		console.log('tags:', tags);
 		tags.forEach(async (tag) => {
 			console.log(`Expiring ${tag}`);
-			const tagName = tag.substr(process.env.CACHE_PREFIX.length + 1);
+			const tagName = tag.substring(process.env.CACHE_PREFIX.length + 1);
 			await cache.store.zremrangebyscore(tagName, 1, Date.now());
 			if (!await cache.store.zcard(tagName)) {
 				await cache.forget(tagName);
