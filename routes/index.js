@@ -8,6 +8,7 @@ router.use('/', require('./media'));
 router.use('/auth', require('./auth'));
 router.use('/marker', require('./marker'));
 router.use('/bio', require('./bio'));
+router.use('/story', require('./story'));
 router.use('/geocode', require('./geocode'));
 
 router.use('/search', require('./search'));

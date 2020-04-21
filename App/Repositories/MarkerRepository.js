@@ -135,7 +135,7 @@ class MarkerRepository {
 	}
 
 	async [get](query, order, limit) {
-		return await query.orderBy('id', order).query((qb) => {
+		return await query.where('story_id', null).orderBy('id', order).query((qb) => {
 			qb.limit(limit);
 		}).fetchAll({
 			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],

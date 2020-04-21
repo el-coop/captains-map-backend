@@ -1,12 +1,14 @@
 const Media = require('../../Models/Media');
 const Marker = require('../../Models/Marker');
 const User = require('../../Models/User');
+const Story = require('../../Models/Story');
 const BaseError = require('../../Errors/BaseError');
 
 const models = {
 	Marker,
 	Media,
-	User
+	User,
+	Story
 };
 
 class ModelMiddleware {

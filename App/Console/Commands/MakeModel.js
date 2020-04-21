@@ -9,7 +9,7 @@ class MakeModel extends MakeBase {
 	}
 }
 
-MakeModel.signature = "make:model";
+MakeModel.signature = "make:model <name>";
 MakeModel.description = "Create a model";
 
 module.exports = MakeModel;
