@@ -13,7 +13,7 @@ class BioController {
 			const bio = await this[getUserBio](user);
 			return this[formatBio](bio);
 		});
-		return res.send(bio);
+		return res.json(bio);
 	};
 
 	async update(req, res) {
@@ -32,7 +32,7 @@ class BioController {
 			}
 			await bio.save();
 			await Cache.forget(`bio:${user.get('id')}`);
-			return res.send(this[formatBio](bio));
+			return res.json(this[formatBio](bio));
 		} catch (e) {
 			fs.unlinkSync(req.file.path);
 			throw e;
