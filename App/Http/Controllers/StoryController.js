@@ -1,5 +1,8 @@
 const StoryRepository = require('../../Repositories/StoryRepository');
 const Cache = require('../../Services/CacheService');
+const Marker = require('../../Models/Marker');
+
+const deleteMarker = Symbol('deleteMarker');
 
 class StoryController {
 	async create(req, res) {
@@ -10,16 +13,49 @@ class StoryController {
 		});
 
 		await Cache.tag([`stories_user:${userId}`]).flush();
-		res.status(200);
+		res.status(201);
 		res.json(story);
 	}
+
+	async get(req, res) {
+		const story = req.objects.story;
+		const markers = await new Marker().where({story_id: story.get('id')}).fetchAll({
+			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
+			withRelated: [
+				{
+					media(query) {
+						return query.select('id', 'marker_id', 'type', 'path');
+					},
+				},
+
+				{
+					user(query) {
+						return query.select('id', 'username');
+					},
+				},
+				{
+					'user.bio'(query) {
+						return query.select('user_id', 'path');
+					}
+				}]
+		});
+
+		res.json({
+			id: story.get('id'),
+			name: story.get('name'),
+			published: story.get('published'),
+			user_id: story.get('user_id'),
+			markers
+		});
+	};
 
 	async edit(req, res) {
 		const userId = req.user.get('id');
 		const story = req.objects.story;
 
 		await StoryRepository.update(story, {
-			name: req.body.name
+			name: req.body.name,
+			published: req.body.published,
 		});
 
 		await Cache.tag([`stories_user:${userId}`]).flush();
@@ -31,7 +67,13 @@ class StoryController {
 	async destroy(req, res) {
 		const userId = req.user.get('id');
 		const story = req.objects.story;
+		await story.load('markers');
+		const markers = story.related('markers');
 		await story.destroy();
+
+		for (let marker in markers) {
+			await this[deleteMarker](marker);
+		}
 
 		await Cache.tag([`stories_user:${userId}`]).flush();
 
@@ -40,7 +82,29 @@ class StoryController {
 			success: true
 		});
 	}
-}
 
+	async [deleteMarker](marker) {
+		await marker.load(['media']);
+
+		try {
+			const medias = marker.related('media');
+			for (let i = 0; i < medias.length; i++) {
+				const media = medias.at(i);
+				if (media.get('type') === 'image') {
+					fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path')}`));
+					if (fs.existsSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`))) {
+						fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`));
+					}
+				}
+				await media.destroy()
+			}
+
+		} catch (error) {
+			console.log(error);
+		}
+
+		await marker.destroy();
+	}
+}
 
 module.exports = new StoryController();

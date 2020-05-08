@@ -57,7 +57,7 @@ test.serial('It creates a story and flushes cache', async t => {
 
 	const story = await new Story().fetch();
 
-	t.is(response.status, 200);
+	t.is(response.status, 201);
 	t.is(response.body.user_id, 1);
 	t.is(response.body.name, 'story');
 	t.is(story.get('user_id'), 1);

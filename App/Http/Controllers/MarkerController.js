@@ -31,6 +31,9 @@ class MarkersController {
 		marker.set('type', req.body.type);
 		marker.set('description', req.body.description);
 		marker.set('location', req.body.location);
+		if(req.objects.story){
+			marker.set('story_id', req.objects.story.get('id'));
+		}
 		await marker.save();
 
 		const medias = [];

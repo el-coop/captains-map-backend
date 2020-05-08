@@ -2,7 +2,6 @@ import test from 'ava';
 import MarkerRepository from '../../../../App/Repositories/MarkerRepository';
 import knex from "../../../../database/knex";
 import MarkerFactory from "../../../../database/factories/MarkerFactory";
-import Marker from '../../../../App/Models/Marker';
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

@@ -7,6 +7,9 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
 	return knex.schema.table('markers', function(table) {
-		table.dropColumn('story_id');
+		if(process.env.APP_ENV !== 'test'){
+			table.dropForeign('story_id')
+			table.dropColumn('story_id');
+		}
 	});
 };

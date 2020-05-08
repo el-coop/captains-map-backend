@@ -4,6 +4,7 @@ const path = require('path');
 
 const getUserBio = Symbol('getUserBio');
 const formatBio = Symbol('formatBio');
+const getUserStories = Symbol('getUserStories');
 
 class BioController {
 	async get(req, res) {
@@ -11,9 +12,18 @@ class BioController {
 
 		const bio = await Cache.rememberForever(`bio:${user.get('id')}`, async () => {
 			const bio = await this[getUserBio](user);
-			return this[formatBio](bio);
+			return {
+				path: bio.get('path') || null,
+				description: bio.get('description') || '',
+			};
 		});
-		return res.json(bio);
+
+		const withUnpublished = req.user && user.id === req.user.id;
+		const stories = await Cache.tag([`stories_user:${user.id}`]).rememberForever(`stories:${user.get('id')}` + (withUnpublished ? '_unpublished' : ''), async () => {
+			return await this[getUserStories](user, withUnpublished);
+		});
+
+		return res.json(this[formatBio](bio, stories));
 	};
 
 	async update(req, res) {
@@ -32,7 +42,10 @@ class BioController {
 			}
 			await bio.save();
 			await Cache.forget(`bio:${user.get('id')}`);
-			return res.json(this[formatBio](bio));
+			return res.json({
+				path: bio.get('path') || null,
+				description: bio.get('description') || '',
+			});
 		} catch (e) {
 			fs.unlinkSync(req.file.path);
 			throw e;
@@ -50,11 +63,29 @@ class BioController {
 		return bio;
 	}
 
-	[formatBio](bio) {
+	[formatBio](bio, stories) {
 		return {
-			path: bio.get('path') || null,
-			description: bio.get('description') || ''
+			...bio,
+			stories
 		};
+	}
+
+	async [getUserStories](user, withUnpublished) {
+		await user.load({
+			stories(query) {
+				if (!withUnpublished) {
+					query.where('published', true)
+				}
+				query.orderBy('created_at', 'DESC')
+			}
+		});
+		return user.related('stories').map((story) => {
+			return {
+				id: story.get('id'),
+				published: story.get('published'),
+				name: story.get('name')
+			}
+		});
 	}
 }
 

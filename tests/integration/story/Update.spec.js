@@ -61,13 +61,15 @@ test.serial('It validates data', async t => {
 
 	const response = await request(app).patch(`/api/story/${story.id}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
-			name: ''
+			name: '',
+			published: ''
 		});
 
 	const updatedStory = await new Story().fetch();
 
 	t.is(response.status, 422);
 	t.is(response.body.errors[0].param, 'name');
+	t.is(response.body.errors[1].param, 'published');
 
 	t.is(await Story.count(), 1);
 	t.is(updatedStory.get('user_id'), 1);
@@ -83,7 +85,8 @@ test.serial('It updates a story and flushes cache', async t => {
 
 	const response = await request(app).patch(`/api/story/${story.id}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
-			name: 'name'
+			name: 'name',
+			published: 1
 		});
 
 	const updatedStory = await new Story().fetch();
@@ -94,6 +97,7 @@ test.serial('It updates a story and flushes cache', async t => {
 	t.is(await Story.count(), 1);
 	t.is(updatedStory.get('user_id'), 1);
 	t.is(updatedStory.get('name'), 'name');
+	t.is(updatedStory.get('published'), 1);
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['stories_user:1']));

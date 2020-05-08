@@ -16,10 +16,14 @@ router.patch('/:story', [
 	modelMiddleware.inject(),
 	modelMiddleware.valdiateOwnership('story'),
 	validation.validate({
-		name: 'required',
+		name: ['required', 'string'],
+		published: ['required', 'in:0,1']
 	})
 ], StoryController.edit);
 
+router.get('/:story', [
+	modelMiddleware.inject(),
+], StoryController.get);
 
 router.delete('/:story', [
 	authMiddleware,

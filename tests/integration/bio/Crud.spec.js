@@ -30,11 +30,13 @@ test('It returns empty when the user has no bio and caches', async t => {
 
 	t.deepEqual(response.body, {
 		description: '',
-		path: null
+		path: null,
+		stories: []
 	});
 
-	t.true(cacheSetStub.calledOnce);
+	t.true(cacheSetStub.calledTwice);
 	t.true(cacheSetStub.calledWith('bio:1'));
+	t.true(cacheSetStub.calledWith('stories:1'));
 });
 
 test('It returns 404 for non existent user get', async t => {
@@ -56,10 +58,12 @@ test('It returns bio for getting existing user with bio and caches', async t => 
 	t.deepEqual(response.body, {
 		path: bio.get('path'),
 		description: bio.get('description'),
+		stories: []
 	});
 
-	t.true(cacheSetStub.calledOnce);
+	t.true(cacheSetStub.calledTwice);
 	t.true(cacheSetStub.calledWith('bio:1'));
+	t.true(cacheSetStub.calledWith('stories:1'));
 });
 
 test('It returns bio from cache for getting existing user with bio', async t => {
@@ -73,16 +77,17 @@ test('It returns bio from cache for getting existing user with bio', async t => 
 		user_id: 1
 	});
 
-	sinon.stub(cache.store, 'get').returns(JSON.stringify({
+	sinon.stub(cache.store, 'get').onFirstCall().returns(JSON.stringify({
 		path: bio.get('path'),
 		description: bio.get('description')
-	}));
+	})).onSecondCall().returns(JSON.stringify([]));
 	const response = await request(app).get('/api/bio/nur');
 
 
 	t.deepEqual(response.body, {
 		path: bio.get('path'),
 		description: bio.get('description'),
+		stories: []
 	});
 
 	t.false(cacheSetStub.called);

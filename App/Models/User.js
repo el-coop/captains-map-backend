@@ -16,7 +16,7 @@ const User = Bookshelf.Model.extend({
 	},
 
 	stories() {
-		return this.hasMany('Marker');
+		return this.hasMany('Story');
 	},
 
 	followers() {
