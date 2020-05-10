@@ -29,6 +29,6 @@ router.delete('/:story', [
 	authMiddleware,
 	modelMiddleware.inject(),
 	modelMiddleware.valdiateOwnership('story')
-], StoryController.destroy);
+], StoryController.destroy.bind(StoryController));
 
 module.exports = router;

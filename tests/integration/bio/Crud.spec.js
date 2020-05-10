@@ -6,11 +6,11 @@ import request from "supertest";
 import app from "../../../app";
 import knex from "../../../database/knex";
 import BioFactory from '../../../database/factories/BioFactory';
+import StoryFactory from '../../../database/factories/StoryFactory';
 import helpers from "../../Helpers";
 import Bio from "../../../App/Models/Bio";
 import fs from 'fs';
 import cache from "../../../App/Services/CacheService";
-import Marker from "../../../App/Models/Marker";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();
@@ -66,6 +66,85 @@ test('It returns bio for getting existing user with bio and caches', async t => 
 	t.true(cacheSetStub.calledWith('stories:1'));
 });
 
+test('It returns bio with published stories when getting existing user with bio and users and caches', async t => {
+	sinon.stub(cache, 'exists').returns(false);
+	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const bio = await BioFactory.create({
+		user_id: 1
+	});
+
+	const stories = await StoryFactory.create({
+		user_id: 1,
+		published: 1
+	}, 3);
+
+	await StoryFactory.create({
+		user_id: 1,
+		published: 0
+	}, 2);
+
+	const response = await request(app).get('/api/bio/nur');
+
+	t.is(response.body.path, bio.get('path'));
+	t.is(response.body.description, bio.get('description'));
+	t.is(response.body.stories.length, 3);
+
+	stories.forEach((story, index) => {
+		t.deepEqual(response.body.stories[Math.abs(2 - index)], {
+			id: story.get('id'),
+			name: story.get('name'),
+			published: 1
+		});
+	});
+
+
+	t.true(cacheSetStub.calledTwice);
+	t.true(cacheSetStub.calledWith('bio:1'));
+	t.true(cacheSetStub.calledWith('stories:1'));
+});
+
+
+test('It returns bio with published and unpublished stories when logged in getting existing user with bio and users and caches', async t => {
+	sinon.stub(cache, 'exists').returns(false);
+	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const bio = await BioFactory.create({
+		user_id: 1
+	});
+
+	const stories = await StoryFactory.create({
+		user_id: 1,
+		published: 1
+	}, 3);
+
+	stories.push(...await StoryFactory.create({
+		user_id: 1,
+		published: 0
+	}, 2));
+
+	const response = await request(app).get('/api/bio/nur')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
+
+	t.is(response.body.path, bio.get('path'));
+	t.is(response.body.description, bio.get('description'));
+	t.is(response.body.stories.length, 5);
+
+	stories.forEach((story, index) => {
+		t.deepEqual(response.body.stories[Math.abs(4 - index)], {
+			id: story.get('id'),
+			name: story.get('name'),
+			published: story.get('published')
+		});
+	});
+
+
+	t.true(cacheSetStub.calledTwice);
+	t.true(cacheSetStub.calledWith('bio:1'));
+	t.true(cacheSetStub.calledWith('stories:1_unpublished'));
+});
+
+
 test('It returns bio from cache for getting existing user with bio', async t => {
 	sinon.stub(cache, 'status').get(() => {
 		return 'ready'
@@ -92,6 +171,84 @@ test('It returns bio from cache for getting existing user with bio', async t => 
 
 	t.false(cacheSetStub.called);
 });
+
+test('It returns bio and published stories from cache for getting existing user with bio', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
+	sinon.stub(cache, 'exists').returns(true);
+	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const bio = await BioFactory.create({
+		user_id: 1
+	});
+
+	const stories = [{
+		id: 1,
+		name: 'name',
+		published: 1
+	}, {
+		id: 2,
+		name: 'name1',
+		published: 1
+	}];
+
+	const cacheGetStub = sinon.stub(cache.store, 'get').onFirstCall().returns(JSON.stringify({
+		path: bio.get('path'),
+		description: bio.get('description')
+	})).onSecondCall().returns(JSON.stringify(stories));
+	const response = await request(app).get('/api/bio/nur');
+
+	t.deepEqual(response.body, {
+		path: bio.get('path'),
+		description: bio.get('description'),
+		stories
+	});
+
+	t.false(cacheSetStub.called);
+	t.true(cacheGetStub.calledWith('bio:1'));
+	t.true(cacheGetStub.calledWith('stories:1'));
+});
+
+test('It returns bio with published and unpublished stories from cache for getting existing user with bio', async t => {
+	sinon.stub(cache, 'status').get(() => {
+		return 'ready'
+	});
+	sinon.stub(cache, 'exists').returns(true);
+	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const bio = await BioFactory.create({
+		user_id: 1
+	});
+
+	const stories = [{
+		id: 1,
+		name: 'name',
+		published: 1
+	}, {
+		id: 2,
+		name: 'name1',
+		published: 0
+	}];
+
+	const cacheGetStub = sinon.stub(cache.store, 'get').onFirstCall().returns(JSON.stringify({
+		path: bio.get('path'),
+		description: bio.get('description')
+	})).onSecondCall().returns(JSON.stringify(stories));
+	const response = await request(app).get('/api/bio/nur')
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
+
+	t.deepEqual(response.body, {
+		path: bio.get('path'),
+		description: bio.get('description'),
+		stories
+	});
+
+	t.false(cacheSetStub.called);
+	t.true(cacheGetStub.calledWith('bio:1'));
+	t.true(cacheGetStub.calledWith('stories:1_unpublished'));
+});
+
 
 test('It prevents guests from editing users bio', async t => {
 	const response = await request(app).post('/api/bio').send({

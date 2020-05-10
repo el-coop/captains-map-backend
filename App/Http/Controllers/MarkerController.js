@@ -68,7 +68,9 @@ class MarkersController {
 			res.status(200);
 			res.json(marker);
 
-			this[notifyFollowers](req.user, marker, req);
+			if(! req.objects.story){
+				this[notifyFollowers](req.user, marker, req);
+			}
 		} catch (e) {
 			await marker.destroy();
 			for (let i = 0; i < medias.length; i++) {

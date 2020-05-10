@@ -1,6 +1,8 @@
 const StoryRepository = require('../../Repositories/StoryRepository');
 const Cache = require('../../Services/CacheService');
 const Marker = require('../../Models/Marker');
+const fs = require('fs');
+const path = require('path');
 
 const deleteMarker = Symbol('deleteMarker');
 
@@ -19,6 +21,9 @@ class StoryController {
 
 	async get(req, res) {
 		const story = req.objects.story;
+		if(! story.get('published') && (! req.user || story.get('user_id') !== req.user.get('id'))){
+			return res.sendStatus(404);
+		}
 		const markers = await new Marker().where({story_id: story.get('id')}).fetchAll({
 			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
 			withRelated: [
@@ -71,8 +76,8 @@ class StoryController {
 		const markers = story.related('markers');
 		await story.destroy();
 
-		for (let marker in markers) {
-			await this[deleteMarker](marker);
+		for (let i = 0; i < markers.length; i++) {
+			await this[deleteMarker](markers.at(i));
 		}
 
 		await Cache.tag([`stories_user:${userId}`]).flush();
@@ -84,7 +89,7 @@ class StoryController {
 	}
 
 	async [deleteMarker](marker) {
-		await marker.load(['media']);
+		await marker.load('media');
 
 		try {
 			const medias = marker.related('media');
