@@ -21,7 +21,7 @@ class StoryController {
 
 	async get(req, res) {
 		const story = req.objects.story;
-		if(! story.get('published') && (! req.user || story.get('user_id') !== req.user.get('id'))){
+		if (!story.get('published') && (!req.user || story.get('user_id') !== req.user.get('id'))) {
 			return res.sendStatus(404);
 		}
 		const markers = await new Marker().where({story_id: story.get('id')}).fetchAll({
@@ -45,11 +45,21 @@ class StoryController {
 				}]
 		});
 
+		let cover;
+		const marker = markers.at(0);
+		if (marker) {
+			cover = marker.related('media').at(0);
+		}
+
 		res.json({
 			id: story.get('id'),
 			name: story.get('name'),
 			published: story.get('published'),
 			user_id: story.get('user_id'),
+			cover: cover ? {
+				type: cover.get('type'),
+				path: cover.get('path'),
+			} : null,
 			markers
 		});
 	};

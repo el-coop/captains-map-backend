@@ -7,6 +7,8 @@ import app from "../../../app";
 import knex from "../../../database/knex";
 import BioFactory from '../../../database/factories/BioFactory';
 import StoryFactory from '../../../database/factories/StoryFactory';
+import MarkerFactory from '../../../database/factories/MarkerFactory';
+import MediaFactory from '../../../database/factories/MediaFactory';
 import helpers from "../../Helpers";
 import Bio from "../../../App/Models/Bio";
 import fs from 'fs';
@@ -79,6 +81,22 @@ test('It returns bio with published stories when getting existing user with bio 
 		published: 1
 	}, 3);
 
+	const mediaStory = stories[(Math.floor(Math.random() * stories.length))].id;
+
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+		story_id: mediaStory
+	}, 2);
+
+
+	for (let markerIndex = 0; markerIndex < markers.length; markerIndex++) {
+		const marker = markers[markerIndex];
+
+		await MediaFactory.create({
+			marker_id: marker.get('id')
+		});
+	}
+
 	await StoryFactory.create({
 		user_id: 1,
 		published: 0
@@ -90,14 +108,27 @@ test('It returns bio with published stories when getting existing user with bio 
 	t.is(response.body.description, bio.get('description'));
 	t.is(response.body.stories.length, 3);
 
-	stories.forEach((story, index) => {
-		t.deepEqual(response.body.stories[Math.abs(2 - index)], {
+	for (let storyIndex = 0; storyIndex < stories.length; storyIndex++) {
+		const story = stories[storyIndex];
+
+		await story.load('markers');
+		const marker = story.related('markers').get(0);
+		let media = null;
+		if (marker) {
+			await marker.load('media');
+			media = marker.related('media').get(0);
+		}
+
+		t.deepEqual(response.body.stories[Math.abs(2 - storyIndex)], {
 			id: story.get('id'),
 			name: story.get('name'),
-			published: 1
+			published: 1,
+			cover: {
+				path: mediaStory === story.get('id') ? 'BlfyEoTDKxi' : null,
+				type: mediaStory === story.get('id') ? 'instagram' : null
+			}
 		});
-	});
-
+	}
 
 	t.true(cacheSetStub.calledTwice);
 	t.true(cacheSetStub.calledWith('bio:1'));
@@ -123,6 +154,22 @@ test('It returns bio with published and unpublished stories when logged in getti
 		published: 0
 	}, 2));
 
+	const mediaStory = stories[(Math.floor(Math.random() * stories.length))].id;
+
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+		story_id: mediaStory
+	}, 2);
+
+
+	for (let markerIndex = 0; markerIndex < markers.length; markerIndex++) {
+		const marker = markers[markerIndex];
+
+		await MediaFactory.create({
+			marker_id: marker.get('id')
+		});
+	}
+
 	const response = await request(app).get('/api/bio/nur')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
 
@@ -134,7 +181,11 @@ test('It returns bio with published and unpublished stories when logged in getti
 		t.deepEqual(response.body.stories[Math.abs(4 - index)], {
 			id: story.get('id'),
 			name: story.get('name'),
-			published: story.get('published')
+			published: story.get('published'),
+			cover: {
+				path: mediaStory === story.get('id') ? 'BlfyEoTDKxi' : null,
+				type: mediaStory === story.get('id') ? 'instagram' : null
+			}
 		});
 	});
 

@@ -6,6 +6,7 @@ import helpers from '../../Helpers';
 import sinon from "sinon";
 import StoryFactory from "../../../database/factories/StoryFactory";
 import MarkerFactory from "../../../database/factories/MarkerFactory";
+import MediaFactory from "../../../database/factories/MediaFactory";
 import UserFactory from "../../../database/factories/UserFactory";
 
 let story;
@@ -66,9 +67,39 @@ test.serial('It returns published story markers when requested', async t => {
 	t.is(response.status, 200);
 	t.is(response.body.name, story.get('name'));
 	t.is(response.body.published, 1);
+	t.deepEqual(response.body.cover, null);
 
 	markers.forEach((marker, index) => {
 		t.is(response.body.markers[index].id, marker.get('id'));
+		t.is(response.body.markers[index].description, marker.get('description'));
+		t.is(response.body.markers[index].description, marker.get('description'));
+	});
+});
+
+test.serial('It returns story with cover data', async t => {
+
+	const markers = await MarkerFactory.create({
+		user_id: 1,
+		story_id: story.get('id')
+	}, 5);
+
+	await MediaFactory.create({
+		marker_id: markers[0].id
+	});
+
+	const response = await request(app).get(`/api/story/${story.id}`);
+
+	t.is(response.status, 200);
+	t.is(response.body.name, story.get('name'));
+	t.is(response.body.published, 1);
+	t.deepEqual(response.body.cover, {
+		path: 'BlfyEoTDKxi',
+		type: 'instagram'
+	});
+
+	markers.forEach((marker, index) => {
+		t.is(response.body.markers[index].id, marker.get('id'));
+		t.is(response.body.markers[index].description, marker.get('description'));
 		t.is(response.body.markers[index].description, marker.get('description'));
 	});
 });

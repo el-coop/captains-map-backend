@@ -73,17 +73,27 @@ class BioController {
 	async [getUserStories](user, withUnpublished) {
 		await user.load({
 			stories(query) {
+				query.select('stories.*', 'medias.type as cover_type', 'medias.path as cover_path')
+					.leftJoin('markers', 'stories.id', 'markers.story_id')
+					.leftJoin('medias', 'markers.id', 'medias.marker_id')
 				if (!withUnpublished) {
-					query.where('published', true)
+					query.where('published', true);
 				}
-				query.orderBy('created_at', 'DESC')
-			}
+				return query.orderBy('created_at', 'DESC');
+			},
 		});
+
 		return user.related('stories').map((story) => {
+			const marker = story.related('markers').at(0);
+
 			return {
 				id: story.get('id'),
 				published: story.get('published'),
-				name: story.get('name')
+				name: story.get('name'),
+				cover: {
+					type: story.get('cover_type'),
+					path: story.get('cover_path'),
+				}
 			}
 		});
 	}

@@ -31,7 +31,7 @@ class MarkersController {
 		marker.set('type', req.body.type);
 		marker.set('description', req.body.description);
 		marker.set('location', req.body.location);
-		if(req.objects.story){
+		if (req.objects.story) {
 			marker.set('story_id', req.objects.story.get('id'));
 		}
 		await marker.save();
@@ -68,8 +68,11 @@ class MarkersController {
 			res.status(200);
 			res.json(marker);
 
-			if(! req.objects.story){
+
+			if (!req.objects.story) {
 				this[notifyFollowers](req.user, marker, req);
+			} else if (await req.objects.story.related('markers').count() === 1) {
+				await Cache.tag([`stories_user:${req.user.id}`]).flush();
 			}
 		} catch (e) {
 			await marker.destroy();
@@ -157,6 +160,7 @@ class MarkersController {
 		try {
 			const marker = req.objects.marker;
 			await marker.load(['media']);
+			const story = marker.get('story_id');
 
 			try {
 				const medias = marker.related('media');
@@ -182,6 +186,10 @@ class MarkersController {
 			res.json({
 				success: true
 			});
+
+			if (story) {
+				await Cache.tag([`stories_user:${req.user.id}`]).flush();
+			}
 		} catch (error) {
 			throw new BaseError('Action failed');
 		}
