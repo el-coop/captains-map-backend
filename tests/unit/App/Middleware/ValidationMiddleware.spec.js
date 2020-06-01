@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import validationMiddleware from '../../../../App/Http/Middleware/ValidationMiddleware';
 import path from "path";
 import fs from "fs";
-import NodeClam from 'clamscan';
 
 test.afterEach.always('Restore sinon', t => {
 	sinon.restore();

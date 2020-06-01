@@ -1,12 +1,14 @@
 const Media = require('../../Models/Media');
 const Marker = require('../../Models/Marker');
 const User = require('../../Models/User');
+const Story = require('../../Models/Story');
 const BaseError = require('../../Errors/BaseError');
 
 const models = {
 	Marker,
 	Media,
-	User
+	User,
+	Story
 };
 
 class ModelMiddleware {
@@ -35,7 +37,7 @@ class ModelMiddleware {
 
 	valdiateOwnership(object, key = 'user_id') {
 		return (req, res, next) => {
-			if (!req.user || req.objects[object].get(key) !== req.user.get('id')) {
+			if (!req.user || (req.objects[object] && req.objects[object].get(key) !== req.user.get('id'))) {
 				throw new BaseError('Forbidden', 403);
 			}
 			next();

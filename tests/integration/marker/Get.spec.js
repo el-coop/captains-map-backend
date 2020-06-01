@@ -2,6 +2,7 @@ import test from 'ava';
 import app from '../../../app';
 import knex from '../../../database/knex';
 import MarkerFactory from '../../../database/factories/MarkerFactory';
+import StoryFactory from '../../../database/factories/StoryFactory';
 import cache from '../../../App/Services/CacheService';
 import request from 'supertest';
 import sinon from 'sinon';
@@ -16,8 +17,16 @@ test.afterEach.always(async () => {
 	sinon.restore();
 });
 
-test.serial('It caches then returns all existing markers with 1 pagination data sorted desc by id ', async t => {
+test.serial('It caches then returns all existing non story markers with 1 pagination data sorted desc by id ', async t => {
 	sinon.stub(cache, 'exists').returns(false);
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const marker0 = await MarkerFactory.create({
@@ -89,6 +98,14 @@ test.serial('It returns data in pages when there is much data', async t => {
 		user_id: 1
 	}, 4);
 
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const response = await request(app).get('/api/marker');
 	t.is(response.body.markers.length, 3);
 	t.true(response.body.pagination.hasNext);
@@ -98,6 +115,15 @@ test.serial('It returns data and caches after id when there id is specified', as
 	sinon.stub(cache, 'exists').returns(false);
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1
 	}, 5);
@@ -108,9 +134,9 @@ test.serial('It returns data and caches after id when there id is specified', as
 	t.is(response.body.markers[0].id, markers[1].id);
 	t.false(response.body.pagination.hasNext);
 	t.true(cacheSetStub.calledOnce);
-	t.true(cacheSetStub.calledWith('markers_starting:3'));
+	t.true(cacheSetStub.calledWith(`markers_starting:${markers[2].id}`));
 	t.true(taggedCacheStub.calledOnce);
-	t.true(taggedCacheStub.calledWith('tag:markers', 0, 'markers_starting:3'));
+	t.true(taggedCacheStub.calledWith('tag:markers', 0, `markers_starting:${markers[2].id}`));
 });
 
 test.serial('It returns data from cache after id when there id is specified', async t => {
@@ -148,6 +174,15 @@ test.serial('It returns and caches only markers of specific user with hasNext fa
 	sinon.stub(cache, 'exists').returns(false);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const marker0 = await MarkerFactory.create({
 		user_id: 1,
 	});
@@ -210,6 +245,15 @@ test.serial('It returns and caches only markers of specific user after specific 
 	sinon.stub(cache, 'exists').returns(false);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const userFirstMarkers = await MarkerFactory.create({
 		user_id: 1,
 	}, 3);
@@ -234,9 +278,9 @@ test.serial('It returns and caches only markers of specific user after specific 
 	}));
 	t.true(response.body.pagination.hasNext);
 	t.true(cacheSetStub.calledOnce);
-	t.true(cacheSetStub.calledWith('markers_user:1_starting:7'));
+	t.true(cacheSetStub.calledWith(`markers_user:1_starting:${userSecondMarkers[2].id}`));
 	t.true(taggedCacheStub.calledOnce);
-	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, 'markers_user:1_starting:7'));
+	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_user:1_starting:${userSecondMarkers[2].id}`));
 });
 
 test.serial('It returns from cache only markers of specific user after specific id when specified', async t => {
@@ -288,6 +332,14 @@ test.serial('It returns only markers of specific user with hasNext true when mor
 	sinon.stub(cache.store, 'zadd');
 	sinon.stub(cache.store, 'set');
 
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	await MarkerFactory.create({
 		user_id: 1,
 	}, 4);
@@ -305,6 +357,14 @@ test.serial('It returns and caches specific marker page with has next when neede
 	sinon.stub(cache, 'exists').returns(false);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
 
 	const markers = await MarkerFactory.create({
 		user_id: 1,
@@ -329,9 +389,9 @@ test.serial('It returns and caches specific marker page with has next when neede
 	t.true(response.body.pagination.hasNext);
 	t.is(response.body.pagination.page, 0);
 	t.true(cacheSetStub.calledOnce);
-	t.true(cacheSetStub.calledWith('markers_user:1_marker:4'));
+	t.true(cacheSetStub.calledWith(`markers_user:1_marker:${markers[3].id}`));
 	t.true(taggedCacheStub.calledOnce);
-	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, 'markers_user:1_marker:4'));
+	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_user:1_marker:${markers[3].id}`));
 });
 
 test.serial('It returns from cache specific marker page with has next when needed', async t => {
@@ -384,6 +444,14 @@ test.serial('It returns specific marker page with no has next when no next', asy
 	sinon.stub(cache.store, 'zadd');
 	sinon.stub(cache.store, 'set');
 
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 6);
@@ -431,6 +499,14 @@ test.serial('It returns and caches previous page', async t => {
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
 
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id')
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 6);
@@ -451,9 +527,9 @@ test.serial('It returns and caches previous page', async t => {
 	t.is(response.body.pagination.hasNext, null);
 	t.is(response.body.pagination.page, null);
 	t.true(cacheSetStub.calledOnce);
-	t.true(cacheSetStub.calledWith('markers_prevUser:1_marker:3'));
+	t.true(cacheSetStub.calledWith(`markers_prevUser:1_marker:${markers[2].id}`));
 	t.true(taggedCacheStub.calledOnce);
-	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, 'markers_prevUser:1_marker:3'));
+	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_prevUser:1_marker:${markers[2].id}`));
 });
 
 test.serial('It returns from cache previous page', async t => {
@@ -503,6 +579,16 @@ test.serial('It returns and caches all markers within boundaries', async t => {
 	sinon.stub(cache, 'exists').returns(false);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+		lat: 9.23849,
+		lng: -9.4922,
+	});
 
 	const marker0 = await MarkerFactory.create({
 		user_id: 1,
@@ -587,6 +673,16 @@ test.serial('It returns and caches only markers of specific user in specific bou
 	sinon.stub(cache, 'exists').returns(false);
 	const taggedCacheStub = sinon.stub(cache.store, 'zadd');
 	const cacheSetStub = sinon.stub(cache.store, 'set');
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+		lat: 9.23849,
+		lng: -9.4922,
+	});
 
 	const borderedMarkers = await MarkerFactory.create({
 		user_id: 1,
@@ -679,6 +775,16 @@ test.serial('It returns and caches previous page within specific boundaries', as
 		lng: 0.6
 	}, 6);
 
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+		lat: 9.23849,
+		lng: -9.4922,
+	});
+
 	await MarkerFactory.create({
 		user_id: 1,
 		lat: 2,
@@ -706,9 +812,9 @@ test.serial('It returns and caches previous page within specific boundaries', as
 	t.is(response.body.pagination.page, null);
 
 	t.true(cacheSetStub.calledOnce);
-	t.true(cacheSetStub.calledWith(`markers_prevUser:1_borders:${borders}_marker:3`));
+	t.true(cacheSetStub.calledWith(`markers_prevUser:1_borders:${borders}_marker:${markers[2].id}`));
 	t.true(taggedCacheStub.calledOnce);
-	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_prevUser:1_borders:${borders}_marker:3`));
+	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_prevUser:1_borders:${borders}_marker:${markers[2].id}`));
 });
 
 

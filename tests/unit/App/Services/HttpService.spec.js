@@ -51,7 +51,6 @@ test.serial('It returns axios error response data when non 200 response', async 
 test.serial('It returns axios post response data when 200 response', async t => {
 	moxios.wait(() => {
 		let request = moxios.requests.mostRecent();
-		console.log(request);
 		request.respondWith({
 			status: 200,
 			response: {

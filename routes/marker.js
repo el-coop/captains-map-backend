@@ -18,8 +18,10 @@ router.get('/:user/:markerId/previous', modelMiddleware.inject({
 	User: 'username'
 }), MarkerController.previousMarkers.bind(MarkerController));
 
-router.post('/create', [
+router.post('/create/:story?', [
 	authMiddleware,
+	modelMiddleware.inject(),
+	modelMiddleware.valdiateOwnership('story'),
 	upload.images('media[files]', 'images', 5),
 	validation.validate({
 		lat: ['required', 'numeric'],

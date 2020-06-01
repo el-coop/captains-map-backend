@@ -4,6 +4,7 @@ const jwtService = require('../Services/JwtService');
 require('./Marker');
 require('./Bio');
 require('./Follower');
+require('./Story');
 
 const User = Bookshelf.Model.extend({
 	tableName: 'users',
@@ -13,6 +14,11 @@ const User = Bookshelf.Model.extend({
 	markers() {
 		return this.hasMany('Marker');
 	},
+
+	stories() {
+		return this.hasMany('Story');
+	},
+
 	followers() {
 		return this.hasMany('Follower');
 	},

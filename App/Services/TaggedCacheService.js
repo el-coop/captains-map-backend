@@ -1,6 +1,12 @@
 let cache;
 const deleteValues = Symbol('deleteValues');
 
+async function asyncForEach(array, callback) {
+	for (let index = 0; index < array.length; index++) {
+		await callback(array[index], index, array);
+	}
+}
+
 class TaggedCacheService {
 	constructor(cacheInstance, tags) {
 		cache = cacheInstance;
@@ -9,7 +15,7 @@ class TaggedCacheService {
 
 	async remember(key, value, seconds) {
 		const result = await cache.remember(key, value, seconds);
-		this.tags.forEach(async (tag) => {
+		await asyncForEach(this.tags, async (tag) => {
 			try {
 				let ttl = 0;
 				if (seconds) {
@@ -32,7 +38,7 @@ class TaggedCacheService {
 	}
 
 	async [deleteValues]() {
-		this.tags.forEach(async (tag) => {
+		await asyncForEach(this.tags, async (tag) => {
 			let keys = [];
 			try {
 				keys = await cache.store.zrange(`tag:${tag}`, 0, -1);
@@ -47,7 +53,7 @@ class TaggedCacheService {
 	static async expireOld(cache) {
 		const tags = await cache.store.keys(`${process.env.CACHE_PREFIX}_tag:*`);
 		console.log('tags:', tags);
-		tags.forEach(async (tag) => {
+		await asyncForEach(tags, async (tag) => {
 			console.log(`Expiring ${tag}`);
 			const tagName = tag.substring(process.env.CACHE_PREFIX.length + 1);
 			await cache.store.zremrangebyscore(tagName, 1, Date.now());
@@ -56,6 +62,8 @@ class TaggedCacheService {
 			}
 		});
 	}
+
+
 }
 
 module.exports = TaggedCacheService;

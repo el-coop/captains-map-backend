@@ -4,6 +4,7 @@ const path = require('path');
 
 const getUserBio = Symbol('getUserBio');
 const formatBio = Symbol('formatBio');
+const getUserStories = Symbol('getUserStories');
 
 class BioController {
 	async get(req, res) {
@@ -11,9 +12,18 @@ class BioController {
 
 		const bio = await Cache.rememberForever(`bio:${user.get('id')}`, async () => {
 			const bio = await this[getUserBio](user);
-			return this[formatBio](bio);
+			return {
+				path: bio.get('path') || null,
+				description: bio.get('description') || '',
+			};
 		});
-		return res.send(bio);
+
+		const withUnpublished = req.user && user.id === req.user.id;
+		const stories = await Cache.tag([`stories_user:${user.id}`]).rememberForever(`stories:${user.get('id')}` + (withUnpublished ? '_unpublished' : ''), async () => {
+			return await this[getUserStories](user, withUnpublished);
+		});
+
+		return res.json(this[formatBio](bio, stories));
 	};
 
 	async update(req, res) {
@@ -32,7 +42,10 @@ class BioController {
 			}
 			await bio.save();
 			await Cache.forget(`bio:${user.get('id')}`);
-			return res.send(this[formatBio](bio));
+			return res.json({
+				path: bio.get('path') || null,
+				description: bio.get('description') || '',
+			});
 		} catch (e) {
 			fs.unlinkSync(req.file.path);
 			throw e;
@@ -50,11 +63,39 @@ class BioController {
 		return bio;
 	}
 
-	[formatBio](bio) {
+	[formatBio](bio, stories) {
 		return {
-			path: bio.get('path') || null,
-			description: bio.get('description') || ''
+			...bio,
+			stories
 		};
+	}
+
+	async [getUserStories](user, withUnpublished) {
+		await user.load({
+			stories(query) {
+				query.select('stories.*', 'medias.type as cover_type', 'medias.path as cover_path')
+					.leftJoin('markers', 'stories.id', 'markers.story_id')
+					.leftJoin('medias', 'markers.id', 'medias.marker_id')
+				if (!withUnpublished) {
+					query.where('published', true);
+				}
+				return query.orderBy('created_at', 'DESC');
+			},
+		});
+
+		return user.related('stories').map((story) => {
+			const marker = story.related('markers').at(0);
+
+			return {
+				id: story.get('id'),
+				published: story.get('published'),
+				name: story.get('name'),
+				cover: {
+					type: story.get('cover_type'),
+					path: story.get('cover_path'),
+				}
+			}
+		});
 	}
 }
 

@@ -11,6 +11,7 @@ import sinon from "sinon";
 import webpush from "web-push";
 import cache from "../../../App/Services/CacheService";
 import FollowerFactory from "../../../database/factories/FollowerFactory";
+import StoryFactory from "../../../database/factories/StoryFactory";
 import errorLogger from '../../../App/Services/ErrorLogger';
 
 
@@ -55,7 +56,8 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 	t.is(marker.get('user_id'), 1);
 	t.is(marker.get('lat'), 0);
 	t.is(marker.get('lng'), 0);
-	t.is(marker.get('location'), 'test');
+	t.is(marker.get('lng'), 0);
+	t.is(marker.get('story_id'), null);
 	t.is(marker.related('media').at(0).get('type'), 'instagram');
 	t.is(marker.related('media').at(0).get('path'), 'BlfyEoTDKxi');
 
@@ -103,6 +105,54 @@ test.serial('It creates a marker and notifies followers', async t => {
 	t.true(webpushStub.calledTwice);
 	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload));
 	t.true(webpushStub.calledWith(followers[1].get('subscription'), payload));
+});
+
+test.serial('It creates a story marker and doesnt notify followers', async t => {
+	const followers = await FollowerFactory.create({
+		user_id: 1,
+	}, 2);
+	const story = await StoryFactory.create({
+		user_id: 1
+	});
+	sinon.stub(cache, 'rememberForever').callsArg(1);
+	const webpushStub = sinon.stub(webpush, 'sendNotification');
+	sinon.stub(cache, 'tag').returns({
+		flush: sinon.stub()
+	});
+
+	const response = await request(app).post(`/api/marker/create/${story.id}`)
+		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
+			lat: '0',
+			lng: '0',
+			time: new Date(),
+			type: 'Visited',
+			description: 'test',
+			location: 'test',
+			media: {
+				type: 'instagram',
+				path: 'https://www.instagram.com/p/BlfyEoTDKxi/?utm_source=ig_web_copy_link'
+			}
+		});
+
+	const marker = await new Marker().fetch({
+		withRelated: ['media']
+	});
+
+	t.is(response.status, 200);
+	t.is(response.body.user_id, 1);
+	t.is(response.body.lat, 0);
+	t.is(response.body.lng, 0);
+	t.is(marker.get('user_id'), 1);
+	t.is(marker.get('lat'), 0);
+	t.is(marker.get('lng'), 0);
+	t.is(marker.get('story_id'), story.id);
+	t.is(marker.get('location'), 'test');
+	t.is(marker.related('media').at(0).get('type'), 'instagram');
+	t.is(marker.related('media').at(0).get('path'), 'BlfyEoTDKxi');
+
+	await helpers.sleep(5000);
+
+	t.true(webpushStub.notCalled);
 });
 
 test.serial('No user gets a forbidden error', async t => {

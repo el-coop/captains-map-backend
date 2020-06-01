@@ -19,9 +19,16 @@ const res = {
 	}
 };
 
-test.afterEach.always('Restore sinon', t => {
+test.beforeEach(async () => {
+	await knex.migrate.latest();
+	await knex.seed.run();
+});
+
+test.afterEach.always(async () => {
+	await knex.migrate.rollback();
 	sinon.restore();
 });
+
 
 test('it calls next without user when there is no token', async t => {
 	const nextSpy = sinon.spy();
@@ -37,8 +44,6 @@ test('it calls next without user when there is no token', async t => {
 });
 
 test.serial('it throws error when cookie exists but the user doesnt verify', async t => {
-	await knex.migrate.latest();
-	await knex.seed.run();
 	const clearCookieSpy = sinon.spy(res, 'clearCookie');
 	const cookieSpy = sinon.spy(res, 'cookie');
 	sinon.stub(JwtService, 'verify').returns(false);
@@ -60,8 +65,6 @@ test.serial('it throws error when cookie exists but the user doesnt verify', asy
 });
 
 test.serial('it injects user when cookie is correct and doesnt refresh cookie', async t => {
-	await knex.migrate.latest();
-	await knex.seed.run();
 	const cookieSpy = sinon.spy(res, 'cookie');
 
 	const user = await new User().fetch();
@@ -81,8 +84,6 @@ test.serial('it injects user when cookie is correct and doesnt refresh cookie', 
 });
 
 test.serial('it extends users login duration when under 2 days', async t => {
-	await knex.migrate.latest();
-	await knex.seed.run();
 	const cookieSpy = sinon.spy(res, 'cookie');
 	const headerSpy = sinon.spy(res, 'header');
 	const user = await new User().fetch();

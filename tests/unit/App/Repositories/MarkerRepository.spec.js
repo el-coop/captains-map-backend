@@ -2,7 +2,7 @@ import test from 'ava';
 import MarkerRepository from '../../../../App/Repositories/MarkerRepository';
 import knex from "../../../../database/knex";
 import MarkerFactory from "../../../../database/factories/MarkerFactory";
-import Marker from '../../../../App/Models/Marker';
+import StoryFactory from "../../../../database/factories/StoryFactory";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();
@@ -18,6 +18,14 @@ test.serial('It returns first page of Markers with hasNext false when less than 
 		user_id: 1,
 	}, 3);
 
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const result = await MarkerRepository.getPage();
 
 	t.is(3, result.markers.length);
@@ -30,6 +38,15 @@ test.serial('It returns first page of Markers with hasNext false when less than 
 });
 
 test.serial('It returns first page of Markers with hasNext true when more than page size', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 4);
@@ -46,6 +63,15 @@ test.serial('It returns first page of Markers with hasNext true when more than p
 });
 
 test.serial('It returns page after specific id', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 5);
@@ -65,6 +91,15 @@ test.serial('It returns page after specific id', async t => {
 
 
 test.serial('It returns user page', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const userMarkers = await MarkerFactory.create({
 		user_id: 1,
 	}, 2);
@@ -86,6 +121,15 @@ test.serial('It returns user page', async t => {
 });
 
 test.serial('It returns user page starting at marker', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const userMarkers = await MarkerFactory.create({
 		user_id: 1,
 	}, 2);
@@ -115,6 +159,15 @@ test.serial('It returns user page starting at marker', async t => {
 });
 
 test.serial('It returns page with specific marker in it', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 9);
@@ -136,6 +189,15 @@ test.serial('It returns page with specific marker in it', async t => {
 });
 
 test.serial('It returns page with specific marker in for specific user', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 2);
@@ -169,6 +231,15 @@ test.serial('It returns page with specific marker in for specific user', async t
 });
 
 test.serial('It returns last page with hasNext false', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 9);
@@ -190,6 +261,15 @@ test.serial('It returns last page with hasNext false', async t => {
 });
 
 test.serial('It returns first page with hasNext', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 9);
@@ -211,6 +291,15 @@ test.serial('It returns first page with hasNext', async t => {
 });
 
 test.serial('It returns false for not found object', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	await MarkerFactory.create({
 		user_id: 1,
 	}, 3);
@@ -221,6 +310,15 @@ test.serial('It returns false for not found object', async t => {
 });
 
 test.serial('It returns previous page', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 	}, 9);
@@ -246,6 +344,15 @@ test.serial('It returns previous page', async t => {
 
 
 test.serial('It returns markers within specific boundaries only', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 		lat: '0.5',
@@ -279,6 +386,15 @@ test.serial('It returns markers within specific boundaries only', async t => {
 });
 
 test.serial('It returns markers within specific boundaries only for specific user', async t => {
+
+	const Story = await StoryFactory.create({
+		user_id: 1
+	});
+	await MarkerFactory.create({
+		user_id: 1,
+		story_id: Story.get('id'),
+	});
+
 	const markers = await MarkerFactory.create({
 		user_id: 1,
 		lat: '0.5',

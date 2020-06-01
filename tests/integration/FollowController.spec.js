@@ -22,7 +22,9 @@ test.serial('It returns public key', async t => {
 	const response = await request(app).get('/api/follow/key');
 
 	t.is(response.status, 200);
-	t.is(response.text, process.env.VAPID_PUBLIC_KEY);
+	t.deepEqual(response.body, {
+		key: process.env.VAPID_PUBLIC_KEY
+	});
 
 });
 

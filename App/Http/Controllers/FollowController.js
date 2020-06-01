@@ -28,7 +28,9 @@ class FollowController {
 
 	key(req, res) {
 		res.status(200)
-			.send(process.env.VAPID_PUBLIC_KEY);
+			.json({
+				key: process.env.VAPID_PUBLIC_KEY
+			});
 	}
 
 	async toggleFollow(req, res) {
