@@ -4,6 +4,13 @@ const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
 const validation = require('../App/Http/Middleware/ValidationMiddleware');
 const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
 
+router.get('/:user/:story', [
+	modelMiddleware.inject({
+		User: 'username'
+	}),
+], StoryController.get);
+
+
 router.post('/', [
 	authMiddleware,
 	validation.validate({
@@ -20,10 +27,6 @@ router.patch('/:story', [
 		published: ['required', 'in:0,1']
 	})
 ], StoryController.edit);
-
-router.get('/:story', [
-	modelMiddleware.inject(),
-], StoryController.get);
 
 router.delete('/:story', [
 	authMiddleware,

@@ -21,7 +21,10 @@ class StoryController {
 
 	async get(req, res) {
 		const story = req.objects.story;
-		if (!story.get('published') && (!req.user || story.get('user_id') !== req.user.get('id'))) {
+		if (
+			!story.get('published') && (!req.user || story.get('user_id') !== req.user.get('id')) ||
+			req.objects.user.get('id') !== story.get('user_id')
+		) {
 			return res.sendStatus(404);
 		}
 		const markers = await new Marker().where({story_id: story.get('id')}).fetchAll({

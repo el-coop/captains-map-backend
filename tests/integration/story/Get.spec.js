@@ -33,13 +33,30 @@ test.afterEach.always(async () => {
 });
 
 test.serial('It returns 404 for a story that doesnt exist', async t => {
-	const response = await request(app).get(`/api/story/${story.id + 10}`);
+	const response = await request(app).get(`/api/story/nur/${story.id + 10}`);
+
+	t.is(response.status, 404);
+});
+
+test.serial('It returns 404 for a story with non existing username', async t => {
+
+	const response = await request(app).get(`/api/story/test/${story.id}`);
+
+	t.is(response.status, 404);
+});
+
+test.serial('It returns 404 for a story with existing username that doesnt own', async t => {
+	await UserFactory.create({
+		username: 'test',
+	});
+
+	const response = await request(app).get(`/api/story/test/${story.id}`);
 
 	t.is(response.status, 404);
 });
 
 test.serial('It returns 404 when not logged in and story not published', async t => {
-	const response = await request(app).get(`/api/story/${unpublishedStory.id}`);
+	const response = await request(app).get(`/api/story/nur/${unpublishedStory.id}`);
 
 	t.is(response.status, 404);
 });
@@ -49,7 +66,7 @@ test.serial('It returns 404 when story unpublished and not correct user', async 
 		password: '123456'
 	});
 
-	const response = await request(app).get(`/api/story/${unpublishedStory.id}`)
+	const response = await request(app).get(`/api/story/nur/${unpublishedStory.id}`)
 		.set('Cookie', await helpers.authorizedCookie(otherUser.get('username'), '123456')).send();
 
 	t.is(response.status, 404);
@@ -62,7 +79,7 @@ test.serial('It returns published story markers when requested', async t => {
 		story_id: story.get('id')
 	}, 5);
 
-	const response = await request(app).get(`/api/story/${story.id}`);
+	const response = await request(app).get(`/api/story/nur/${story.id}`);
 
 	t.is(response.status, 200);
 	t.is(response.body.name, story.get('name'));
@@ -87,7 +104,7 @@ test.serial('It returns story with cover data', async t => {
 		marker_id: markers[0].id
 	});
 
-	const response = await request(app).get(`/api/story/${story.id}`);
+	const response = await request(app).get(`/api/story/nur/${story.id}`);
 
 	t.is(response.status, 200);
 	t.is(response.body.name, story.get('name'));
@@ -111,7 +128,7 @@ test.serial('It returns unpublished story markers when requested', async t => {
 		story_id: unpublishedStory.get('id')
 	}, 5);
 
-	const response = await request(app).get(`/api/story/${unpublishedStory.id}`)
+	const response = await request(app).get(`/api/story/nur/${unpublishedStory.id}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send();
 
 	t.is(response.status, 200);
