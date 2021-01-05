@@ -10,7 +10,7 @@
 		"test:integration": "ava --config=integration-tests.config.js --verbose --serial"
 	},
 	"dependencies": {
-		"axios": "^0.19.2",
+		"axios": "^0.21.1",
 		"bookshelf": "^1.1.1",
 		"bookshelf-secure-password": "^5.0.0",
 		"bookshelf-virtuals-plugin": "^0.1.1",
