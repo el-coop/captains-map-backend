@@ -70,6 +70,12 @@ class Cache {
 		return true;
 	}
 
+
+	async flush() {
+		redis.flushall();
+		return true;
+	}
+
 	get status() {
 		return redis.status;
 	}

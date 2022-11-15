@@ -103,19 +103,19 @@ class Validator {
 				return Promise.resolve();
 			}
 			const clamscan = await new NodeClam().init({
-				remove_infected: true
+				removeInfected: true
 			});
 			let virus = false;
 			if (req.file) {
-				const response = await clamscan.is_infected(req.file);
-				if (response.is_infected) {
+				const response = await clamscan.isInfected(req.file);
+				if (response.isInfected) {
 					virus = true;
 				}
 			} else if (req.files) {
 				for (const file of req.files) {
-					const response = await clamscan.is_infected(file.path);
+					const response = await clamscan.isInfected(file.path);
 
-					if (response.is_infected) {
+					if (response.isInfected) {
 						virus = true;
 					}
 				}
