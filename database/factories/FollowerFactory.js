@@ -1,6 +1,6 @@
-const faker = require('faker');
-const Follower = require('../../App/models/Follower');
-const BaseFactory = require('./BaseFactory');
+import faker from 'faker';
+import Follower from '../../App/models/Follower.js';
+import BaseFactory from './BaseFactory.js';
 
 class FollowerFactory extends BaseFactory {
 	model() {
@@ -17,6 +17,6 @@ class FollowerFactory extends BaseFactory {
 			}
 		}
 	}
-};
+}
 
-module.exports = new FollowerFactory();
+export default new FollowerFactory();

@@ -1,5 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 export default {
 
@@ -10,11 +16,11 @@ export default {
 			filename: './database/test.sqlite3'
 		},
 		migrations: {
-			directory: new URL('/database/migrations',import.meta.url),
+			directory: __dirname + '/database/migrations',
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory: new URL('/database/seeds/test',import.meta.url)
+			directory: __dirname + '/database/seeds/test'
 		}
 
 	},
@@ -33,11 +39,11 @@ export default {
 			max: 10
 		},
 		migrations: {
-			directory:  new URL('/database/migrations',import.meta.url),
+			directory: __dirname + '/database/migrations',
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory:  new URL('/database/seeds',import.meta.url)
+			directory:  __dirname + '/database/seeds'
 		}
 	},
 
@@ -55,11 +61,11 @@ export default {
 			max: 10
 		},
 		migrations: {
-			directory:  new URL('/database/migrations',import.meta.url),
+			directory:  __dirname + '/database/migrations',
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory:  new URL('/database/seeds',import.meta.url)
+			directory:  __dirname + '/database/seeds'
 		}
 	},
 

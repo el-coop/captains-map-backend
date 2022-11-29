@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import authMiddleware from '../../../../App/Http/Middleware/AuthMiddleware';
+import authMiddleware from '../../../../App/Http/Middleware/AuthMiddleware.js';
 
 test.afterEach.always('Restore sinon', t => {
 	sinon.restore();

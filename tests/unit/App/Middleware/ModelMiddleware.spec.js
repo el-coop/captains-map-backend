@@ -1,11 +1,11 @@
 import test from 'ava';
 import sinon from 'sinon';
-import modelMiddleware from '../../../../App/Http/Middleware/ModelMiddleware';
-import knex from "../../../../database/knex";
-import MarkerFactory from "../../../../database/factories/MarkerFactory";
-import InjectUserMiddleware from "../../../../App/Http/Middleware/InjectUserMiddleware";
+import modelMiddleware from '../../../../App/Http/Middleware/ModelMiddleware.js';
+import knex from "../../../../database/knex.js";
+import MarkerFactory from "../../../../database/factories/MarkerFactory.js";
+import InjectUserMiddleware from "../../../../App/Http/Middleware/InjectUserMiddleware.js";
 import express from "express";
-import User from "../../../../App/Models/User";
+import User from "../../../../App/Models/User.js";
 
 let res;
 let next;

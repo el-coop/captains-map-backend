@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import Http from '../../../../App/Services/HttpService';
-import VirtualEarthGeocoder from '../../../../App/Services/VirtualEarthGeocoder';
+import Http from '../../../../App/Services/HttpService.js';
+import VirtualEarthGeocoder from '../../../../App/Services/VirtualEarthGeocoder.js';
 
 
 const data = {

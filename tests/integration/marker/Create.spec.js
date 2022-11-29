@@ -1,18 +1,23 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
 import request from 'supertest';
-import helpers from '../../Helpers';
-import Marker from '../../../App/Models/Marker';
-import Media from '../../../App/Models/Media';
+import helpers from '../../Helpers.js';
+import Marker from '../../../App/Models/Marker.js';
+import Media from '../../../App/Models/Media.js';
 import path from 'path';
 import fs from 'fs';
 import sinon from "sinon";
 import webpush from "web-push";
-import cache from "../../../App/Services/CacheService";
-import FollowerFactory from "../../../database/factories/FollowerFactory";
-import StoryFactory from "../../../database/factories/StoryFactory";
-import errorLogger from '../../../App/Services/ErrorLogger';
+import cache from "../../../App/Services/CacheService.js";
+import FollowerFactory from "../../../database/factories/FollowerFactory.js";
+import StoryFactory from "../../../database/factories/StoryFactory.js";
+import errorLogger from '../../../App/Services/ErrorLogger.js';
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 test.beforeEach(async () => {

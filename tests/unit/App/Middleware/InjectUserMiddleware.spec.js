@@ -1,9 +1,9 @@
 import test from 'ava';
 import sinon from 'sinon';
-import InjectUserMiddleware from '../../../../App/Http/Middleware/InjectUserMiddleware';
-import JwtService from '../../../../App/Services/JwtService';
-import knex from "../../../../database/knex";
-import User from "../../../../App/Models/User";
+import InjectUserMiddleware from '../../../../App/Http/Middleware/InjectUserMiddleware.js';
+import JwtService from '../../../../App/Services/JwtService.js';
+import knex from "../../../../database/knex.js";
+import User from "../../../../App/Models/User.js";
 import express from "express";
 
 const injectUserMiddleware = new InjectUserMiddleware(express.Router());

@@ -1,7 +1,8 @@
 import test from 'ava';
 import sinon from 'sinon';
-import { boot } from '../../../../App/Http/Kernel';
+import kernel from '../../../../App/Http/Kernel.js';
 
+const boot = kernel.boot
 let kernelSpec;
 let app;
 

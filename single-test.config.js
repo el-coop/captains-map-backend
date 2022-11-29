@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/marker/Create.spec.js"
+		"tests/**/HttpService.spec.js"
 	]
 }

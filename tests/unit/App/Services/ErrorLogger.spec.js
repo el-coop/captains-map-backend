@@ -1,6 +1,6 @@
 import test from 'ava';
-import http from '../../../../App/Services/HttpService';
-import errorLogger from '../../../../App/Services/ErrorLogger';
+import http from '../../../../App/Services/HttpService.js';
+import errorLogger from '../../../../App/Services/ErrorLogger.js';
 import sinon from "sinon";
 
 

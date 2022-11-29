@@ -1,4 +1,4 @@
-module.exports = class {
+export default class {
 	model(data) {
 		throw new Error('Model is undefined');
 	}

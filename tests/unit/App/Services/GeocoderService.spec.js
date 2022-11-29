@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import GeocoderService from '../../../../App/Services/GeocoderService';
-import Cache from '../../../../App/Services/CacheService';
+import GeocoderService from '../../../../App/Services/GeocoderService.js';
+import Cache from '../../../../App/Services/CacheService.js';
 
 test.beforeEach(t => {
 	sinon.stub(GeocoderService.geocoders[0], 'geocode').callsFake(() => {

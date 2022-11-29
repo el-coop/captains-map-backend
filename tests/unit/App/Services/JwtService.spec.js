@@ -1,5 +1,5 @@
 import test from 'ava';
-import JwtService from '../../../../App/Services/JwtService';
+import JwtService from '../../../../App/Services/JwtService.js';
 
 
 test('Generates a valid jwt token', t => {
