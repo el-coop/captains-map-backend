@@ -1,6 +1,7 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-module.exports = {
+export default {
 
 	test: {
 		client: 'sqlite3',
@@ -9,11 +10,11 @@ module.exports = {
 			filename: './database/test.sqlite3'
 		},
 		migrations: {
-			directory: __dirname + '/database/migrations',
+			directory: new URL('/database/migrations',import.meta.url),
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory: __dirname + '/database/seeds/test'
+			directory: new URL('/database/seeds/test',import.meta.url)
 		}
 
 	},
@@ -32,11 +33,11 @@ module.exports = {
 			max: 10
 		},
 		migrations: {
-			directory: __dirname + '/database/migrations',
+			directory:  new URL('/database/migrations',import.meta.url),
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory: __dirname + '/database/seeds'
+			directory:  new URL('/database/seeds',import.meta.url)
 		}
 	},
 
@@ -54,11 +55,11 @@ module.exports = {
 			max: 10
 		},
 		migrations: {
-			directory: __dirname + '/database/migrations',
+			directory:  new URL('/database/migrations',import.meta.url),
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory: __dirname + '/database/seeds'
+			directory:  new URL('/database/seeds',import.meta.url)
 		}
 	},
 

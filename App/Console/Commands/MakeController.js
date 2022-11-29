@@ -1,5 +1,5 @@
-const MakeBase = require('./BaseClasses/MakeBase');
-const path = require('path');
+import MakeBase from './BaseClasses/MakeBase.js';
+import path from 'path';
 
 class MakeController extends MakeBase {
 	constructor() {
@@ -12,4 +12,4 @@ class MakeController extends MakeBase {
 MakeController.signature = "make:controller <name>";
 MakeController.description = "Create a controller";
 
-module.exports = MakeController;
+export default MakeController;

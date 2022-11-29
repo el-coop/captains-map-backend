@@ -1,4 +1,4 @@
-const Http = require('./HttpService');
+import Http from './HttpService.js';
 
 const key = process.env.BING_ACCESS_TOKEN;
 const endpoint = 'https://dev.virtualearth.net/REST/v1/Locations';
@@ -54,4 +54,4 @@ class VirtualEarthGeocoder {
 	}
 }
 
-module.exports = new VirtualEarthGeocoder();
+export default new VirtualEarthGeocoder();

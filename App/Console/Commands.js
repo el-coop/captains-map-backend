@@ -1,7 +1,11 @@
-const program = require('commander');
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config();
+import program from 'commander';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 class Commands {
 	constructor() {
@@ -40,4 +44,4 @@ class Commands {
 	}
 }
 
-module.exports = new Commands(program);
+export default new Commands(program);

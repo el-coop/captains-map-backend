@@ -1,7 +1,7 @@
-const DataError = require('../../Errors/DataError');
-const {check, validationResult} = require('express-validator');
-const NodeClam = require('clamscan');
-const fs = require('fs');
+import DataError from '../../Errors/DataError.js';
+import {check, validationResult} from 'express-validator';
+import NodeClam from 'clamscan';
+import fs from 'fs';
 
 class Validator {
 	validate(rules) {
@@ -168,4 +168,4 @@ class Validator {
 	}
 }
 
-module.exports = new Validator;
+export default new Validator;

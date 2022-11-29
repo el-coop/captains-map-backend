@@ -1,5 +1,5 @@
-const User = require('../../Models/User');
-const Cache = require('../../Services/CacheService');
+import User from'../../Models/User.js';
+import Cache from'../../Services/CacheService.js';
 
 class SearchController {
 	async users(req, res) {
@@ -21,4 +21,4 @@ class SearchController {
 }
 
 
-module.exports = new SearchController();
+export default new SearchController();

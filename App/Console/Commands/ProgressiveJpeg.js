@@ -1,7 +1,7 @@
-const chalk = require('chalk');
-const path = require('path');
-const fs = require('fs');
-const sharp = require('sharp');
+import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
+import sharp from 'sharp';
 
 class ProgressiveJpeg {
 	constructor() {
@@ -44,4 +44,4 @@ class ProgressiveJpeg {
 ProgressiveJpeg.signature = "jpeg:convert";
 ProgressiveJpeg.description = "Converts all jpegs to progressive jpegs";
 
-module.exports = ProgressiveJpeg;
+export default ProgressiveJpeg;

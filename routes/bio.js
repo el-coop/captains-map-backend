@@ -1,10 +1,11 @@
-const router = require('express').Router();
-const validation = require('../App/Http/Middleware/ValidationMiddleware');
-const upload = require('../App/Http/Middleware/UploadMiddleware');
-const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
-const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
-const BioController = require('../App/Http/Controllers/BioController');
+import express from 'express';
+import validation from'../App/Http/Middleware/ValidationMiddleware.js';
+import upload from'../App/Http/Middleware/UploadMiddleware.js';
+import authMiddleware from'../App/Http/Middleware/AuthMiddleware.js';
+import modelMiddleware from'../App/Http/Middleware/ModelMiddleware.js';
+import BioController from'../App/Http/Controllers/BioController.js';
 
+const router = express.Router();
 
 router.get('/:user', modelMiddleware.inject({
 	User: 'username'
@@ -19,4 +20,4 @@ router.post('/', [
 	}),
 ], BioController.update.bind(BioController));
 
-module.exports = router;
+export default router;

@@ -1,6 +1,8 @@
-const Cache = require('../../Services/CacheService');
-const fs = require('fs');
-const path = require('path');
+import Cache from '../../Services/CacheService.js';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const getUserBio = Symbol('getUserBio');
 const formatBio = Symbol('formatBio');
@@ -100,4 +102,4 @@ class BioController {
 }
 
 
-module.exports = new BioController();
+export default new BioController();

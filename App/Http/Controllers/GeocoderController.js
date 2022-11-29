@@ -1,4 +1,4 @@
-const GeocoderService = require('../../Services/GeocoderService');
+import GeocoderService from '../../Services/GeocoderService.js';
 
 class GeocoderController {
 	async geocode(req, res) {
@@ -19,4 +19,4 @@ class GeocoderController {
 	}
 }
 
-module.exports = new GeocoderController();
+export default new GeocoderController();

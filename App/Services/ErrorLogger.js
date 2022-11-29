@@ -1,4 +1,4 @@
-const http = require('./HttpService');
+import http from './HttpService.js';
 
 const logUrl = process.env.ERROR_LOGGING_URL;
 const key = process.env.ERROR_LOGGING_KEY;
@@ -79,4 +79,4 @@ class ErrorLogger {
 	}
 }
 
-module.exports = new ErrorLogger;
+export default new ErrorLogger;

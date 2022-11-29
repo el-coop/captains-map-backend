@@ -1,4 +1,6 @@
 const environment = process.env.APP_ENV || 'development';
-const config = require('../knexfile.js')[environment];
+import knexFile from '../knexfile.js';
+import knex from 'knex';
+const config = knexFile[environment];
 
-module.exports = require('knex')(config);
+export default knex(config);

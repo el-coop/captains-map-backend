@@ -9,6 +9,7 @@
     "test:unit": "ava --config=unit-tests.config.js --verbose --serial",
     "test:integration": "ava --config=integration-tests.config.js --verbose --serial"
   },
+  "type": "module",
   "dependencies": {
     "axios": "^1.1.3",
     "bookshelf": "^1.2.0",

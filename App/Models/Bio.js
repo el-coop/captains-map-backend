@@ -1,6 +1,6 @@
-const Bookshelf = require('./bookshelf');
+import Bookshelf from './bookshelf.js';
 
-require('./User');
+import './User.js';
 
 const Bio = Bookshelf.Model.extend({
 	tableName: 'bios',
@@ -10,4 +10,4 @@ const Bio = Bookshelf.Model.extend({
 	}
 });
 
-module.exports = Bookshelf.model('Bio', Bio);
+export default Bookshelf.model('Bio', Bio);

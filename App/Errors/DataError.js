@@ -1,6 +1,6 @@
-const BaseError = require('./BaseError');
+import BaseError from './BaseError.js';
 
-module.exports = class DataError extends BaseError {
+export default class DataError extends BaseError {
 	constructor(message, statusCode, data, name) {
 		super(message, statusCode, name);
 		this.data = data;

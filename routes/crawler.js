@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
-const CrawlerController = require('../App/Http/Controllers/CrawlerController');
+import modelMiddleware from'../App/Http/Middleware/ModelMiddleware.js';
+import CrawlerController from'../App/Http/Controllers/CrawlerController.js';
 
 router.get('/:user?/:marker?', [
 	modelMiddleware.inject({
@@ -9,4 +9,4 @@ router.get('/:user?/:marker?', [
 	})
 ], CrawlerController.index);
 
-module.exports = router;
+export default router;

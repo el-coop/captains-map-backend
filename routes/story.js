@@ -1,8 +1,10 @@
-const router = require('express').Router();
-const StoryController = require('../App/Http/Controllers/StoryController');
-const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
-const validation = require('../App/Http/Middleware/ValidationMiddleware');
-const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
+import express from 'express';
+import StoryController from '../App/Http/Controllers/StoryController.js';
+import authMiddleware from '../App/Http/Middleware/AuthMiddleware.js';
+import validation from '../App/Http/Middleware/ValidationMiddleware.js';
+import modelMiddleware from '../App/Http/Middleware/ModelMiddleware.js';
+
+const router = express.Router();
 
 router.get('/:user/:story', [
 	modelMiddleware.inject({
@@ -34,4 +36,4 @@ router.delete('/:story', [
 	modelMiddleware.valdiateOwnership('story')
 ], StoryController.destroy.bind(StoryController));
 
-module.exports = router;
+export default router;

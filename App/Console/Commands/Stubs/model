@@ -1,8 +1,8 @@
-const Bookshelf = require('./bookshelf');
+import Bookshelf from './bookshelf.js';
 
 const {{name}} = Bookshelf.Model.extend({
 	tableName: '{{name}}s',
 	hasTimestamps: true,
 });
 
-module.exports = Bookshelf.model('{{name}}', {{name}});
+export default Bookshelf.model('{{name}}', {{name}});

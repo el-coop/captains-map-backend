@@ -1,4 +1,4 @@
-const BaseMiddleware = require('./BaseMiddleware');
+import BaseMiddleware from './BaseMiddleware.js';
 
 class {{name}} extends BaseMiddleware {
 	constructor(router) {
@@ -10,4 +10,4 @@ class {{name}} extends BaseMiddleware {
 	}
 }
 
-module.exports = {{name}};
+export default {{name}};

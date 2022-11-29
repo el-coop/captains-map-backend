@@ -36,4 +36,4 @@ class CrawlerController {
 }
 
 
-module.exports = new CrawlerController();
+export default new CrawlerController();

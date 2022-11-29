@@ -1,10 +1,10 @@
-const Bookshelf = require('./bookshelf');
-const jwtService = require('../Services/JwtService');
+import Bookshelf from './bookshelf.js';
+import jwtService from '../Services/JwtService.js';
 
-require('./Marker');
-require('./Bio');
-require('./Follower');
-require('./Story');
+import './Marker.js';
+import './Bio.js';
+import './Follower.js';
+import './Story.js';
 
 const User = Bookshelf.Model.extend({
 	tableName: 'users',
@@ -34,4 +34,4 @@ const User = Bookshelf.Model.extend({
 	}
 });
 
-module.exports = Bookshelf.model('User', User);
+export default Bookshelf.model('User', User);

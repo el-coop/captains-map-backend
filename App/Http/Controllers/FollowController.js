@@ -1,5 +1,5 @@
-const Follower = require('../../Models/Follower');
-const Cache = require('../../Services/CacheService');
+import Follower from '../../Models/Follower.js';
+import Cache from '../../Services/CacheService.js';
 
 const follow = Symbol('follow');
 
@@ -71,4 +71,4 @@ class FollowController {
 }
 
 
-module.exports = new FollowController();
+export default new FollowController();

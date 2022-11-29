@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 class HttpService {
 	async get(url, headers = {}) {
@@ -18,4 +18,4 @@ class HttpService {
 	}
 }
 
-module.exports = new HttpService();
+export default new HttpService();

@@ -1,9 +1,11 @@
-const errorLogger = require("../App/Services/ErrorLogger");
-const router = require('express').Router();
+import express from 'express';
+const router = express.Router();
+
+import errorLogger from"../App/Services/ErrorLogger.js";
 
 router.post('/', function (req, res) {
 	res.sendStatus(200);
 	errorLogger.clientLog(req);
 });
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const Http = require('./HttpService');
+import Http from'./HttpService.js';
 
 
 const endpoint = 'https://nominatim.openstreetmap.org/search';
@@ -80,4 +80,4 @@ class VirtualEarthGeocoder {
 	}
 }
 
-module.exports = new VirtualEarthGeocoder();
+export default new VirtualEarthGeocoder();

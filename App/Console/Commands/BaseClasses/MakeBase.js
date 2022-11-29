@@ -1,7 +1,10 @@
-const fs = require('fs');
-const chalk = require('chalk');
-const path = require('path');
-const exec = require('child_process').execSync;
+import fs from 'fs';
+import chalk from 'chalk';
+import path from 'path';
+import child_process from 'child_process';
+import url from 'url';
+const exec = child_process.execSync;
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 class MakeBase {
 	constructor() {
@@ -48,4 +51,4 @@ class MakeBase {
 	}
 }
 
-module.exports = MakeBase;
+export default MakeBase;

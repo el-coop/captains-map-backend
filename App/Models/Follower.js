@@ -1,4 +1,4 @@
-const Bookshelf = require('./bookshelf');
+import Bookshelf from './bookshelf.js';
 
 const Follower = Bookshelf.Model.extend({
 	tableName: 'followers',
@@ -23,4 +23,4 @@ const Follower = Bookshelf.Model.extend({
 	},
 });
 
-module.exports = Bookshelf.model('Follower', Follower);
+export default Bookshelf.model('Follower', Follower);

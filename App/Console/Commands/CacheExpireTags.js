@@ -1,7 +1,7 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
-const cache = require('../../Services/CacheService');
-const TaggedCache = require('../../Services/TaggedCacheService');
+import cache from '../../Services/CacheService.js';
+import TaggedCache from '../../Services/TaggedCacheService.js';
 
 class CacheExpireTags {
 	constructor() {
@@ -22,4 +22,4 @@ class CacheExpireTags {
 CacheExpireTags.signature = "cache:expireTags";
 CacheExpireTags.description = "Expires old tags from redis database";
 
-module.exports = CacheExpireTags;
+export default CacheExpireTags;

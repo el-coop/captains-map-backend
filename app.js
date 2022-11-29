@@ -1,10 +1,15 @@
-const express = require('express');
-require('express-async-errors');
-const nunjucks = require('nunjucks');
-require('dotenv').config();
-let app = express();
+import express from 'express';
+import 'express-async-errors';
+import nunjucks from 'nunjucks';
+import dotenv from 'dotenv';
 
-const kernel = require('./App/Http/Kernel').boot(app);
+import routes from './routes/index.js';
+
+dotenv.config();
+const app = express();
+
+import kernelModule from './App/Http/Kernel.js';
+const kernel = kernelModule.boot(app);
 
 app.set('port', process.env.PORT || 3000);
 nunjucks.configure('views', {
@@ -14,8 +19,9 @@ nunjucks.configure('views', {
 
 kernel.registerPreMiddleware();
 
-app.use('/api', require('./routes/index'));
+
+app.use('/api', routes);
 
 kernel.registerPostMiddleware();
 
-module.exports = app;
+export default app;

@@ -1,7 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
-const mkdirp = require('mkdirp');
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
+import mkdirp from 'mkdirp';
+import url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 class ThumbnailController {
 	async generate(req, res) {
@@ -25,4 +27,4 @@ class ThumbnailController {
 }
 
 
-module.exports = new ThumbnailController();
+export default new ThumbnailController();

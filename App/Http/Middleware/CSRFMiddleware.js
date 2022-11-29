@@ -1,5 +1,6 @@
-const BaseMiddleware = require('./BaseMiddleware');
-const csrfProtection = require('csurf')({cookie: true});
+import BaseMiddleware from './BaseMiddleware.js';
+import csurf from 'csurf';
+const csrfProtection = csurf({cookie: true});
 
 class CSRFMiddleware extends BaseMiddleware {
 	constructor(router) {
@@ -17,4 +18,4 @@ class CSRFMiddleware extends BaseMiddleware {
 	}
 }
 
-module.exports = CSRFMiddleware;
+export default CSRFMiddleware;

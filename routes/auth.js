@@ -1,6 +1,7 @@
-const router = require('express').Router();
-const validation = require('../App/Http/Middleware/ValidationMiddleware');
-const AuthController = require('../App/Http/Controllers/AuthController');
+import express from 'express';
+const router = express.Router();
+import validation from '../App/Http/Middleware/ValidationMiddleware.js';
+import AuthController from '../App/Http/Controllers/AuthController.js';
 
 router.post('/register', validation.validate({
 	username: 'required',
@@ -16,4 +17,4 @@ router.post('/login', validation.validate({
 router.get('/logout', AuthController.logout);
 
 
-module.exports = router;
+export default router;

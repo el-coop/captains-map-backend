@@ -1,8 +1,10 @@
-const StoryRepository = require('../../Repositories/StoryRepository');
-const Cache = require('../../Services/CacheService');
-const Marker = require('../../Models/Marker');
-const fs = require('fs');
-const path = require('path');
+import StoryRepository from '../../Repositories/StoryRepository.js';
+import Cache from '../../Services/CacheService.js';
+import Marker from '../../Models/Marker.js';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const deleteMarker = Symbol('deleteMarker');
 
@@ -125,4 +127,4 @@ class StoryController {
 	}
 }
 
-module.exports = new StoryController();
+export default new StoryController();

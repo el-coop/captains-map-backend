@@ -1,8 +1,8 @@
-const chalk = require('chalk');
-const path = require('path');
-const fs = require('fs');
-const Bio = require('../../Models/Bio');
-const Media = require('../../Models/Media');
+import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
+import Bio from '../../Models/Bio.js';
+import Media from '../../Models/Media.js';
 
 
 class DeleteUnusedImages {
@@ -60,4 +60,4 @@ class DeleteUnusedImages {
 DeleteUnusedImages.signature = "images:clearUnused";
 DeleteUnusedImages.description = "Deletes all unused images";
 
-module.exports = DeleteUnusedImages;
+export default DeleteUnusedImages;

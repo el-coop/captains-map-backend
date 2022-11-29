@@ -1,5 +1,5 @@
-const MakeBase = require('./BaseClasses/MakeBase');
-const path = require('path');
+import MakeBase from './BaseClasses/MakeBase.js';
+import path from 'path';
 
 class MakeModel extends MakeBase {
 	constructor() {
@@ -12,4 +12,4 @@ class MakeModel extends MakeBase {
 MakeModel.signature = "make:model <name>";
 MakeModel.description = "Create a model";
 
-module.exports = MakeModel;
+export default MakeModel;

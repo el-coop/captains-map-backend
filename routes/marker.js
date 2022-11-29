@@ -1,10 +1,12 @@
-const express = require('express');
+import express from 'express';
+import authMiddleware from '../App/Http/Middleware/AuthMiddleware.js';
+import upload from '../App/Http/Middleware/UploadMiddleware.js';
+import validation from '../App/Http/Middleware/ValidationMiddleware.js';
+import modelMiddleware from '../App/Http/Middleware/ModelMiddleware.js';
+import MarkerController from '../App/Http/Controllers/MarkerController.js';
+
 const router = express.Router();
-const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
-const upload = require('../App/Http/Middleware/UploadMiddleware');
-const validation = require('../App/Http/Middleware/ValidationMiddleware');
-const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
-const MarkerController = require('../App/Http/Controllers/MarkerController');
+
 
 router.get('/', MarkerController.index.bind(MarkerController));
 
@@ -32,7 +34,7 @@ router.post('/create/:story?', [
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
 		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\\/\\/www\\.instagram\\.com\\/p\\/\\w*\\/.*'],
-		'media.files': ['requiredIf:media.type,image,file','clamav']
+		'media.files': ['requiredIf:media.type,image,file', 'clamav']
 	}),
 ], MarkerController.create.bind(MarkerController));
 
@@ -42,4 +44,4 @@ router.delete('/:marker', [
 	modelMiddleware.valdiateOwnership('marker')
 ], MarkerController.delete.bind(MarkerController));
 
-module.exports = router;
+export default router;
