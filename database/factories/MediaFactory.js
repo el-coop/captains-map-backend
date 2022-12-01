@@ -1,6 +1,6 @@
-const faker = require('faker');
-const Media = require('../../App/Models/Media');
-const BaseFactory = require('./BaseFactory');
+import faker from 'faker';
+import Media from '../../App/Models/Media.js';
+import BaseFactory from './BaseFactory.js';
 
 class MediaFactory extends BaseFactory {
 	model() {
@@ -16,4 +16,4 @@ class MediaFactory extends BaseFactory {
 	}
 };
 
-module.exports = new MediaFactory();
+export default new MediaFactory();

@@ -1,9 +1,9 @@
 import test from 'ava';
-import app from '../../app';
+import app from '../../app.js';
 import request from 'supertest';
-import errorLogger from '../../App/Services/ErrorLogger';
+import errorLogger from '../../App/Services/ErrorLogger.js';
 import sinon from 'sinon';
-import knex from "../../database/knex";
+import knex from "../../database/knex.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

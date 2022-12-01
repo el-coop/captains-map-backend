@@ -2,8 +2,12 @@ import multer from 'multer';
 import crypto from 'crypto';
 import path from 'path';
 import mime from 'mime';
-import url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import SharpStorage from '../../Services/SharpStorage.js';
 
 const storages = {};

@@ -1,8 +1,10 @@
 'use strict';
 
 import webPush from 'web-push';
-import url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 webPush.setVapidDetails(
 	'https://map.elcoop.io',

@@ -1,8 +1,14 @@
 import test from 'ava';
-import app from '../../../app';
+import app from '../../../app.js';
 import request from 'supertest';
 import path from 'path';
 import fs from 'fs';
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const src = path.resolve(__dirname, '../../demo.jpg');
 

@@ -1,7 +1,9 @@
 import path from 'path';
 import dotenv from 'dotenv';
-import url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config({
 	path: path.resolve(__dirname, '.env.test')

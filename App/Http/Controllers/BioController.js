@@ -1,8 +1,10 @@
 import Cache from '../../Services/CacheService.js';
 import fs from 'fs';
 import path from 'path';
-import url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const getUserBio = Symbol('getUserBio');
 const formatBio = Symbol('formatBio');

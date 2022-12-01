@@ -1,11 +1,13 @@
 import program from 'commander';
 import fs from 'fs';
 import path from 'path';
-import url from 'url';
+import {fileURLToPath} from 'url';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class Commands {
 	constructor() {

@@ -1,12 +1,12 @@
 import test from 'ava';
 import sinon from 'sinon';
-import knex from "../../database/knex";
+import knex from "../../database/knex.js";
 import request from "supertest";
-import app from "../../app";
-import cache from "../../App/Services/CacheService";
-import UserFactory from "../../database/factories/UserFactory";
-import FollowFactory from "../../database/factories/FollowerFactory";
-import Follower from "../../App/Models/Follower";
+import app from "../../app.js";
+import cache from "../../App/Services/CacheService.js";
+import UserFactory from "../../database/factories/UserFactory.js";
+import FollowFactory from "../../database/factories/FollowerFactory.js";
+import Follower from "../../App/Models/Follower.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

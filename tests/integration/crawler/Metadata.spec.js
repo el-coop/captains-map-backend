@@ -1,9 +1,9 @@
 import test from 'ava';
-import app from '../../../app';
+import app from '../../../app.js';
 import request from 'supertest';
-import knex from "../../../database/knex";
-import MarkerFactory from "../../../database/factories/MarkerFactory";
-import MediaFactory from "../../../database/factories/MediaFactory";
+import knex from "../../../database/knex.js";
+import MarkerFactory from "../../../database/factories/MarkerFactory.js";
+import MediaFactory from "../../../database/factories/MediaFactory.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

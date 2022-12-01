@@ -1,10 +1,10 @@
 import test from 'ava';
-import app from '../../app';
+import app from '../../app.js';
 import request from 'supertest';
-import GeocoderService from '../../App/Services/GeocoderService';
+import GeocoderService from '../../App/Services/GeocoderService.js';
 import sinon from 'sinon';
-import knex from "../../database/knex";
-import helpers from "../Helpers";
+import knex from "../../database/knex.js";
+import helpers from "../Helpers.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

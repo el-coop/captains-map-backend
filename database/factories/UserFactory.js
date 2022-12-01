@@ -1,6 +1,6 @@
-const faker = require('faker');
-const User = require('../../App/Models/User');
-const BaseFactory = require('./BaseFactory');
+import faker from 'faker';
+import User from '../../App/Models/User.js';
+import BaseFactory from './BaseFactory.js';
 
 class UserFactory extends BaseFactory {
 	model() {
@@ -16,4 +16,4 @@ class UserFactory extends BaseFactory {
 	}
 };
 
-module.exports = new UserFactory();
+export default new UserFactory();

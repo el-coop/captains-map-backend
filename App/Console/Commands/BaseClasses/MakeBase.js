@@ -2,10 +2,12 @@ import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
 import child_process from 'child_process';
-import url from 'url';
-const exec = child_process.execSync;
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import {fileURLToPath} from 'url';
 
+const exec = child_process.execSync;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 class MakeBase {
 	constructor() {
 		this.path = '';

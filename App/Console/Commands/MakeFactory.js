@@ -2,8 +2,10 @@ import MakeBase from './BaseClasses/MakeBase.js';
 import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs';
-import url from 'url';
-const __dirname = url.fileURLToPath(new RL('.', import.meta.url));
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class MakeFactory extends MakeBase {
 	constructor() {

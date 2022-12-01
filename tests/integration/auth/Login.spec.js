@@ -1,10 +1,10 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
 import sinon from 'sinon';
-import JwtService from '../../../App/Services/JwtService';
+import JwtService from '../../../App/Services/JwtService.js';
 import request from 'supertest';
-import User from "../../../App/Models/User";
+import User from "../../../App/Models/User.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

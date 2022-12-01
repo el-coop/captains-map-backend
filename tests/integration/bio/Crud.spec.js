@@ -2,17 +2,21 @@ import test from 'ava';
 import sinon from 'sinon';
 import path from 'path';
 import request from "supertest";
+import { fileURLToPath } from 'url';
 
-import app from "../../../app";
-import knex from "../../../database/knex";
-import BioFactory from '../../../database/factories/BioFactory';
-import StoryFactory from '../../../database/factories/StoryFactory';
-import MarkerFactory from '../../../database/factories/MarkerFactory';
-import MediaFactory from '../../../database/factories/MediaFactory';
-import helpers from "../../Helpers";
-import Bio from "../../../App/Models/Bio";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import app from "../../../app.js";
+import knex from "../../../database/knex.js";
+import BioFactory from '../../../database/factories/BioFactory.js';
+import StoryFactory from '../../../database/factories/StoryFactory.js';
+import MarkerFactory from '../../../database/factories/MarkerFactory.js';
+import MediaFactory from '../../../database/factories/MediaFactory.js';
+import helpers from "../../Helpers.js";
+import Bio from "../../../App/Models/Bio.js";
 import fs from 'fs';
-import cache from "../../../App/Services/CacheService";
+import cache from "../../../App/Services/CacheService.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();
@@ -316,6 +320,7 @@ test('It uploads photo and creates bio when non is present and deletes cached da
 		flush: flushStub
 	});
 
+
 	const response = await request(app).post('/api/bio')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.attach('image', path.resolve(__dirname, '../../demo.jpg'))
@@ -362,7 +367,7 @@ test('It saves only description when only description is given and deletes cache
 	t.true(forgetCacheStub.calledWith('bio:1'));
 });
 
-test('It updates only description when only description is given and flushes ild data', async t => {
+test('It updates only description when only description is given and flushes old data', async t => {
 	const forgetCacheStub = sinon.stub(cache, 'forget');
 
 	const oldBio = await BioFactory.create({

@@ -1,17 +1,22 @@
 import test from 'ava';
-import knex from "../../../database/knex";
-import app from '../../../app';
-import MarkerFactory from "../../../database/factories/MarkerFactory";
-import MediaFactory from "../../../database/factories/MediaFactory";
+import knex from "../../../database/knex.js";
+import app from '../../../app.js';
+import MarkerFactory from "../../../database/factories/MarkerFactory.js";
+import MediaFactory from "../../../database/factories/MediaFactory.js";
 import request from 'supertest';
-import UserFactory from "../../../database/factories/UserFactory";
-import helpers from "../../Helpers";
+import UserFactory from "../../../database/factories/UserFactory.js";
+import helpers from "../../Helpers.js";
 import fs from 'fs';
 import path from 'path';
-import Marker from "../../../App/Models/Marker";
-import cache from '../../../App/Services/CacheService';
+import Marker from "../../../App/Models/Marker.js";
+import cache from '../../../App/Services/CacheService.js';
 import sinon from "sinon";
-import Media from "../../../App/Models/Media";
+import Media from "../../../App/Models/Media.js";
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 test.beforeEach(async () => {

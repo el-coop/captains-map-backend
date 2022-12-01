@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/HttpService.spec.js"
+		"tests/**/marker/Thumbnail.spec.js"
 	]
 }
