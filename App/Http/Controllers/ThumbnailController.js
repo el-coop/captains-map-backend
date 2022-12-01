@@ -2,8 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import mkdirp from 'mkdirp';
-import url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import {fileURLToPath} from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class ThumbnailController {
 	async generate(req, res) {

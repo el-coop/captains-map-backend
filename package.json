@@ -5,9 +5,9 @@
   "scripts": {
     "start": "NODE_ENV=production node ./bin/www",
     "debug": "SET DEBUG=captains-map-backend:* && nodemon ./bin/www",
-    "test": "ava --config=single-test.config.js --verbose --serial",
-    "test:unit": "ava --config=unit-tests.config.js --verbose --serial",
-    "test:integration": "ava --config=integration-tests.config.js --verbose --serial"
+    "test": "ava --no-worker-threads --config=single-test.config.js --verbose --serial",
+    "test:unit": "ava --no-worker-threads --config=unit-tests.config.js --verbose --serial",
+    "test:integration": "ava --no-worker-threads --config=integration-tests.config.js --verbose --serial"
   },
   "type": "module",
   "dependencies": {
@@ -25,13 +25,13 @@
     "express-validator": "^6.14.2",
     "ioredis": "^5.2.4",
     "jsonwebtoken": "^8.5.1",
-    "knex": "1.0.7",
+    "knex": "^0.21.21",
     "mime": "^3.0.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "nunjucks": "^3.2.3",
-    "sharp": "0.29.3",
+    "sharp": "^0.31.2",
     "superagent": "^8.0.4",
     "web-push": "^3.5.0"
   },
