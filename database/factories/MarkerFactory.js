@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import Marker from '../../App/Models/Marker.js';
 import BaseFactory from './BaseFactory.js';
 
@@ -16,6 +16,6 @@ class MarkerFactory extends BaseFactory {
 			description: faker.lorem.sentence()
 		}
 	}
-};
+}
 
 export default new MarkerFactory();

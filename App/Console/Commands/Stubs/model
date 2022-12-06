@@ -3,6 +3,6 @@ import Bookshelf from './bookshelf.js';
 const {{name}} = Bookshelf.Model.extend({
 	tableName: '{{name}}s',
 	hasTimestamps: true,
-});
+})
 
 export default Bookshelf.model('{{name}}', {{name}});

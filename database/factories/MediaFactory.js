@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import Media from '../../App/Models/Media.js';
 import BaseFactory from './BaseFactory.js';
 
@@ -14,6 +14,6 @@ class MediaFactory extends BaseFactory {
 			path: 'BlfyEoTDKxi',
 		}
 	}
-};
+}
 
 export default new MediaFactory();

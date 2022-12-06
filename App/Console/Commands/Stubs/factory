@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import {{model}} from '../../App/models/{{model}}.js';
 import BaseFactory from './BaseFactory.js';
 
@@ -11,6 +11,6 @@ class {{name}} extends BaseFactory {
 		return {
 		}
 	}
-};
+}
 
 export default new {{name}}();

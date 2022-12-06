@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import Bio from '../../App/Models/Bio.js';
 import BaseFactory from './BaseFactory.js';
 
@@ -13,6 +13,6 @@ class BioFactory extends BaseFactory {
 			description: faker.lorem.sentence()
 		}
 	}
-};
+}
 
 export default new BioFactory();

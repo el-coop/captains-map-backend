@@ -40,7 +40,7 @@
     "ava": "^5.1.0",
     "chalk": "^5.1.2",
     "commander": "^9.4.1",
-    "faker": "^5.5.3",
+    "@faker-js/faker": "^7.6.0",
     "moxios": "^0.4.0",
     "sinon": "^14.0.2",
     "sqlite3": "^5.1.2",

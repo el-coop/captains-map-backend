@@ -26,4 +26,4 @@ export default class {
 		await object.save();
 		return object;
 	}
-};
+}

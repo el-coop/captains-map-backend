@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import User from '../../App/Models/User.js';
 import BaseFactory from './BaseFactory.js';
 
@@ -14,6 +14,6 @@ class UserFactory extends BaseFactory {
 			password: '123456'
 		}
 	}
-};
+}
 
 export default new UserFactory();
