@@ -1,5 +1,3 @@
-'use strict';
-
 import webPush from 'web-push';
 import {fileURLToPath} from 'url';
 
