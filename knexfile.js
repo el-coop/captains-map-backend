@@ -1,6 +1,13 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+export default {
 
 	test: {
 		client: 'sqlite3',
@@ -36,7 +43,7 @@ module.exports = {
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory: __dirname + '/database/seeds'
+			directory:  __dirname + '/database/seeds'
 		}
 	},
 
@@ -54,11 +61,11 @@ module.exports = {
 			max: 10
 		},
 		migrations: {
-			directory: __dirname + '/database/migrations',
+			directory:  __dirname + '/database/migrations',
 			tableName: 'migrations'
 		},
 		seeds: {
-			directory: __dirname + '/database/seeds'
+			directory:  __dirname + '/database/seeds'
 		}
 	},
 

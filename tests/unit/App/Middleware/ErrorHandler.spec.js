@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import ErrorHandlerMiddlware from '../../../../App/Http/Middleware/ErrorHandlerMiddleware';
-import errorLogger from '../../../../App/Services/ErrorLogger';
+import ErrorHandlerMiddlware from '../../../../App/Http/Middleware/ErrorHandlerMiddleware.js';
+import errorLogger from '../../../../App/Services/ErrorLogger.js';
 import express from 'express';
 import Multer from 'multer';
 

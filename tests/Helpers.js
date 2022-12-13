@@ -1,6 +1,6 @@
-const User = require('../App/Models/User');
-const request = require('supertest');
-const app = require('../app');
+import User from '../App/Models/User.js';
+import request from 'supertest';
+import app from '../app.js';
 
 class Helpers {
 	async authorizedCookie(username, password) {
@@ -17,4 +17,4 @@ class Helpers {
 	}
 }
 
-module.exports = new Helpers();
+export default new Helpers();

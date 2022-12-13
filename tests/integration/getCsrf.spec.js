@@ -1,6 +1,6 @@
 import test from 'ava';
 import request from "supertest";
-import app from "../../app";
+import app from "../../app.js";
 
 
 test.serial('It returns an empty response with a csrf header', async t => {

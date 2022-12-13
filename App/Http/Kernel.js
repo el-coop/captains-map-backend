@@ -1,11 +1,11 @@
-const BaseMiddleware = require('./Middleware/BaseMiddleware');
-const CSRFMiddleware = require('./Middleware/CSRFMiddleware');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const cookieEncrypter = require('cookie-encrypter');
-const logger = require('morgan');
-const ErrorHandlerMiddleware = require('./Middleware/ErrorHandlerMiddleware');
-const InjectUserMiddleware = require('./Middleware/InjectUserMiddleware');
+import BaseMiddleware from './Middleware/BaseMiddleware.js';
+import CSRFMiddleware from './Middleware/CSRFMiddleware.js';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import cookieEncrypter from 'cookie-encrypter';
+import logger from 'morgan';
+import ErrorHandlerMiddleware from './Middleware/ErrorHandlerMiddleware.js';
+import InjectUserMiddleware from './Middleware/InjectUserMiddleware.js';
 
 const preMiddleware = [
 	logger('dev'),
@@ -45,7 +45,7 @@ class Kernel {
 	}
 }
 
-module.exports = {
+export default {
 	boot(app) {
 		return new Kernel(app);
 	}

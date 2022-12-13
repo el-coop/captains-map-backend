@@ -1,6 +1,6 @@
-const jwtService = require('../../Services/JwtService');
-const User = require('../../Models/User');
-const BaseMiddleware = require('./BaseMiddleware');
+import jwtService from '../../Services/JwtService.js';
+import User from '../../Models/User.js';
+import BaseMiddleware from './BaseMiddleware.js';
 
 class InjectUserMiddleware extends BaseMiddleware {
 	constructor(router) {
@@ -32,4 +32,4 @@ class InjectUserMiddleware extends BaseMiddleware {
 	}
 }
 
-module.exports = InjectUserMiddleware;
+export default InjectUserMiddleware;

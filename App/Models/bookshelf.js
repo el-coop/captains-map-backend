@@ -1,8 +1,13 @@
-const knex = require('../../database/knex');
+import knex from '../../database/knex.js';
+import bookshelfModule from 'bookshelf';
 
-const bookshelf = require('bookshelf')(knex);
-bookshelf.plugin('bookshelf-virtuals-plugin');
+const bookshelf = bookshelfModule(knex);
 
-bookshelf.plugin(require('bookshelf-secure-password'));
+import bookshelfVirtualsPlugin from 'bookshelf-virtuals-plugin';
+bookshelf.plugin(bookshelfVirtualsPlugin);
 
-module.exports = bookshelf;
+import bookshelfSecurePassword from 'bookshelf-secure-password';
+
+bookshelf.plugin(bookshelfSecurePassword);
+
+export default bookshelf;

@@ -1,6 +1,6 @@
-const BaseMiddleware = require('./BaseMiddleware');
-const multer = require("multer");
-const ErrorLogger = require("../../Services/ErrorLogger");
+import BaseMiddleware from './BaseMiddleware.js';
+import multer from "multer";
+import ErrorLogger from "../../Services/ErrorLogger.js";
 
 class ErrorHandlerMiddleware extends BaseMiddleware {
 	handle(error, req, res, next) {
@@ -36,4 +36,4 @@ class ErrorHandlerMiddleware extends BaseMiddleware {
 	}
 }
 
-module.exports = ErrorHandlerMiddleware;
+export default ErrorHandlerMiddleware;

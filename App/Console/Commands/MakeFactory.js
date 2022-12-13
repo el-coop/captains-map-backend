@@ -1,7 +1,11 @@
-const MakeBase = require('./BaseClasses/MakeBase');
-const path = require('path');
-const chalk = require('chalk');
-const fs = require('fs');
+import MakeBase from './BaseClasses/MakeBase.js';
+import path from 'path';
+import chalk from 'chalk';
+import fs from 'fs';
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class MakeFactory extends MakeBase {
 	constructor() {
@@ -29,4 +33,4 @@ class MakeFactory extends MakeBase {
 MakeFactory.signature = "make:factory <name> <model>";
 MakeFactory.description = "Make a new factory";
 
-module.exports = MakeFactory;
+export default MakeFactory;

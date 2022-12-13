@@ -1,8 +1,12 @@
 import test from 'ava';
 import sinon from 'sinon';
-import validationMiddleware from '../../../../App/Http/Middleware/ValidationMiddleware';
+import validationMiddleware from '../../../../App/Http/Middleware/ValidationMiddleware.js';
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 test.afterEach.always('Restore sinon', t => {
 	sinon.restore();

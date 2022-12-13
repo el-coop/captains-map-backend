@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import Http from '../../../../App/Services/HttpService';
-import OpenStreetMapGeocoder from '../../../../App/Services/OpenStreetMapGeocoder';
+import Http from '../../../../App/Services/HttpService.js';
+import OpenStreetMapGeocoder from '../../../../App/Services/OpenStreetMapGeocoder.js';
 
 
 const data = [{

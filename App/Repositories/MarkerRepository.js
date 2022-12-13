@@ -1,4 +1,4 @@
-const Marker = require('../Models/Marker');
+import Marker from '../Models/Marker.js';
 const pageSize = parseInt(process.env.PAGE_SIZE);
 
 const buildConditions = Symbol('buildConditions');
@@ -164,4 +164,4 @@ class MarkerRepository {
 	}
 }
 
-module.exports = new MarkerRepository();
+export default new MarkerRepository();

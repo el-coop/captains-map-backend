@@ -1,9 +1,9 @@
-const fs = require('fs');
-const sharp = require('sharp');
-const mkdirp = require('mkdirp');
-const os = require('os');
-const path = require('path');
-const crypto = require('crypto');
+import fs from 'fs';
+import sharp from 'sharp';
+import mkdirp from 'mkdirp';
+import os from 'os';
+import path from 'path';
+import crypto from 'crypto';
 
 function getDestination(req, file, cb) {
 	cb(null, os.tmpdir())
@@ -68,4 +68,4 @@ class SharpStorage {
 }
 
 
-module.exports = SharpStorage;
+export default SharpStorage;

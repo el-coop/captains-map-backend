@@ -1,5 +1,5 @@
 import test from 'ava';
-import BaseError from '../../../../App/Errors/BaseError';
+import BaseError from '../../../../App/Errors/BaseError.js';
 
 test('It creates error object', async t => {
 	const error = new BaseError('message', 403, 'name');

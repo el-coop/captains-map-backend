@@ -66,4 +66,4 @@ class TaggedCacheService {
 
 }
 
-module.exports = TaggedCacheService;
+export default TaggedCacheService;

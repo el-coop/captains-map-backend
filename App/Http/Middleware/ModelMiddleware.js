@@ -1,8 +1,8 @@
-const Media = require('../../Models/Media');
-const Marker = require('../../Models/Marker');
-const User = require('../../Models/User');
-const Story = require('../../Models/Story');
-const BaseError = require('../../Errors/BaseError');
+import Media from '../../Models/Media.js';
+import Marker from '../../Models/Marker.js';
+import User from '../../Models/User.js';
+import Story from '../../Models/Story.js';
+import BaseError from '../../Errors/BaseError.js';
 
 const models = {
 	Marker,
@@ -45,4 +45,4 @@ class ModelMiddleware {
 	}
 }
 
-module.exports = new ModelMiddleware();
+export default new ModelMiddleware();

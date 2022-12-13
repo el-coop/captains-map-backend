@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
-const GeocodcerController = require('../App/Http/Controllers/GeocoderController');
+import authMiddleware from'../App/Http/Middleware/AuthMiddleware.js';
+import GeocodcerController from'../App/Http/Controllers/GeocoderController.js';
 
 router.get('/:query', authMiddleware, GeocodcerController.geocode);
 router.get('/:lat/:lng', authMiddleware, GeocodcerController.reverseGeocode);
 
-module.exports = router;
+export default router;

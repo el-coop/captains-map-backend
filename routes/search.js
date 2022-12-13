@@ -1,7 +1,8 @@
-const router = require('express').Router();
-const authMiddleware = require('../App/Http/Middleware/AuthMiddleware');
-const SearchController = require("../App/Http/Controllers/SearchController");
+import express from 'express';
+const router = express.Router();
+import authMiddleware from'../App/Http/Middleware/AuthMiddleware.js';
+import SearchController from"../App/Http/Controllers/SearchController.js";
 
 router.get('/users/:query', authMiddleware, SearchController.users);
 
-module.exports = router;
+export default router;

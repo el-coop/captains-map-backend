@@ -1,9 +1,9 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
-import MarkerFactory from '../../../database/factories/MarkerFactory';
-import StoryFactory from '../../../database/factories/StoryFactory';
-import cache from '../../../App/Services/CacheService';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
+import MarkerFactory from '../../../database/factories/MarkerFactory.js';
+import StoryFactory from '../../../database/factories/StoryFactory.js';
+import cache from '../../../App/Services/CacheService.js';
 import request from 'supertest';
 import sinon from 'sinon';
 

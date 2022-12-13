@@ -8,5 +8,5 @@ class BaseMiddleware {
 	};
 }
 
-module.exports = BaseMiddleware;
+export default BaseMiddleware;
 

@@ -1,5 +1,5 @@
-const Repository = require('./Repository');
-const Story = require('../Models/Story');
+import Repository from './Repository.js';
+import Story from '../Models/Story.js';
 
 class StoryRepository extends Repository {
 
@@ -7,4 +7,4 @@ class StoryRepository extends Repository {
 
 }
 
-module.exports = new StoryRepository();
+export default new StoryRepository();

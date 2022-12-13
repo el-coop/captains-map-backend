@@ -1,13 +1,13 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
 import request from 'supertest';
-import helpers from '../../Helpers';
-import Story from '../../../App/Models/Story';
+import helpers from '../../Helpers.js';
+import Story from '../../../App/Models/Story.js';
 import sinon from "sinon";
-import cache from "../../../App/Services/CacheService";
-import StoryFactory from "../../../database/factories/StoryFactory";
-import UserFactory from "../../../database/factories/UserFactory";
+import cache from "../../../App/Services/CacheService.js";
+import StoryFactory from "../../../database/factories/StoryFactory.js";
+import UserFactory from "../../../database/factories/UserFactory.js";
 
 let story;
 

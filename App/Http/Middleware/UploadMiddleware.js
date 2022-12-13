@@ -1,8 +1,14 @@
-const multer = require('multer');
-const crypto = require('crypto');
-const path = require('path');
-const mime = require('mime');
-const SharpStorage = require('../../Services/SharpStorage');
+import multer from 'multer';
+import crypto from 'crypto';
+import path from 'path';
+import mime from 'mime';
+
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import SharpStorage from '../../Services/SharpStorage.js';
 
 const storages = {};
 
@@ -45,7 +51,7 @@ function getImageFolder(path, width, height) {
 	return imageUpload;
 }
 
-module.exports = {
+export default {
 	image(fieldName, path, width = 1000, height = 800) {
 		const imageUpload = getImageFolder(path, width, height);
 		return imageUpload.single(fieldName);

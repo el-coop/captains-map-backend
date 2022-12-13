@@ -1,4 +1,4 @@
-const Bookshelf = require('./bookshelf');
+import Bookshelf from './bookshelf.js';
 
 const Media = Bookshelf.Model.extend({
 	tableName: 'medias',
@@ -10,4 +10,4 @@ const Media = Bookshelf.Model.extend({
 
 });
 
-module.exports = Bookshelf.model('Media', Media);
+export default Bookshelf.model('Media', Media);

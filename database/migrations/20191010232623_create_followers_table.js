@@ -1,4 +1,4 @@
-exports.up = function (knex) {
+export const up = function (knex) {
 	return knex.schema.createTable('followers', (table) => {
 		if(process.env.APP_ENV !== 'test'){
 			table.engine('InnoDB');
@@ -15,6 +15,6 @@ exports.up = function (knex) {
 	});
 };
 
-exports.down = function (knex) {
+export const down = function (knex) {
 	return knex.schema.dropTable('followers');
 };

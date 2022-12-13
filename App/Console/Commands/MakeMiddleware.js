@@ -1,5 +1,5 @@
-const MakeBase = require('./BaseClasses/MakeBase');
-const path = require('path');
+import MakeBase from './BaseClasses/MakeBase.js';
+import path from 'path';
 
 class MakeMiddleware extends MakeBase {
 	constructor() {
@@ -12,4 +12,4 @@ class MakeMiddleware extends MakeBase {
 MakeMiddleware.signature = "make:middleware <name>";
 MakeMiddleware.description = "Make a new global middleware";
 
-module.exports = MakeMiddleware;
+export default MakeMiddleware;

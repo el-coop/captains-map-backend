@@ -1,7 +1,7 @@
-const DataError = require('../../Errors/DataError');
-const {check, validationResult} = require('express-validator');
-const NodeClam = require('clamscan');
-const fs = require('fs');
+import DataError from '../../Errors/DataError.js';
+import {check, validationResult} from 'express-validator';
+import NodeClam from 'clamscan';
+import fs from 'fs';
 
 class Validator {
 	validate(rules) {
@@ -103,19 +103,19 @@ class Validator {
 				return Promise.resolve();
 			}
 			const clamscan = await new NodeClam().init({
-				remove_infected: true
+				removeInfected: true
 			});
 			let virus = false;
 			if (req.file) {
-				const response = await clamscan.is_infected(req.file);
-				if (response.is_infected) {
+				const response = await clamscan.isInfected(req.file);
+				if (response.isInfected) {
 					virus = true;
 				}
 			} else if (req.files) {
 				for (const file of req.files) {
-					const response = await clamscan.is_infected(file.path);
+					const response = await clamscan.isInfected(file.path);
 
-					if (response.is_infected) {
+					if (response.isInfected) {
 						virus = true;
 					}
 				}
@@ -168,4 +168,4 @@ class Validator {
 	}
 }
 
-module.exports = new Validator;
+export default new Validator;

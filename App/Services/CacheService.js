@@ -1,4 +1,4 @@
-const Redis = require('ioredis');
+import Redis from 'ioredis';
 const redis = new Redis({
 	port: process.env.CACHE_PORT,          // Redis port
 	host: process.env.CACHE_HOST,   // Redis host
@@ -13,7 +13,7 @@ redis.on('error', function (error) {
 	}
 });
 
-const TaggedCacheService = require('./TaggedCacheService');
+import TaggedCacheService from './TaggedCacheService.js';
 
 class Cache {
 
@@ -70,6 +70,12 @@ class Cache {
 		return true;
 	}
 
+
+	async flush() {
+		redis.flushall();
+		return true;
+	}
+
 	get status() {
 		return redis.status;
 	}
@@ -83,4 +89,4 @@ class Cache {
 	}
 }
 
-module.exports = new Cache();
+export default new Cache();

@@ -1,6 +1,6 @@
-const VirtualEarthGeocoder = require('./VirtualEarthGeocoder');
-const OpenStreetMapGeocoder = require('./OpenStreetMapGeocoder');
-const Cache = require('./CacheService');
+import VirtualEarthGeocoder from './VirtualEarthGeocoder.js';
+import OpenStreetMapGeocoder from './OpenStreetMapGeocoder.js';
+import Cache from './CacheService.js';
 
 class GeocoderService {
 
@@ -36,4 +36,4 @@ class GeocoderService {
 	}
 }
 
-module.exports = new GeocoderService();
+export default new GeocoderService();

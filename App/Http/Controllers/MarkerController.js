@@ -1,22 +1,25 @@
-'use strict';
+import webPush from 'web-push';
+import {fileURLToPath} from 'url';
 
-const webPush = require('web-push');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 webPush.setVapidDetails(
 	'https://map.elcoop.io',
 	process.env.VAPID_PUBLIC_KEY,
 	process.env.VAPID_PRIVATE_KEY
 );
 
-const Marker = require('../../Models/Marker');
-const Follower = require('../../Models/Follower');
-const Media = require('../../Models/Media');
-const http = require('../../Services/HttpService');
-const BaseError = require('../../Errors/BaseError');
-const fs = require('fs');
-const path = require('path');
-const Cache = require('../../Services/CacheService');
-const MarkerRepository = require('../../Repositories/MarkerRepository');
-const errorLogger = require('../../Services/ErrorLogger');
+import Marker from '../../Models/Marker.js';
+import Follower from '../../Models/Follower.js';
+import Media from '../../Models/Media.js';
+import http from '../../Services/HttpService.js';
+import BaseError from '../../Errors/BaseError.js';
+import fs from 'fs';
+import path from 'path';
+import Cache from '../../Services/CacheService.js';
+import MarkerRepository from '../../Repositories/MarkerRepository.js';
+import errorLogger from '../../Services/ErrorLogger.js';
 
 const generateQueryKey = Symbol('generateQueryKey');
 const notifyFollowers = Symbol('notifyFollowers');
@@ -256,4 +259,4 @@ class MarkersController {
 }
 
 
-module.exports = new MarkersController();
+export default new MarkersController();

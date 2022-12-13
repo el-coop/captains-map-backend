@@ -1,5 +1,5 @@
-const MakeBase = require('./BaseClasses/MakeBase');
-const path = require('path');
+import MakeBase from './BaseClasses/MakeBase.js';
+import path from 'path';
 
 class MakeCommand extends MakeBase {
 	constructor() {
@@ -12,4 +12,4 @@ class MakeCommand extends MakeBase {
 MakeCommand.signature = "make:command <name>";
 MakeCommand.description = "Make a new console command";
 
-module.exports = MakeCommand;
+export default MakeCommand;

@@ -1,8 +1,8 @@
 import test from 'ava';
-import MarkerRepository from '../../../../App/Repositories/MarkerRepository';
-import knex from "../../../../database/knex";
-import MarkerFactory from "../../../../database/factories/MarkerFactory";
-import StoryFactory from "../../../../database/factories/StoryFactory";
+import MarkerRepository from '../../../../App/Repositories/MarkerRepository.js';
+import knex from "../../../../database/knex.js";
+import MarkerFactory from "../../../../database/factories/MarkerFactory.js";
+import StoryFactory from "../../../../database/factories/StoryFactory.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

@@ -1,7 +1,7 @@
-const User = require('../../Models/User');
-const Cache = require('../../Services/CacheService');
+import User from'../../Models/User.js';
+import Cache from '../../Services/CacheService.js';
 
-const BaseError = require('../../Errors/BaseError');
+import BaseError from '../../Errors/BaseError.js';
 
 class AuthController {
 	async register(req, res) {
@@ -60,4 +60,4 @@ class AuthController {
 }
 
 
-module.exports = new AuthController();
+export default new AuthController();

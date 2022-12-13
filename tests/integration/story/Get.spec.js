@@ -1,13 +1,13 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
 import request from 'supertest';
-import helpers from '../../Helpers';
+import helpers from '../../Helpers.js';
 import sinon from "sinon";
-import StoryFactory from "../../../database/factories/StoryFactory";
-import MarkerFactory from "../../../database/factories/MarkerFactory";
-import MediaFactory from "../../../database/factories/MediaFactory";
-import UserFactory from "../../../database/factories/UserFactory";
+import StoryFactory from "../../../database/factories/StoryFactory.js";
+import MarkerFactory from "../../../database/factories/MarkerFactory.js";
+import MediaFactory from "../../../database/factories/MediaFactory.js";
+import UserFactory from "../../../database/factories/UserFactory.js";
 
 let story;
 let unpublishedStory;

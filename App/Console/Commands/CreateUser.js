@@ -1,6 +1,6 @@
-const chalk = require('chalk');
-const User = require('../../Models/User');
-const Cache = require('../../Services/CacheService');
+import chalk from 'chalk';
+import User from '../../Models/User.js';
+import Cache from '../../Services/CacheService.js';
 
 class CreateUser {
 	constructor() {
@@ -28,4 +28,4 @@ class CreateUser {
 CreateUser.signature = "create:user <name> <email> <password>";
 CreateUser.description = "description";
 
-module.exports = CreateUser;
+export default CreateUser;

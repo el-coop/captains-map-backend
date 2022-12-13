@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const ThumbnailController = require('../App/Http/Controllers/ThumbnailController');
+import ThumbnailController from '../App/Http/Controllers/ThumbnailController.js';
 
 router.use('/images', express.static('./public/images', {
 	immutable: true,
@@ -29,4 +29,4 @@ router.use('/bios', express.static('./public/bios', {
 
 router.get('/thumbnails/:filename', ThumbnailController.generate);
 
-module.exports = router;
+export default router;

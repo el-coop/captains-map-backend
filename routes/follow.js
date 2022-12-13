@@ -1,7 +1,8 @@
-const router = require('express').Router();
-const FollowController = require('../App/Http/Controllers/FollowController');
-const modelMiddleware = require('../App/Http/Middleware/ModelMiddleware');
-const validation = require('../App/Http/Middleware/ValidationMiddleware');
+import express from 'express';
+const router = express.Router();
+import FollowController from '../App/Http/Controllers/FollowController.js';
+import modelMiddleware from '../App/Http/Middleware/ModelMiddleware.js';
+import validation from '../App/Http/Middleware/ValidationMiddleware.js';
 
 router.get('/', FollowController.following);
 router.get('/key', FollowController.key);
@@ -14,4 +15,4 @@ router.post('/toggleFollow/:user', modelMiddleware.inject({
 }), FollowController.toggleFollow.bind(FollowController));
 
 
-module.exports = router;
+export default router;

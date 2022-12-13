@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import Cache from '../../../../App/Services/CacheService';
-import TaggedCacheService from '../../../../App/Services/TaggedCacheService';
+import Cache from '../../../../App/Services/CacheService.js';
+import TaggedCacheService from '../../../../App/Services/TaggedCacheService.js';
 
 test.afterEach.always(() => {
 	sinon.restore();

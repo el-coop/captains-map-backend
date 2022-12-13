@@ -1,4 +1,4 @@
-module.exports = class Repository {
+export default class Repository {
 
 	constructor() {
 		if (!this.constructor.model) {

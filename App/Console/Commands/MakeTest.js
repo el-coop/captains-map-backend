@@ -1,8 +1,11 @@
-const MakeBase = require('./BaseClasses/MakeBase');
-const chalk = require('chalk');
-const path = require('path');
-const fs = require('fs');
+import MakeBase from './BaseClasses/MakeBase.js';
+import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
+import {fileURLToPath} from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class MakeTest extends MakeBase {
 	constructor() {
@@ -40,4 +43,4 @@ MakeTest.options = {
 	'--unit': 'Generate a unit test'
 };
 
-module.exports = MakeTest;
+export default MakeTest;

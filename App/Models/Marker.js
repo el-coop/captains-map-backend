@@ -1,7 +1,7 @@
-let Bookshelf = require('./bookshelf');
+import Bookshelf from './bookshelf.js';
 
-require('./User');
-require('./Media');
+import './User.js';
+import './Media.js';
 
 let Marker = Bookshelf.Model.extend({
 	tableName: 'markers',
@@ -16,4 +16,4 @@ let Marker = Bookshelf.Model.extend({
 	}
 });
 
-module.exports = Bookshelf.model('Marker', Marker);
+export default Bookshelf.model('Marker', Marker);

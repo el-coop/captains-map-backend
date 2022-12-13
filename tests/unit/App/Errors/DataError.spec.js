@@ -1,5 +1,5 @@
 import test from 'ava';
-import DataError from '../../../../App/Errors/DataError';
+import DataError from '../../../../App/Errors/DataError.js';
 
 test('It creates error object', async t => {
 	const error = new DataError('message', 403, {data: 'test'}, 'name');

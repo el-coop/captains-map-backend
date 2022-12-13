@@ -1,6 +1,6 @@
-const faker = require('faker');
-const Marker = require('../../App/Models/Marker');
-const BaseFactory = require('./BaseFactory');
+import { faker } from '@faker-js/faker';
+import Marker from '../../App/Models/Marker.js';
+import BaseFactory from './BaseFactory.js';
 
 class MarkerFactory extends BaseFactory {
 	model() {
@@ -16,6 +16,6 @@ class MarkerFactory extends BaseFactory {
 			description: faker.lorem.sentence()
 		}
 	}
-};
+}
 
-module.exports = new MarkerFactory();
+export default new MarkerFactory();

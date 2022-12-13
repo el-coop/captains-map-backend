@@ -1,8 +1,8 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
 import request from 'supertest';
-import helpers from "../../Helpers";
+import helpers from "../../Helpers.js";
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

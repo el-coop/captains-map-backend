@@ -1,19 +1,24 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
 import request from 'supertest';
-import helpers from '../../Helpers';
-import Story from '../../../App/Models/Story';
+import helpers from '../../Helpers.js';
+import Story from '../../../App/Models/Story.js';
 import sinon from "sinon";
-import cache from "../../../App/Services/CacheService";
-import StoryFactory from "../../../database/factories/StoryFactory";
-import MarkerFactory from "../../../database/factories/MarkerFactory";
-import UserFactory from "../../../database/factories/UserFactory";
+import cache from "../../../App/Services/CacheService.js";
+import StoryFactory from "../../../database/factories/StoryFactory.js";
+import MarkerFactory from "../../../database/factories/MarkerFactory.js";
+import UserFactory from "../../../database/factories/UserFactory.js";
 import path from "path";
 import fs from "fs";
-import MediaFactory from "../../../database/factories/MediaFactory";
-import Marker from "../../../App/Models/Marker";
-import Media from "../../../App/Models/Media";
+import MediaFactory from "../../../database/factories/MediaFactory.js";
+import Marker from "../../../App/Models/Marker.js";
+import Media from "../../../App/Models/Media.js";
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let story;
 

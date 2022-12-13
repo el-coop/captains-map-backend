@@ -1,11 +1,11 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
-import MediaFactory from '../../../database/factories/MediaFactory';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
+import MediaFactory from '../../../database/factories/MediaFactory.js';
 import request from 'supertest';
 import sinon from 'sinon';
-import httpService from '../../../App/Services/HttpService';
-import Cache from '../../../App/Services/CacheService';
+import httpService from '../../../App/Services/HttpService.js';
+import Cache from '../../../App/Services/CacheService.js';
 
 test.beforeEach(async () => {
 	await knex.migrate.latest();

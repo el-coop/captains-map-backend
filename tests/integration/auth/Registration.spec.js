@@ -1,10 +1,10 @@
 import test from 'ava';
-import app from '../../../app';
-import knex from '../../../database/knex';
-import User from '../../../App/Models/User';
+import app from '../../../app.js';
+import knex from '../../../database/knex.js';
+import User from '../../../App/Models/User.js';
 import request from 'supertest';
 import sinon from "sinon";
-import cache from "../../../App/Services/CacheService";
+import cache from "../../../App/Services/CacheService.js";
 
 
 test.beforeEach(async () => {

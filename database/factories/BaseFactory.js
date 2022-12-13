@@ -1,4 +1,4 @@
-module.exports = class {
+export default class {
 	model(data) {
 		throw new Error('Model is undefined');
 	}
@@ -26,4 +26,4 @@ module.exports = class {
 		await object.save();
 		return object;
 	}
-};
+}

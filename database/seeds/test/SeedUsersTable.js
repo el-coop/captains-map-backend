@@ -1,6 +1,6 @@
-const User = require('../../../App/Models/User');
+import User from '../../../App/Models/User.js';
 
-exports.seed = async function (knex, Promise) {
+export const seed = async function (knex, Promise) {
 	// Deletes ALL existing entries
 	await knex('users').del();
 

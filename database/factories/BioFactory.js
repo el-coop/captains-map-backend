@@ -1,6 +1,6 @@
-const faker = require('faker');
-const Bio = require('../../App/Models/Bio');
-const BaseFactory = require('./BaseFactory');
+import { faker } from '@faker-js/faker';
+import Bio from '../../App/Models/Bio.js';
+import BaseFactory from './BaseFactory.js';
 
 class BioFactory extends BaseFactory {
 	model() {
@@ -13,6 +13,6 @@ class BioFactory extends BaseFactory {
 			description: faker.lorem.sentence()
 		}
 	}
-};
+}
 
-module.exports = new BioFactory();
+export default new BioFactory();
