@@ -12,6 +12,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^1.2.0",
+    "bcrypt": "^5.1.0",
     "bookshelf": "^1.2.0",
     "bookshelf-secure-password": "^5.0.0",
     "bookshelf-virtuals-plugin": "^1.0.0",
@@ -30,21 +31,26 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "nunjucks": "^3.2.3",
+    "sequelize": "^6.28.0",
     "sharp": "^0.31.2",
     "superagent": "^8.0.4",
     "web-push": "^3.5.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@vscode/sqlite3": "^5.1.2-vscode",
     "ava": "^5.1.0",
+    "babel-register": "^6.26.0",
     "chalk": "^5.1.2",
     "commander": "^9.4.1",
-    "@faker-js/faker": "^7.6.0",
     "moxios": "^0.4.0",
+    "sequelize-cli": "^6.5.2",
     "sinon": "^14.0.2",
     "sqlite3": "^5.1.2",
-    "supertest": "^6.3.1"
+    "supertest": "^6.3.1",
+    "umzug": "^3.2.1"
   },
   "ava": {
     "require": [

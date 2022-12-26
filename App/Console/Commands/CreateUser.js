@@ -11,8 +11,8 @@ class CreateUser {
 
 		try {
 			const user = new User();
-			user.set('username', name);
-			user.set('email', email);
+			user.username = name;
+			user.email = email;
 			user.set('password', password);
 			await user.save();
 			await Cache.tag(['user_search']).flush();
