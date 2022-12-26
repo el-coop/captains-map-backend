@@ -2,7 +2,8 @@ import test from 'ava';
 import sinon from 'sinon';
 import InjectUserMiddleware from '../../../../App/Http/Middleware/InjectUserMiddleware.js';
 import JwtService from '../../../../App/Services/JwtService.js';
-import knex from "../../../../database/knex.js";
+import migrator from '../../../Migrator.js';
+import seeder from '../../../Seeder.js';
 import User from "../../../../App/Models/User.js";
 import express from "express";
 
@@ -20,12 +21,13 @@ const res = {
 };
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down();
+	await seeder.down();
 	sinon.restore();
 });
 
@@ -47,7 +49,7 @@ test.serial('it throws error when cookie exists but the user doesnt verify', asy
 	const clearCookieSpy = sinon.spy(res, 'clearCookie');
 	const cookieSpy = sinon.spy(res, 'cookie');
 	sinon.stub(JwtService, 'verify').returns(false);
-	const user = await new User().fetch();
+	const user = await User.findOne();
 
 	const nextSpy = sinon.spy();
 	const req = {
@@ -67,7 +69,7 @@ test.serial('it throws error when cookie exists but the user doesnt verify', asy
 test.serial('it injects user when cookie is correct and doesnt refresh cookie', async t => {
 	const cookieSpy = sinon.spy(res, 'cookie');
 
-	const user = await new User().fetch();
+	const user = await User.findOne();
 
 	const nextSpy = sinon.spy();
 	const req = {
@@ -86,7 +88,7 @@ test.serial('it injects user when cookie is correct and doesnt refresh cookie', 
 test.serial('it extends users login duration when under 2 days', async t => {
 	const cookieSpy = sinon.spy(res, 'cookie');
 	const headerSpy = sinon.spy(res, 'header');
-	const user = await new User().fetch();
+	const user = await User.findOne();
 
 	const nextSpy = sinon.spy();
 	const req = {

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import {fileURLToPath} from "url";
 import path from "path";
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,9 +15,8 @@ export default {
 		storage: 'database/test.sqlite3',
 		migrations: __dirname + '/database/migrations',
 		logging: false,
-		seeds: {
-			directory: 'database/seeds/test'
-		}
+		seeds: __dirname + '/database/seeds/test'
+
 
 	},
 
@@ -32,10 +32,8 @@ export default {
 			min: 2,
 			max: 10
 		},
-		migrations: 'database/migrations',
-		seeds: {
-			directory: 'database/seeds'
-		}
+		migrations: __dirname + '/database/migrations',
+		seeds: __dirname + '/database/seeds'
 	},
 
 	production: {
@@ -50,10 +48,8 @@ export default {
 			min: 2,
 			max: 10
 		},
-		migrations: 'database/migrations',
-		seeds: {
-			directory: 'database/seeds'
-		}
+		migrations: __dirname + '/database/migrations',
+		seeds: __dirname + '/database/seeds'
 	},
 
 };

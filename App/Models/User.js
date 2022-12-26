@@ -1,6 +1,7 @@
 import {Model, DataTypes} from 'sequelize';
 import sequelize from "../../database/sequelize.js";
 import bcrypt from 'bcrypt';
+import jwtService from '../Services/JwtService.js';
 
 const saltRounds = 12;
 
@@ -11,6 +12,12 @@ async function hashPassword(user) {
 }
 
 class User extends Model {
+	generateJwt() {
+		return jwtService.generate({
+			id: this.id,
+			username: this.username
+		});
+	}
 }
 
 User.init({

@@ -17,3 +17,4 @@ export default new Sequelize(config.database || '', config.username || '', confi
 });
 
 export const migrationsPath = config.migrations;
+export const seedsPath = config.seeds;
