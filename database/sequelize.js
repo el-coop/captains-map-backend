@@ -1,6 +1,6 @@
 const environment = process.env.APP_ENV || 'development';
 import dbConfig from '../dbConfig.js';
-const config = dbConfig['test'];
+const config = dbConfig[environment];
 
 import { Sequelize } from 'sequelize';
 

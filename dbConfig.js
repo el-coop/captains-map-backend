@@ -1,5 +1,10 @@
 import dotenv from 'dotenv';
+import {fileURLToPath} from "url";
+import path from "path";
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default {
 
@@ -7,7 +12,7 @@ export default {
 		dialect: 'sqlite',
 		useNullAsDefault: true,
 		storage: 'database/test.sqlite3',
-		migrations: 'database/migrations',
+		migrations: __dirname + '/database/migrations',
 		logging: false,
 		seeds: {
 			directory: 'database/seeds/test'

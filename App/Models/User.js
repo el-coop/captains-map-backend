@@ -26,6 +26,7 @@ User.init({
 	modelName: 'User',
 	createdAt: 'created_at',
 	updatedAt: 'updated_at',
+	tableName: 'users'
 });
 
 export default User;
