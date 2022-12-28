@@ -19,6 +19,10 @@ class User extends Model {
 		});
 	}
 
+	async authenticate(password){
+		return await bcrypt.compare(password,this.password)
+	}
+
 	static associate(models) {
 		User.hasMany(models.Marker,{
 			foreignKey: 'user_id'

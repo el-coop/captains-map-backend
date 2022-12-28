@@ -25,11 +25,17 @@ class AuthController {
 	async login(req, res) {
 
 		try {
-			const user = await new User({
-				username: req.body.username
-			}).fetch();
+			const user = await User.findOne({
+				where: {
+					username: req.body.username
+				}
+			});
 
-			await user.authenticate(req.body.password);
+			const authenticated = await user.authenticate(req.body.password);
+
+			if(! authenticated){
+				throw new BaseError('Invalid Credentials');
+			}
 
 			const token = user.generateJwt();
 			res.status(200)
