@@ -20,7 +20,15 @@ class User extends Model {
 	}
 
 	static associate(models) {
-		User.hasMany(models.Marker);
+		User.hasMany(models.Marker,{
+			foreignKey: 'user_id'
+		});
+		User.hasMany(models.Story,{
+			foreignKey: 'user_id'
+		});
+		User.hasOne(models.Bio,{
+			foreignKey: 'user_id'
+		});
 	}
 
 }

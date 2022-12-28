@@ -13,7 +13,6 @@ export default new Umzug({
 	storage: 'sequelize',
 	storageOptions: {
 		sequelize: sequelize,
-		tableName: 'seeds'
 	}
 });
 

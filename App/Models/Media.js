@@ -1,13 +1,29 @@
-import Bookshelf from './bookshelf.js';
+import {Model, DataTypes} from 'sequelize';
+import sequelize from "../../database/sequelize.js";
 
-const Media = Bookshelf.Model.extend({
-	tableName: 'medias',
-	hasTimestamps: true,
-
-	marker() {
-		return this.belongsTo('Marker');
+class Media extends Model {
+	/**
+	 * Helper method for defining associations.
+	 * This method is not a part of Sequelize lifecycle.
+	 * The `models/index` file will call this method automatically.
+	 */
+	static associate(models) {
+		Media.belongsTo(models.Marker,{
+			foreignKey: 'marker_id'
+		})
 	}
+}
 
+Media.init({
+	marker_id: DataTypes.INTEGER,
+	type: DataTypes.STRING,
+	path: DataTypes.STRING
+}, {
+	sequelize,
+	modelName: 'Media',
+	createdAt: 'created_at',
+	updatedAt: 'updated_at',
+	tableName: 'medias'
 });
 
-export default Bookshelf.model('Media', Media);
+export default Media;

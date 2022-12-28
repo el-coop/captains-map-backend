@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import Story from '../../App/Models/Story.js';
 import BaseFactory from './BaseFactory.js';
 

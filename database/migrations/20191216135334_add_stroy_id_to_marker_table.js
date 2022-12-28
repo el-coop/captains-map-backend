@@ -6,21 +6,25 @@ module.exports = {
 		await queryInterface.addColumn('markers','story_id',{
 			allowNull: true,
 			type: Sequelize.INTEGER.UNSIGNED,
-			//TODO: Enable this once stories is created
-			// onDelete: 'CASCADE',
-			// references: {
-			// 	model: {
-			// 		tableName: 'stories',
-			// 	},
-			// 	key: 'id',
-			// }
+			onDelete: 'CASCADE',
+			references: {
+				model: {
+					tableName: 'stories',
+				},
+				key: 'id',
+			}
 
 		})
 	},
 
 	async down(queryInterface, Sequelize) {
-		//TODO: Enable this once stories is created
-		// await queryInterface.removeConstraint('markers','stories_ibfk_1')
+		const foreignKeys = await queryInterface.getForeignKeysForTables(['markers']);
+		const storiesKey = foreignKeys['markers'].find((key) => {
+			return key.includes('story');
+		});
+		if(storiesKey){
+			await queryInterface.removeConstraint('markers',storiesKey)
+		}
 		await queryInterface.removeColumn('markers','story_id');
 	}
 };

@@ -2,43 +2,31 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
-		await queryInterface.createTable('markers', {
+		await queryInterface.createTable('medias', {
 			id: {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
 				type: Sequelize.INTEGER.UNSIGNED
 			},
-			user_id: {
+			marker_id: {
 				allowNull: false,
 				type: Sequelize.INTEGER.UNSIGNED,
 				onDelete: 'CASCADE',
 				references: {
 					model: {
-						tableName: 'users',
+						tableName: 'markers',
 					},
 					key: 'id',
 				}
 			},
-			lat: {
-				allowNull: false,
-				type: Sequelize.DOUBLE
-			},
-			lng: {
-				allowNull: false,
-				type: Sequelize.DOUBLE
-			},
 			type: {
+				allowNull: true,
 				type: Sequelize.STRING
 			},
-			location: {
+			path: {
+				allowNull: true,
 				type: Sequelize.STRING
-			},
-			time: {
-				type: 'timestamp'
-			},
-			description: {
-				type: Sequelize.TEXT
 			},
 			created_at: {
 				allowNull: false,
@@ -51,6 +39,6 @@ module.exports = {
 		});
 	},
 	async down(queryInterface, Sequelize) {
-		await queryInterface.dropTable('markers');
+		await queryInterface.dropTable('medias');
 	}
 };

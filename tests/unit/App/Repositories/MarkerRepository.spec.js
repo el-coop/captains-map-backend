@@ -1,16 +1,24 @@
 import test from 'ava';
 import MarkerRepository from '../../../../App/Repositories/MarkerRepository.js';
-import knex from "../../../../database/knex.js";
 import MarkerFactory from "../../../../database/factories/MarkerFactory.js";
 import StoryFactory from "../../../../database/factories/StoryFactory.js";
+import migrator from "../../../Migrator.js";
+import seeder from "../../../Seeder.js";
+import registerModels from "../../../../App/Models/registerModels.js";
+import UserFactory from "../../../../database/factories/UserFactory.js";
+import {EmptyResultError} from 'sequelize'
+
+let otherUser;
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
+	otherUser = await UserFactory.create();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 });
 
 test.serial('It returns first page of Markers with hasNext false when less than page size', async t => {
@@ -27,7 +35,6 @@ test.serial('It returns first page of Markers with hasNext false when less than 
 	});
 
 	const result = await MarkerRepository.getPage();
-
 	t.is(3, result.markers.length);
 	markers.forEach((marker) => {
 		t.not(undefined, result.markers.find((item) => {
@@ -104,7 +111,7 @@ test.serial('It returns user page', async t => {
 		user_id: 1,
 	}, 2);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	}, 2);
 
 	const result = await MarkerRepository.getPage({
@@ -134,7 +141,7 @@ test.serial('It returns user page starting at marker', async t => {
 		user_id: 1,
 	}, 2);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	}, 2);
 
 	const userMarkers2 = await MarkerFactory.create({
@@ -202,13 +209,13 @@ test.serial('It returns page with specific marker in for specific user', async t
 		user_id: 1,
 	}, 2);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	}, 5);
 	const pivotMarker = await MarkerFactory.create({
 		user_id: 1,
 	});
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	}, 2);
 	const nextMarker = await MarkerFactory.create({
 		user_id: 1,
@@ -290,7 +297,7 @@ test.serial('It returns first page with hasNext', async t => {
 	t.is(result.pagination.page, 0);
 });
 
-test.serial('It returns false for not found object', async t => {
+test.serial('It throws error not found object', async t => {
 
 	const Story = await StoryFactory.create({
 		user_id: 1
@@ -305,7 +312,7 @@ test.serial('It returns false for not found object', async t => {
 	}, 3);
 
 	await t.throwsAsync(MarkerRepository.getObjectPage(20, 1), {
-		message: 'EmptyResponse'
+		instanceOf: EmptyResultError
 	});
 });
 

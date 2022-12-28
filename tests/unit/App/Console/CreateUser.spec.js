@@ -14,8 +14,7 @@ test.beforeEach(async () => {
 });
 
 test.afterEach.always(async () => {
-	await migrator.down();
-	sinon.restore();
+	await migrator.down({to: '20180814134813_create_users_table'});
 });
 
 

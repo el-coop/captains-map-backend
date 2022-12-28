@@ -11,12 +11,15 @@ module.exports = {
 				type: DataTypes.INTEGER.UNSIGNED
 			},
 			username: {
+				allowNull: false,
 				type: DataTypes.STRING
 			},
 			email: {
+				allowNull: false,
 				type: DataTypes.STRING
 			},
 			password: {
+				allowNull: false,
 				type: DataTypes.STRING
 			},
 			created_at: {
