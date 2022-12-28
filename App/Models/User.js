@@ -18,6 +18,11 @@ class User extends Model {
 			username: this.username
 		});
 	}
+
+	static associate(models) {
+		User.hasMany(models.Marker);
+	}
+
 }
 
 User.init({

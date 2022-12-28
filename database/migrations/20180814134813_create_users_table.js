@@ -8,7 +8,7 @@ module.exports = {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
-				type: DataTypes.INTEGER
+				type: DataTypes.INTEGER.UNSIGNED
 			},
 			username: {
 				type: DataTypes.STRING
@@ -21,11 +21,11 @@ module.exports = {
 			},
 			created_at: {
 				allowNull: false,
-				type: DataTypes.DATE
+				type: 'timestamp',
 			},
 			updated_at: {
 				allowNull: false,
-				type: DataTypes.DATE
+				type: 'timestamp'
 			}
 		});
 	},

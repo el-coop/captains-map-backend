@@ -1,9 +1,6 @@
 import {Sequelize} from "sequelize";
 import sequelize, {migrationsPath} from "../database/sequelize.js";
 import Umzug from 'umzug';
-import sequelizeStorage  from 'umzug/lib/storages/SequelizeStorage.js';
-
-const SequelizeStorage = sequelizeStorage.default;
 
 export default new Umzug({
 	migrations: {
@@ -13,6 +10,10 @@ export default new Umzug({
 			Sequelize
 		]
 	},
-	storage: new SequelizeStorage({ sequelize }),
+	storage: 'sequelize',
+	storageOptions: {
+		sequelize: sequelize,
+	}
+
 });
 

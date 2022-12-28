@@ -1,19 +1,27 @@
-import Bookshelf from './bookshelf.js';
+import {Model, DataTypes} from 'sequelize';
+import sequelize from "../../database/sequelize.js";
 
-import './User.js';
-import './Media.js';
-
-let Marker = Bookshelf.Model.extend({
-	tableName: 'markers',
-	hasTimestamps: true,
-
-	user() {
-		return this.belongsTo('User');
-	},
-
-	media() {
-		return this.hasMany('Media');
+class Marker extends Model {
+	static associate(models) {
+		Marker.belongsTo(models.User);
 	}
+}
+
+Marker.init({
+	user_id: DataTypes.INTEGER.UNSIGNED,
+	story_id: DataTypes.INTEGER.UNSIGNED,
+	lat: DataTypes.DOUBLE,
+	lng: DataTypes.DOUBLE,
+	type: DataTypes.STRING,
+	location: DataTypes.STRING,
+	time: DataTypes.DATE,
+	description: DataTypes.TEXT
+}, {
+	sequelize,
+	modelName: 'Marker',
+	createdAt: 'created_at',
+	updatedAt: 'updated_at',
+	tableName: 'markers'
 });
 
-export default Bookshelf.model('Marker', Marker);
+export default Marker;

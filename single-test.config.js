@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/InjectUserMiddleware.spec.js"
+		"tests/**/ModelMiddleware.spec.js"
 	]
 }

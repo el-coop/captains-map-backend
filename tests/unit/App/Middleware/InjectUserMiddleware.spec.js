@@ -26,8 +26,8 @@ test.beforeEach(async () => {
 });
 
 test.afterEach.always(async () => {
-	await migrator.down();
-	await seeder.down();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
