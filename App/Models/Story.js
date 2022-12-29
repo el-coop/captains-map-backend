@@ -7,6 +7,9 @@ class Story extends Model {
 		Story.belongsTo(models.User,{
 			foreignKey: 'user_id'
 		});
+		Story.hasMany(models.Marker,{
+			foreignKey: 'story_id'
+		});
 	}
 }
 

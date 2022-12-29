@@ -1,19 +1,21 @@
 import test from 'ava';
 import app from '../../../app.js';
 import request from 'supertest';
-import knex from "../../../database/knex.js";
 import MarkerFactory from "../../../database/factories/MarkerFactory.js";
 import MediaFactory from "../../../database/factories/MediaFactory.js";
 
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
+
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 });
-
 test('It returns metadata for main page', async t => {
 
 	const response = await request(app).get('/api/crawler');
@@ -56,13 +58,13 @@ test.serial('It returns metadata for image marker', async t => {
 	const response = await request(app).get('/api/crawler/nur/1');
 	t.is(response.status, 200);
 	t.true(response.text.indexOf('<meta property="og:title" content="nur | Captains Map"/>') > -1);
-	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.get('description') + '"/>') > -1);
+	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.description + '"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:type" content="article"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:url" content="https://map.elcoop.io/nur/1"/>') > -1);
 	medias.forEach((media) => {
-		t.true(response.text.indexOf(`<meta property="og:image" content="https://map.elcoop.io/api${media.get('path')}"/>`) > -1);
+		t.true(response.text.indexOf(`<meta property="og:image" content="https://map.elcoop.io/api${media.path}"/>`) > -1);
 	});
-	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://map.elcoop.io/api${medias[0].get('path')}"/>`) > -1);
+	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://map.elcoop.io/api${medias[0].path}"/>`) > -1);
 
 });
 
@@ -76,11 +78,11 @@ test.serial('It returns metadata for instagram marker', async t => {
 
 	t.is(response.status, 200);
 	t.true(response.text.indexOf('<meta property="og:title" content="nur | Captains Map"/>') > -1);
-	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.get('description') + '"/>') > -1);
+	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.description + '"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:type" content="article"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:url" content="https://map.elcoop.io/nur/1"/>') > -1);
-	t.true(response.text.indexOf(`<meta property="og:image" content="https://instagram.com/p/${media.get('path')}/media/"/>`) > -1);
-	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://instagram.com/p/${media.get('path')}/media/"/>`) > -1);
+	t.true(response.text.indexOf(`<meta property="og:image" content="https://instagram.com/p/${media.path}/media/"/>`) > -1);
+	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://instagram.com/p/${media.path}/media/"/>`) > -1);
 
 
 });

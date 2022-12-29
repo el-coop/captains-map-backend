@@ -8,7 +8,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import app from "../../../app.js";
-import knex from "../../../database/knex.js";
 import BioFactory from '../../../database/factories/BioFactory.js';
 import StoryFactory from '../../../database/factories/StoryFactory.js';
 import MarkerFactory from '../../../database/factories/MarkerFactory.js';
@@ -17,14 +16,17 @@ import helpers from "../../Helpers.js";
 import Bio from "../../../App/Models/Bio.js";
 import fs from 'fs';
 import cache from "../../../App/Services/CacheService.js";
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
-test.afterEach.always('Restore sinon', async () => {
-	await knex.migrate.rollback();
+test.afterEach.always(async () => {
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -62,8 +64,8 @@ test('It returns bio for getting existing user with bio and caches', async t => 
 
 
 	t.deepEqual(response.body, {
-		path: bio.get('path'),
-		description: bio.get('description'),
+		path: bio.path,
+		description: bio.description,
 		stories: []
 	});
 
@@ -97,7 +99,7 @@ test('It returns bio with published stories when getting existing user with bio 
 		const marker = markers[markerIndex];
 
 		await MediaFactory.create({
-			marker_id: marker.get('id')
+			marker_id: marker.id
 		});
 	}
 
@@ -108,28 +110,27 @@ test('It returns bio with published stories when getting existing user with bio 
 
 	const response = await request(app).get('/api/bio/nur');
 
-	t.is(response.body.path, bio.get('path'));
-	t.is(response.body.description, bio.get('description'));
+	t.is(response.body.path, bio.path);
+	t.is(response.body.description, bio.description);
 	t.is(response.body.stories.length, 3);
 
 	for (let storyIndex = 0; storyIndex < stories.length; storyIndex++) {
 		const story = stories[storyIndex];
 
-		await story.load('markers');
-		const marker = story.related('markers').get(0);
+
+		const marker = (await story.getMarkers())[0];
 		let media = null;
 		if (marker) {
-			await marker.load('media');
-			media = marker.related('media').get(0);
+			media = (await marker.getMedia())[0];
 		}
 
 		t.deepEqual(response.body.stories[Math.abs(2 - storyIndex)], {
-			id: story.get('id'),
-			name: story.get('name'),
-			published: 1,
+			id: story.id,
+			name: story.name,
+			published: true,
 			cover: {
-				path: mediaStory === story.get('id') ? 'BlfyEoTDKxi' : null,
-				type: mediaStory === story.get('id') ? 'instagram' : null
+				path: mediaStory === story.id ? 'BlfyEoTDKxi' : null,
+				type: mediaStory === story.id ? 'instagram' : null
 			}
 		});
 	}
@@ -170,25 +171,25 @@ test('It returns bio with published and unpublished stories when logged in getti
 		const marker = markers[markerIndex];
 
 		await MediaFactory.create({
-			marker_id: marker.get('id')
+			marker_id: marker.id
 		});
 	}
 
 	const response = await request(app).get('/api/bio/nur')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
 
-	t.is(response.body.path, bio.get('path'));
-	t.is(response.body.description, bio.get('description'));
+	t.is(response.body.path, bio.path);
+	t.is(response.body.description, bio.description);
 	t.is(response.body.stories.length, 5);
 
 	stories.forEach((story, index) => {
 		t.deepEqual(response.body.stories[Math.abs(4 - index)], {
-			id: story.get('id'),
-			name: story.get('name'),
-			published: story.get('published'),
+			id: story.id,
+			name: story.name,
+			published: story.published,
 			cover: {
-				path: mediaStory === story.get('id') ? 'BlfyEoTDKxi' : null,
-				type: mediaStory === story.get('id') ? 'instagram' : null
+				path: mediaStory === story.id ? 'BlfyEoTDKxi' : null,
+				type: mediaStory === story.id ? 'instagram' : null
 			}
 		});
 	});
@@ -212,15 +213,15 @@ test('It returns bio from cache for getting existing user with bio', async t => 
 	});
 
 	sinon.stub(cache.store, 'get').onFirstCall().returns(JSON.stringify({
-		path: bio.get('path'),
-		description: bio.get('description')
+		path: bio.path,
+		description: bio.description
 	})).onSecondCall().returns(JSON.stringify([]));
 	const response = await request(app).get('/api/bio/nur');
 
 
 	t.deepEqual(response.body, {
-		path: bio.get('path'),
-		description: bio.get('description'),
+		path: bio.path,
+		description: bio.description,
 		stories: []
 	});
 
@@ -249,14 +250,14 @@ test('It returns bio and published stories from cache for getting existing user 
 	}];
 
 	const cacheGetStub = sinon.stub(cache.store, 'get').onFirstCall().returns(JSON.stringify({
-		path: bio.get('path'),
-		description: bio.get('description')
+		path: bio.path,
+		description: bio.description
 	})).onSecondCall().returns(JSON.stringify(stories));
 	const response = await request(app).get('/api/bio/nur');
 
 	t.deepEqual(response.body, {
-		path: bio.get('path'),
-		description: bio.get('description'),
+		path: bio.path,
+		description: bio.description,
 		stories
 	});
 
@@ -287,15 +288,15 @@ test('It returns bio with published and unpublished stories from cache for getti
 	}];
 
 	const cacheGetStub = sinon.stub(cache.store, 'get').onFirstCall().returns(JSON.stringify({
-		path: bio.get('path'),
-		description: bio.get('description')
+		path: bio.path,
+		description: bio.description
 	})).onSecondCall().returns(JSON.stringify(stories));
 	const response = await request(app).get('/api/bio/nur')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
 
 	t.deepEqual(response.body, {
-		path: bio.get('path'),
-		description: bio.get('description'),
+		path: bio.path,
+		description: bio.description,
 		stories
 	});
 
@@ -326,16 +327,16 @@ test('It uploads photo and creates bio when non is present and deletes cached da
 		.attach('image', path.resolve(__dirname, '../../demo.jpg'))
 		.field('description', 'testdesc');
 
-	const bio = await new Bio().fetch();
+	const bio = await Bio.findOne();
 	const filePath = path.resolve(__dirname, `../../../public${response.body.path}`);
 
 	t.is(response.status, 200);
 	t.is(response.body.description, 'testdesc');
 	t.true(fs.existsSync(filePath));
 
-	t.is(bio.get('user_id'), 1);
-	t.is(bio.get('path'), response.body.path);
-	t.is(bio.get('description'), 'testdesc');
+	t.is(bio.user_id, 1);
+	t.is(bio.path, response.body.path);
+	t.is(bio.description, 'testdesc');
 
 	fs.unlinkSync(filePath);
 	t.true(forgetCacheStub.calledOnce);
@@ -354,15 +355,15 @@ test('It saves only description when only description is given and deletes cache
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.field('description', 'testdesc');
 
-	const bio = await new Bio().fetch();
+	const bio = await Bio.findOne();
 
 	t.is(response.status, 200);
 	t.is(response.body.description, 'testdesc');
 	t.is(response.body.path, null);
 
-	t.is(bio.get('user_id'), 1);
-	t.is(bio.get('path'), null);
-	t.is(bio.get('description'), 'testdesc');
+	t.is(bio.user_id, 1);
+	t.is(bio.path, null);
+	t.is(bio.description, 'testdesc');
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
 });
@@ -377,15 +378,15 @@ test('It updates only description when only description is given and flushes old
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.field('description', 'testdesc');
 
-	const bio = await new Bio().fetch();
+	const bio = await Bio.findOne();
 
 	t.is(response.status, 200);
 	t.is(response.body.description, 'testdesc');
-	t.is(response.body.path, oldBio.get('path'));
+	t.is(response.body.path, oldBio.path);
 
-	t.is(bio.get('user_id'), 1);
-	t.is(bio.get('path'), oldBio.get('path'));
-	t.is(bio.get('description'), 'testdesc');
+	t.is(bio.user_id, 1);
+	t.is(bio.path, oldBio.path);
+	t.is(bio.description, 'testdesc');
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));
 });
@@ -402,7 +403,7 @@ test.serial('It updates bio and deletes old image and deletes old data', async t
 		user_id: 1
 	});
 	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
-	const oldFilePath = path.resolve(__dirname, `../../../public${oldBio.get('path')}`);
+	const oldFilePath = path.resolve(__dirname, `../../../public${oldBio.path}`);
 	fs.copyFileSync(demoFilePath, oldFilePath);
 
 	const response = await request(app).post('/api/bio')
@@ -410,7 +411,7 @@ test.serial('It updates bio and deletes old image and deletes old data', async t
 		.attach('image', demoFilePath)
 		.field('description', 'testdesc');
 
-	const bio = await new Bio().fetch();
+	const bio = await Bio.findOne();
 	const filePath = path.resolve(__dirname, `../../../public${response.body.path}`);
 
 	t.is(response.status, 200);
@@ -418,9 +419,9 @@ test.serial('It updates bio and deletes old image and deletes old data', async t
 	t.true(fs.existsSync(filePath));
 	t.false(fs.existsSync(oldFilePath));
 
-	t.is(bio.get('user_id'), 1);
-	t.is(bio.get('path'), response.body.path);
-	t.is(bio.get('description'), 'testdesc');
+	t.is(bio.user_id, 1);
+	t.is(bio.path, response.body.path);
+	t.is(bio.description, 'testdesc');
 	fs.unlinkSync(filePath);
 	t.true(forgetCacheStub.calledOnce);
 	t.true(forgetCacheStub.calledWith('bio:1'));

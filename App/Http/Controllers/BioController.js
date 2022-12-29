@@ -1,7 +1,11 @@
 import Cache from '../../Services/CacheService.js';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
+import Bio from '../../Models/Bio.js';
+import Media from "../../Models/Media.js";
+import Marker from "../../Models/Marker.js";
+import sequelize from "sequelize";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,16 +18,16 @@ class BioController {
 	async get(req, res) {
 		const user = req.objects.user;
 
-		const bio = await Cache.rememberForever(`bio:${user.get('id')}`, async () => {
+		const bio = await Cache.rememberForever(`bio:${user.id}`, async () => {
 			const bio = await this[getUserBio](user);
 			return {
-				path: bio.get('path') || null,
-				description: bio.get('description') || '',
+				path: bio.path || null,
+				description: bio.description || '',
 			};
 		});
 
 		const withUnpublished = req.user && user.id === req.user.id;
-		const stories = await Cache.tag([`stories_user:${user.id}`]).rememberForever(`stories:${user.get('id')}` + (withUnpublished ? '_unpublished' : ''), async () => {
+		const stories = await Cache.tag([`stories_user:${user.id}`]).rememberForever(`stories:${user.id}` + (withUnpublished ? '_unpublished' : ''), async () => {
 			return await this[getUserStories](user, withUnpublished);
 		});
 
@@ -36,19 +40,19 @@ class BioController {
 			const bio = await this[getUserBio](user);
 			bio.set('description', req.body.description);
 			if (req.file) {
-				const oldImage = bio.get('path');
+				const oldImage = bio.path;
 				bio.set('path', `/bios/${req.file.filename}`);
 
 				if (oldImage && fs.existsSync(path.join(__dirname, `../../../public/${oldImage}`))) {
 					fs.unlinkSync(path.join(__dirname, `../../../public/${oldImage}`));
 				}
-				await Cache.tag(['markers', `markers_user:${user.get('id')}`]).flush();
+				await Cache.tag(['markers', `markers_user:${user.id}`]).flush();
 			}
 			await bio.save();
-			await Cache.forget(`bio:${user.get('id')}`);
+			await Cache.forget(`bio:${user.id}`);
 			return res.json({
-				path: bio.get('path') || null,
-				description: bio.get('description') || '',
+				path: bio.path || null,
+				description: bio.description || '',
 			});
 		} catch (e) {
 			fs.unlinkSync(req.file.path);
@@ -58,8 +62,7 @@ class BioController {
 	}
 
 	async [getUserBio](user) {
-		await user.load('bio');
-		let bio = user.related('bio');
+		let bio = await user.getBio();
 		if (!bio) {
 			bio = new Bio();
 			bio.user_id = user.id;
@@ -75,28 +78,44 @@ class BioController {
 	}
 
 	async [getUserStories](user, withUnpublished) {
-		await user.load({
-			stories(query) {
-				query.select('stories.*', 'medias.type as cover_type', 'medias.path as cover_path')
-					.leftJoin('markers', 'stories.id', 'markers.story_id')
-					.leftJoin('medias', 'markers.id', 'medias.marker_id')
-				if (!withUnpublished) {
-					query.where('published', true);
-				}
-				return query.orderBy('created_at', 'DESC');
+		const where = {};
+		if (!withUnpublished) {
+			where.published = true;
+		}
+
+		const stories = await user.getStories({
+			attributes: {
+				include: [
+					[sequelize.col('Markers.Media.path'), 'cover_path'],
+					[sequelize.col('Markers.Media.type'), 'cover_type'],
+				]
 			},
+			where,
+			include: [{
+				attributes: [],
+				model: Marker,
+				include: [{
+					model: Media,
+					attributes: [],
+				}],
+			}],
+			order: [['created_at', 'DESC']],
 		});
 
-		return user.related('stories').map((story) => {
-			const marker = story.related('markers').at(0);
 
+
+		if (!stories) {
+			return [];
+		}
+
+		return stories.map((story) => {
 			return {
-				id: story.get('id'),
-				published: story.get('published'),
-				name: story.get('name'),
+				id: story.id,
+				published: story.published,
+				name: story.name,
 				cover: {
-					type: story.get('cover_type'),
-					path: story.get('cover_path'),
+					type: story.dataValues.cover_type,
+					path: story.dataValues.cover_path,
 				}
 			}
 		});

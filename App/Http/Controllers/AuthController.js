@@ -48,8 +48,8 @@ class AuthController {
 				})
 				.json({
 					user: {
-						id: user.get('id'),
-						username: user.get('username'),
+						id: user.id,
+						username: user.username,
 						exp: Date.now() + parseInt(process.env.LOGIN_DURATION)
 					}
 				});
