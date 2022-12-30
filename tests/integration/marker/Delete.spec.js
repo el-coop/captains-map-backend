@@ -1,5 +1,4 @@
 import test from 'ava';
-import knex from "../../../database/knex.js";
 import app from '../../../app.js';
 import MarkerFactory from "../../../database/factories/MarkerFactory.js";
 import MediaFactory from "../../../database/factories/MediaFactory.js";
@@ -12,6 +11,8 @@ import Marker from "../../../App/Models/Marker.js";
 import cache from '../../../App/Services/CacheService.js';
 import sinon from "sinon";
 import Media from "../../../App/Models/Media.js";
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
 
 import { fileURLToPath } from 'url';
 
@@ -20,12 +21,13 @@ const __dirname = path.dirname(__filename);
 
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -79,7 +81,7 @@ test.serial('It allows user to delete marker, deletes image and flushes cached d
 
 	for (let i = 0; i < 3; i++) {
 		medias.push(await MediaFactory.create({
-			marker_id: marker.get('id'),
+			marker_id: marker.id,
 			type: 'image',
 			path: `/images/blabla${i}`
 		}));
@@ -89,7 +91,7 @@ test.serial('It allows user to delete marker, deletes image and flushes cached d
 		fs.copyFileSync(demoFilePath, thumbPath);
 	}
 
-	const response = await request(app).delete(`/api/marker/${marker.get('id')}`)
+	const response = await request(app).delete(`/api/marker/${marker.id}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'))
 		.send();
 

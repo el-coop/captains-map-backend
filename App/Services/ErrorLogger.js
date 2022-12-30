@@ -34,6 +34,9 @@ class ErrorLogger {
 	}
 
 	async log(error, req, type = 'serverSide') {
+		if( process.env.APP_ENV !== 'production'){
+			console.log(error);
+		}
 
 		const url = req.protocol + '://' + req.hostname + req.path;
 		const user = this[getRequestUser](req);

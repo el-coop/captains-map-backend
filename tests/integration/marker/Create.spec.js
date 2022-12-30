@@ -1,6 +1,5 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import request from 'supertest';
 import helpers from '../../Helpers.js';
 import Marker from '../../../App/Models/Marker.js';
@@ -14,19 +13,23 @@ import FollowerFactory from "../../../database/factories/FollowerFactory.js";
 import StoryFactory from "../../../database/factories/StoryFactory.js";
 import errorLogger from '../../../App/Services/ErrorLogger.js';
 
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
+
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -50,21 +53,22 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 			}
 		});
 
-	const marker = await new Marker().fetch({
-		withRelated: ['media']
+
+	const marker = await Marker.findOne({
+		include: Media
 	});
 
 	t.is(response.status, 200);
 	t.is(response.body.user_id, 1);
 	t.is(response.body.lat, 0);
 	t.is(response.body.lng, 0);
-	t.is(marker.get('user_id'), 1);
-	t.is(marker.get('lat'), 0);
-	t.is(marker.get('lng'), 0);
-	t.is(marker.get('lng'), 0);
-	t.is(marker.get('story_id'), null);
-	t.is(marker.related('media').at(0).get('type'), 'instagram');
-	t.is(marker.related('media').at(0).get('path'), 'BlfyEoTDKxi');
+	t.is(marker.user_id, 1);
+	t.is(marker.lat, 0);
+	t.is(marker.lng, 0);
+	t.is(marker.lng, 0);
+	t.is(marker.story_id, null);
+	t.is(marker.Media[0].type, 'instagram');
+	t.is(marker.Media[0].path, 'BlfyEoTDKxi');
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
@@ -108,12 +112,12 @@ test.serial('It creates a marker and notifies followers', async t => {
 	await helpers.sleep(5000);
 
 	t.true(webpushStub.calledTwice);
-	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload));
-	t.true(webpushStub.calledWith(followers[1].get('subscription'), payload));
+	t.true(webpushStub.calledWith(followers[0].subscription, payload));
+	t.true(webpushStub.calledWith(followers[1].subscription, payload));
 });
 
 test.serial('It creates a story marker and doesnt notify followers', async t => {
-	const followers = await FollowerFactory.create({
+	await FollowerFactory.create({
 		user_id: 1,
 	}, 2);
 	const story = await StoryFactory.create({
@@ -139,21 +143,21 @@ test.serial('It creates a story marker and doesnt notify followers', async t => 
 			}
 		});
 
-	const marker = await new Marker().fetch({
-		withRelated: ['media']
+	const marker = await Marker.findOne({
+		include: [Media]
 	});
 
 	t.is(response.status, 200);
 	t.is(response.body.user_id, 1);
 	t.is(response.body.lat, 0);
 	t.is(response.body.lng, 0);
-	t.is(marker.get('user_id'), 1);
-	t.is(marker.get('lat'), 0);
-	t.is(marker.get('lng'), 0);
-	t.is(marker.get('story_id'), story.id);
-	t.is(marker.get('location'), 'test');
-	t.is(marker.related('media').at(0).get('type'), 'instagram');
-	t.is(marker.related('media').at(0).get('path'), 'BlfyEoTDKxi');
+	t.is(marker.user_id, 1);
+	t.is(marker.lat, 0);
+	t.is(marker.lng, 0);
+	t.is(marker.story_id, story.id);
+	t.is(marker.location, 'test');
+	t.is(marker.Media[0].type, 'instagram');
+	t.is(marker.Media[0].path, 'BlfyEoTDKxi');
 
 	await helpers.sleep(5000);
 
@@ -197,21 +201,22 @@ test.serial('It uploads a photos and creates a marker and flushes caches', async
 		.field('description', 'test')
 		.field('media[type]', 'file');
 
-	const marker = await new Marker().fetch({
-		withRelated: ['media']
+	const marker = await Marker.findOne({
+		include: [Media]
 	});
+
 	const filePath = path.resolve(__dirname, `../../../public${response.body.media[0].path}`);
 	const filePath1 = path.resolve(__dirname, `../../../public${response.body.media[1].path}`);
 	t.is(response.status, 200);
 	t.is(response.body.user_id, 1);
 	t.is(response.body.lat, 0);
 	t.is(response.body.lng, 0);
-	t.is(marker.get('user_id'), 1);
-	t.is(marker.get('lat'), 0);
-	t.is(marker.get('lng'), 0);
-	t.is(marker.get('location'), 'test');
-	t.is(marker.related('media').at(0).get('type'), 'file');
-	t.is(marker.related('media').at(1).get('type'), 'file');
+	t.is(marker.user_id, 1);
+	t.is(marker.lat, 0);
+	t.is(marker.lng, 0);
+	t.is(marker.location, 'test');
+	t.is(marker.Media[0].type, 'file');
+	t.is(marker.Media[1].type, 'file');
 	t.true(fs.existsSync(filePath));
 	t.true(fs.existsSync(filePath1));
 
@@ -275,7 +280,7 @@ test.serial('It validates data', async t => {
 
 test.serial('It deletes created marker and media when error thrown after creation', async t => {
 
-	sinon.stub(Marker.prototype, 'load').throws('test');
+	sinon.stub(Marker.prototype, 'setDataValue').throws('test');
 
 	const response = await request(app).post('/api/marker/create')
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
@@ -338,7 +343,7 @@ test.serial('It creates a marker and logs follower notification error', async t 
 	await helpers.sleep(5000);
 
 	t.true(webpushStub.calledOnce);
-	t.true(webpushStub.calledWith(followers[0].get('subscription'), payload) || webpushStub.calledWith(followers[1].get('subscription'), payload));
+	t.true(webpushStub.calledWith(followers[0].subscription, payload) || webpushStub.calledWith(followers[1].subscription, payload));
 	t.true(loggerStub.calledOnce);
 	t.true(loggerStub.calledWith(error));
 });
