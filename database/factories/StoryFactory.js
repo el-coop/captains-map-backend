@@ -2,7 +2,7 @@ import {faker} from '@faker-js/faker';
 import Story from '../../App/Models/Story.js';
 import BaseFactory from './BaseFactory.js';
 
-class MarkerFactory extends BaseFactory {
+class StoryFactory extends BaseFactory {
 	model() {
 		return Story;
 	}
@@ -14,4 +14,4 @@ class MarkerFactory extends BaseFactory {
 	}
 }
 
-export default new MarkerFactory();
+export default new StoryFactory();
