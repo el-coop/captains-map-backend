@@ -1,4 +1,3 @@
-import User from '../App/Models/User.js';
 import request from 'supertest';
 import app from '../app.js';
 

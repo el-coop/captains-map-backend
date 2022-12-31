@@ -7,8 +7,6 @@ import httpService from '../../../App/Services/HttpService.js';
 import Cache from '../../../App/Services/CacheService.js';
 import migrator from "../../Migrator.js";
 import seeder from "../../Seeder.js";
-import MarkerFactory from "../../../database/factories/MarkerFactory.js";
-import UserFactory from "../../../database/factories/UserFactory.js";
 
 test.beforeEach(async () => {
 	await migrator.up();

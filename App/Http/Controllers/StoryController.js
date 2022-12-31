@@ -4,6 +4,9 @@ import Marker from '../../Models/Marker.js';
 import fs from 'fs';
 import path from 'path';
 import {fileURLToPath} from 'url';
+import Media from "../../Models/Media.js";
+import User from "../../Models/User.js";
+import Bio from "../../Models/Bio.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,7 +15,7 @@ const deleteMarker = Symbol('deleteMarker');
 
 class StoryController {
 	async create(req, res) {
-		const userId = req.user.get('id');
+		const userId = req.user.id;
 		const story = await StoryRepository.create({
 			name: req.body.name,
 			user_id: userId
@@ -26,53 +29,51 @@ class StoryController {
 	async get(req, res) {
 		const story = req.objects.story;
 		if (
-			!story.get('published') && (!req.user || story.get('user_id') !== req.user.get('id')) ||
-			req.objects.user.get('id') !== story.get('user_id')
+			!story.published && (!req.user || story.user_id !== req.user.id) ||
+			req.objects.user.id !== story.user_id
 		) {
 			return res.sendStatus(404);
 		}
-		const markers = await new Marker().where({story_id: story.get('id')}).fetchAll({
-			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
-			withRelated: [
-				{
-					media(query) {
-						return query.select('id', 'marker_id', 'type', 'path');
-					},
-				},
-
-				{
-					user(query) {
-						return query.select('id', 'username');
-					},
-				},
-				{
-					'user.bio'(query) {
-						return query.select('user_id', 'path');
-					}
+		const markers = await Marker.findAll({
+			attributes: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
+			where: {
+				story_id: story.id
+			},
+			include: [{
+				model: Media,
+				attributes: ['id', 'marker_id', 'type', 'path'],
+			},{
+				model: User,
+				attributes: ['id', 'username'],
+				include:[{
+					attributes: ['user_id', 'path'],
+					model: Bio,
 				}]
+			}]
 		});
 
+
 		let cover;
-		const marker = markers.at(0);
+		const marker = markers[0];
 		if (marker) {
-			cover = marker.related('media').at(0);
+			cover = marker.Media[0];
 		}
 
 		res.json({
-			id: story.get('id'),
-			name: story.get('name'),
-			published: story.get('published'),
-			user_id: story.get('user_id'),
+			id: story.id,
+			name: story.name,
+			published: story.published,
+			user_id: story.user_id,
 			cover: cover ? {
-				type: cover.get('type'),
-				path: cover.get('path'),
+				type: cover.type,
+				path: cover.path,
 			} : null,
 			markers
 		});
 	};
 
 	async edit(req, res) {
-		const userId = req.user.get('id');
+		const userId = req.user.id;
 		const story = req.objects.story;
 
 		await StoryRepository.update(story, {
@@ -87,10 +88,11 @@ class StoryController {
 	}
 
 	async destroy(req, res) {
-		const userId = req.user.get('id');
+		const userId = req.user.id;
 		const story = req.objects.story;
-		await story.load('markers');
-		const markers = story.related('markers');
+		const markers = await story.getMarkers({
+			include: [Media]
+		});
 		await story.destroy();
 
 		for (let i = 0; i < markers.length; i++) {
@@ -106,16 +108,14 @@ class StoryController {
 	}
 
 	async [deleteMarker](marker) {
-		await marker.load('media');
-
 		try {
-			const medias = marker.related('media');
+			const medias = marker.Media;
 			for (let i = 0; i < medias.length; i++) {
-				const media = medias.at(i);
-				if (media.get('type') === 'image') {
-					fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path')}`));
-					if (fs.existsSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`))) {
-						fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`));
+				const media = medias[i];
+				if (media.type === 'image') {
+					fs.unlinkSync(path.join(__dirname, `../../../public/${media.path}`));
+					if (fs.existsSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`))) {
+						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`));
 					}
 				}
 				await media.destroy()

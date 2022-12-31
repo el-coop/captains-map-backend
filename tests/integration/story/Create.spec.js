@@ -1,20 +1,21 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import request from 'supertest';
 import helpers from '../../Helpers.js';
 import Story from '../../../App/Models/Story.js';
 import sinon from "sinon";
 import cache from "../../../App/Services/CacheService.js";
-
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -55,13 +56,13 @@ test.serial('It creates a story and flushes cache', async t => {
 			name: 'story'
 		});
 
-	const story = await new Story().fetch();
+	const story = await Story.findOne();
 
 	t.is(response.status, 201);
 	t.is(response.body.user_id, 1);
 	t.is(response.body.name, 'story');
-	t.is(story.get('user_id'), 1);
-	t.is(story.get('name'), 'story');
+	t.is(story.user_id, 1);
+	t.is(story.name, 'story');
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['stories_user:1']));

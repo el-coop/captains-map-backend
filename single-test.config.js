@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/marker/Instagram.spec.js"
+		"tests/**/error.spec.js"
 	]
 }
