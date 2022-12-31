@@ -50,6 +50,7 @@ test.serial('It returns metadata for image marker', async t => {
 	const medias = [];
 	for(let i = 0; i < 3; i++){
 		medias.push(await MediaFactory.create({
+			marker_id: marker.id,
 			type: 'image',
 			path: `/path${i}`
 		}));
@@ -66,13 +67,16 @@ test.serial('It returns metadata for image marker', async t => {
 	});
 	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://map.elcoop.io/api${medias[0].path}"/>`) > -1);
 
-});
+})
+;
 
 test.serial('It returns metadata for instagram marker', async t => {
 	const marker = await MarkerFactory.create({
 		user_id: 1,
 	});
-	const media = await MediaFactory.create();
+	const media = await MediaFactory.create({
+		marker_id: marker.id,
+	});
 
 	const response = await request(app).get('/api/crawler/nur/1');
 

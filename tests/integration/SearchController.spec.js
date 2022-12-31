@@ -1,19 +1,21 @@
 import test from 'ava';
 import sinon from 'sinon';
-import knex from "../../database/knex.js";
 import request from "supertest";
 import app from "../../app.js";
 import helpers from "../Helpers.js";
 import UserFactory from "../../database/factories/UserFactory.js";
 import cache from "../../App/Services/CacheService.js";
+import migrator from "../Migrator.js";
+import seeder from "../Seeder.js";
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
-test.afterEach.always('Restore sinon', async t => {
-	await knex.migrate.rollback();
+test.afterEach.always(async () => {
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -49,10 +51,10 @@ test.serial('It returns search with the similar answers and caches results', asy
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456'));
 
 	t.deepEqual(response.body, [
-		'atest',
-		'atesta',
 		'test',
-		'testa'
+		'testa',
+		'atesta',
+		'atest',
 	]);
 
 	t.true(cacheSetStub.calledOnce);

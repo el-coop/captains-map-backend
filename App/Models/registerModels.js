@@ -11,7 +11,7 @@ const models = {
 	User,
 	Story,
 	Bio,
-	// Follower
+	Follower
 };
 
 for(let model in models){

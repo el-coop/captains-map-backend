@@ -30,6 +30,9 @@ class User extends Model {
 		User.hasMany(models.Story,{
 			foreignKey: 'user_id'
 		});
+		User.hasMany(models.Follower,{
+			foreignKey: 'user_id'
+		});
 		User.hasOne(models.Bio,{
 			foreignKey: 'user_id'
 		});
