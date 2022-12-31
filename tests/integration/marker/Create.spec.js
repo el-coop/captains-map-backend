@@ -55,7 +55,10 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 
 
 	const marker = await Marker.findOne({
-		include: Media
+		include: [{
+			model: Media,
+			as: 'media'
+		}],
 	});
 
 	t.is(response.status, 200);
@@ -67,8 +70,8 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 	t.is(marker.lng, 0);
 	t.is(marker.lng, 0);
 	t.is(marker.story_id, null);
-	t.is(marker.Media[0].type, 'instagram');
-	t.is(marker.Media[0].path, 'BlfyEoTDKxi');
+	t.is(marker.media[0].type, 'instagram');
+	t.is(marker.media[0].path, 'BlfyEoTDKxi');
 
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['markers', 'markers_user:1']));
@@ -144,7 +147,10 @@ test.serial('It creates a story marker and doesnt notify followers', async t => 
 		});
 
 	const marker = await Marker.findOne({
-		include: [Media]
+		include: [{
+			model: Media,
+			as: 'media'
+		}]
 	});
 
 	t.is(response.status, 200);
@@ -156,8 +162,8 @@ test.serial('It creates a story marker and doesnt notify followers', async t => 
 	t.is(marker.lng, 0);
 	t.is(marker.story_id, story.id);
 	t.is(marker.location, 'test');
-	t.is(marker.Media[0].type, 'instagram');
-	t.is(marker.Media[0].path, 'BlfyEoTDKxi');
+	t.is(marker.media[0].type, 'instagram');
+	t.is(marker.media[0].path, 'BlfyEoTDKxi');
 
 	await helpers.sleep(5000);
 
@@ -202,7 +208,10 @@ test.serial('It uploads a photos and creates a marker and flushes caches', async
 		.field('media[type]', 'file');
 
 	const marker = await Marker.findOne({
-		include: [Media]
+		include: [{
+			model: Media,
+			as: 'media'
+		}]
 	});
 
 	const filePath = path.resolve(__dirname, `../../../public${response.body.media[0].path}`);
@@ -215,8 +224,8 @@ test.serial('It uploads a photos and creates a marker and flushes caches', async
 	t.is(marker.lat, 0);
 	t.is(marker.lng, 0);
 	t.is(marker.location, 'test');
-	t.is(marker.Media[0].type, 'file');
-	t.is(marker.Media[1].type, 'file');
+	t.is(marker.media[0].type, 'file');
+	t.is(marker.media[1].type, 'file');
 	t.true(fs.existsSync(filePath));
 	t.true(fs.existsSync(filePath1));
 

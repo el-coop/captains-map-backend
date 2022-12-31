@@ -116,10 +116,13 @@ class MarkerRepository {
 				include: {
 					model: Bio,
 					attributes: ['user_id', 'path'],
-				}
+					as: 'bio'
+				},
+				as: 'user'
 			}, {
 				model: Media,
-				attributes: ['id', 'marker_id', 'type', 'path']
+				attributes: ['id', 'marker_id', 'type', 'path'],
+				as: 'media'
 			}],
 			rejectOnEmpty: true
 		});
@@ -173,10 +176,13 @@ class MarkerRepository {
 				include: {
 					model: Bio,
 					attributes: ['user_id', 'path'],
-				}
+					as: 'bio',
+				},
+				as: 'user',
 			}, {
 				model: Media,
-				attributes: ['id', 'marker_id', 'type', 'path']
+				attributes: ['id', 'marker_id', 'type', 'path'],
+				as: 'media',
 			}],
 			order: [['id', order]],
 			limit

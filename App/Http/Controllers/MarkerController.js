@@ -64,10 +64,14 @@ class MarkersController {
 					medias.push(media);
 				}
 			}
-			marker.setDataValue('media',medias);
-			marker.setDataValue('user',{
+			marker.setDataValue('media', medias);
+			marker.setDataValue('user', {
 				bio: await marker.getUser({
-					include: Bio
+					include: [{
+						model: Bio,
+						as: 'bio'
+					}]
+
 				})
 			});
 
@@ -205,6 +209,7 @@ class MarkersController {
 		const instagramId = req.objects.media.path;
 		const response = await Cache.remember(`instagram:${instagramId}`, async () => {
 			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
+			console.log(apiResponse);
 			if (apiResponse.status === 200) {
 				return apiResponse.data;
 			}

@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/MetaData.spec.js"
+		"tests/**/FollowController.spec.js"
 	]
 }

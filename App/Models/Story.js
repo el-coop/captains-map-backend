@@ -5,10 +5,12 @@ class Story extends Model {
 
 	static associate(models) {
 		Story.belongsTo(models.User,{
-			foreignKey: 'user_id'
+			foreignKey: 'user_id',
+			as: 'user',
 		});
 		Story.hasMany(models.Marker,{
-			foreignKey: 'story_id'
+			foreignKey: 'story_id',
+			as: 'markers',
 		});
 	}
 }

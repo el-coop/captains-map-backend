@@ -1,8 +1,24 @@
-import Bookshelf from './bookshelf.js';
+import {Model, DataTypes} from 'sequelize';
+import sequelize from "../../database/sequelize.js";
 
-const {{name}} = Bookshelf.Model.extend({
-	tableName: '{{name}}s',
-	hasTimestamps: true,
-})
+class {{name}} extends Model {
+	/**
+	 * Helper method for defining associations.
+	 * This method is not a part of Sequelize lifecycle.
+	 * The `models/index` file will call this method automatically.
+	 */
+	static associate(models) {
+	}
+}
 
-export default Bookshelf.model('{{name}}', {{name}});
+{{name}}.init({
+}, {
+
+	sequelize,
+	modelName: '{{name}}',
+	createdAt: 'created_at',
+	updatedAt: 'updated_at',
+	tableName: '{{name}}s'
+});
+
+export default {{name}};

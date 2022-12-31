@@ -17,11 +17,12 @@ class FollowController {
 				include: [{
 					attributes: ['id', 'username'],
 					model: User,
+					as: 'user'
 				}]
 			});
 
 			return result.map((following) => {
-				return following.User.username;
+				return following.user.username;
 			});
 		});
 

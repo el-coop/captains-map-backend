@@ -55,6 +55,7 @@ class AuthController {
 				});
 
 		} catch (error) {
+			console.log(error);
 			throw new BaseError('Invalid Credentials', 403, 'Authorization Error');
 		}
 	}

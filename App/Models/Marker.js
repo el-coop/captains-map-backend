@@ -4,13 +4,16 @@ import sequelize from "../../database/sequelize.js";
 class Marker extends Model {
 	static associate(models) {
 		Marker.belongsTo(models.User, {
-			foreignKey: 'user_id'
+			foreignKey: 'user_id',
+			as: 'user'
 		});
 		Marker.belongsTo(models.Story, {
-			foreignKey: 'story_id'
+			foreignKey: 'story_id',
+			as: 'story'
 		});
 		Marker.hasMany(models.Media, {
-			foreignKey: 'marker_id'
+			foreignKey: 'marker_id',
+			as: 'media'
 		});
 	}
 }

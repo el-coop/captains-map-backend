@@ -4,7 +4,8 @@ import sequelize from "../../database/sequelize.js";
 class Follower extends Model {
 	static associate(models) {
 		this.belongsTo(models.User,{
-			foreignKey: 'user_id'
+			foreignKey: 'user_id',
+			as: 'user'
 		});
 	}
 }

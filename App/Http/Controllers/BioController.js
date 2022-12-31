@@ -86,8 +86,8 @@ class BioController {
 		const stories = await user.getStories({
 			attributes: {
 				include: [
-					[sequelize.col('Markers.Media.path'), 'cover_path'],
-					[sequelize.col('Markers.Media.type'), 'cover_type'],
+					[sequelize.col('markers.media.path'), 'cover_path'],
+					[sequelize.col('markers.media.type'), 'cover_type'],
 				]
 			},
 			where,
@@ -97,7 +97,9 @@ class BioController {
 				include: [{
 					model: Media,
 					attributes: [],
+					as:'media'
 				}],
+				as: 'markers'
 			}],
 			order: [['created_at', 'DESC']],
 		});

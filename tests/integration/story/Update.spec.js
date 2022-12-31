@@ -1,6 +1,5 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import request from 'supertest';
 import helpers from '../../Helpers.js';
 import Story from '../../../App/Models/Story.js';

@@ -9,7 +9,8 @@ class Media extends Model {
 	 */
 	static associate(models) {
 		Media.belongsTo(models.Marker,{
-			foreignKey: 'marker_id'
+			foreignKey: 'marker_id',
+			as: 'marker'
 		})
 	}
 }

@@ -26,7 +26,7 @@ router.patch('/:story', [
 	modelMiddleware.valdiateOwnership('story'),
 	validation.validate({
 		name: ['required', 'string'],
-		published: ['required', 'in:0,1']
+		published: ['required', 'in:false,true']
 	})
 ], StoryController.edit);
 

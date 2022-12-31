@@ -42,13 +42,16 @@ class StoryController {
 			include: [{
 				model: Media,
 				attributes: ['id', 'marker_id', 'type', 'path'],
+				as: 'media'
 			},{
 				model: User,
 				attributes: ['id', 'username'],
 				include:[{
 					attributes: ['user_id', 'path'],
 					model: Bio,
-				}]
+					as: 'bio'
+				}],
+				as: 'user'
 			}]
 		});
 
@@ -56,7 +59,7 @@ class StoryController {
 		let cover;
 		const marker = markers[0];
 		if (marker) {
-			cover = marker.Media[0];
+			cover = marker.media[0];
 		}
 
 		res.json({
@@ -91,7 +94,10 @@ class StoryController {
 		const userId = req.user.id;
 		const story = req.objects.story;
 		const markers = await story.getMarkers({
-			include: [Media]
+			include: [{
+				model: Media,
+				as: 'media'
+			}]
 		});
 		await story.destroy();
 
@@ -109,7 +115,7 @@ class StoryController {
 
 	async [deleteMarker](marker) {
 		try {
-			const medias = marker.Media;
+			const medias = marker.media;
 			for (let i = 0; i < medias.length; i++) {
 				const media = medias[i];
 				if (media.type === 'image') {
