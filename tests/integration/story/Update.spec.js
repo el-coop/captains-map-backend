@@ -88,7 +88,7 @@ test.serial('It updates a story and flushes cache', async t => {
 	const response = await request(app).patch(`/api/story/${story.id}`)
 		.set('Cookie', await helpers.authorizedCookie('nur', '123456')).send({
 			name: 'name',
-			published: 1
+			published: true
 		});
 
 	const updatedStory = await Story.findOne();

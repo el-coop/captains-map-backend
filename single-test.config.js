@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/FollowController.spec.js"
+		"tests/**/story/Update.spec.js"
 	]
 }
