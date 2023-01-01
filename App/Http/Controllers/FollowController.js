@@ -1,5 +1,6 @@
 import Follower from '../../Models/Follower.js';
 import Cache from '../../Services/CacheService.js';
+import User from "../../Models/User.js";
 
 const follow = Symbol('follow');
 
@@ -8,17 +9,20 @@ class FollowController {
 	async following(req, res) {
 		const endpoint = req.query.endpoint;
 		const following = await Cache.rememberForever(endpoint, async () => {
-			const result = await new Follower().where('endpoint', endpoint).fetchAll({
-				columns: ['endpoint', 'user_id'],
-				withRelated: [{
-					user(query) {
-						return query.select('id', 'username');
-					},
+			const result = await Follower.findAll({
+				attributes: ['endpoint', 'user_id'],
+				where: {
+					endpoint: endpoint
+				},
+				include: [{
+					attributes: ['id', 'username'],
+					model: User,
+					as: 'user'
 				}]
 			});
 
 			return result.map((following) => {
-				return following.related('user').get('username');
+				return following.user.username;
 			});
 		});
 
@@ -36,11 +40,11 @@ class FollowController {
 	async toggleFollow(req, res) {
 		const user = req.objects.user;
 
-		const subscription = await new Follower({
-			user_id: user.get('id'),
-			endpoint: req.body.subscription.endpoint
-		}).fetch({
-			require: false
+		const subscription = await Follower.findOne({
+			where: {
+				user_id: user.id,
+				endpoint: req.body.subscription.endpoint
+			}
 		});
 
 		let status = 200;
@@ -52,7 +56,7 @@ class FollowController {
 		}
 
 		await Cache.forget(req.body.subscription.endpoint);
-		await Cache.forget(`followers_${user.get('id')}`);
+		await Cache.forget(`followers_${user.id}`);
 
 		return res.status(status)
 			.json({
@@ -62,9 +66,9 @@ class FollowController {
 
 	async [follow](subscriptionData, user) {
 		const subscription = new Follower();
-		subscription.set('user_id', user.get('id'));
-		subscription.set('endpoint', subscriptionData.endpoint);
-		subscription.set('subscription', subscriptionData);
+		subscription.user_id = user.id;
+		subscription.endpoint = subscriptionData.endpoint;
+		subscription.subscription = subscriptionData;
 		await subscription.save();
 	}
 

@@ -1,20 +1,54 @@
-export const up = function (knex) {
-	return knex.schema.createTable('followers', (table) => {
-		if(process.env.APP_ENV !== 'test'){
-			table.engine('InnoDB');
-		}
-		table.increments();
-		table.integer('user_id').unsigned();
-		table.string('endpoint');
-		table.json('subscription');
-		table.timestamps();
+'use strict';
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+	async up(queryInterface, Sequelize) {
+		await queryInterface.createTable('followers', {
+			id: {
+				allowNull: false,
+				autoIncrement: true,
+				primaryKey: true,
+				type: Sequelize.INTEGER.UNSIGNED
+			},
+			user_id: {
+				allowNull: false,
+				type: Sequelize.INTEGER.UNSIGNED,
+				onDelete: 'CASCADE',
+				references: {
+					model: {
+						tableName: 'users',
+					},
+					key: 'id',
+				}
+			},
+			endpoint: {
+				allowNull: false,
+				type: Sequelize.STRING
+			},
+			subscription: {
+				allowNull: false,
+				type: Sequelize.JSON
+			},
+			created_at: {
+				allowNull: false,
+				type: 'timestamp'
+			},
+			updated_at: {
+				allowNull: false,
+				type: 'timestamp'
+			}
+		});
 
-		table.foreign('user_id').references('users.id').onDelete('CASCADE');
-		table.unique(['user_id', 'endpoint']);
-		table.index('endpoint');
-	});
-};
+		await queryInterface.addIndex('followers',{
+			fields: ['user_id', 'endpoint'],
+			unique: true
+		});
 
-export const down = function (knex) {
-	return knex.schema.dropTable('followers');
+		await queryInterface.addIndex('followers',{
+			fields: ['endpoint'],
+		});
+
+	},
+	async down(queryInterface, Sequelize) {
+		await queryInterface.dropTable('followers');
+	}
 };

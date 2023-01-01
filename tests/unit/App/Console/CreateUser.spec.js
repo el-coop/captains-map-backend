@@ -1,19 +1,20 @@
 import test from 'ava';
-import knex from '../../../../database/knex.js';
 import sinon from "sinon";
+import bcrypt from 'bcrypt';
 
 import CreateUser from '../../../../App/Console/Commands/CreateUser.js';
 import User from '../../../../App/Models/User.js';
 import cache from "../../../../App/Services/CacheService.js";
+import migrator from '../../../Migrator.js';
+
 
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
+	await migrator.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
-	sinon.restore();
+	await migrator.down({to: '20180814134813_create_users_table'});
 });
 
 
@@ -22,17 +23,21 @@ test.serial('It creates user from command line', async t => {
 	const taggedCacheStub = sinon.stub(cache, 'tag').returns({
 		flush: flushStub
 	});
+
 	const createUser = new CreateUser();
-	await createUser.handle('name','email','123456');
+	await createUser.handle('name', 'email', '123456');
 
 	const userCount = await User.count();
-	const user = await new User({
-		username: 'name'
-	}).fetch();
+	const user = await User.findOne({
+		where: {
+			username: 'name'
+		}
+	});
 
 	t.is(userCount, 1);
-	t.is(user.get('username'), 'name');
-	t.is(user.get('email'), 'email');
+	t.is(user.username, 'name');
+	t.is(user.email, 'email');
+	t.true(await bcrypt.compare('123456',user.password));
 	t.true(taggedCacheStub.calledOnce);
 	t.true(taggedCacheStub.calledWith(['user_search']));
 	t.true(flushStub.calledOnce);

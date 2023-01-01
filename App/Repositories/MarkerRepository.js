@@ -1,37 +1,54 @@
 import Marker from '../Models/Marker.js';
+import {Op} from 'sequelize';
+import User from "../Models/User.js";
+import Bio from "../Models/Bio.js";
+import Media from "../Models/Media.js";
+
 const pageSize = parseInt(process.env.PAGE_SIZE);
 
-const buildConditions = Symbol('buildConditions');
+const buildWhere = Symbol('buildWhere');
 const calculateObjectPage = Symbol('calculateObjectPage');
 const get = Symbol('get');
 const count = Symbol('count');
 
 class MarkerRepository {
 
-	[buildConditions](query, {user = false, startId = false, borders = false, previous = false}) {
+	[buildWhere]({user = false, startId = false, borders = false, previous = false}) {
+		const where = {};
 		if (user) {
-			query.where('user_id', user);
+			where.user_id = user;
 		}
 		if (startId) {
 			if (previous) {
-				query.where('id', '>', startId);
+				where.id = {
+					[Op.gt]: startId
+				}
 			} else {
-				query.where('id', '<', startId);
+				where.id = {
+					[Op.lt]: startId
+				}
 			}
 		}
 
 		if (borders) {
-			query.where('lat', '>', borders[0].lat).where('lng', '>', borders[0].lng)
-				.where('lat', '<', borders[1].lat).where('lng', '<', borders[1].lng);
+			where.lat = {
+				[Op.gt]: borders[0].lat,
+				[Op.lt]: borders[1].lat
+			}
+			where.lng = {
+				[Op.gt]: borders[0].lng,
+				[Op.lt]: borders[1].lng
+			}
 		}
 
-		return query;
+		return where;
 	}
 
 	async getPage(conditions = {}) {
 		let hasNext = false;
-		let markers = this[buildConditions](new Marker(), conditions);
-		markers = await this[get](markers, 'DESC', pageSize + 1);
+		const where = this[buildWhere](conditions);
+
+		const markers = await this[get](where, 'DESC', pageSize + 1);
 
 		if (markers.length > pageSize) {
 			markers.pop();
@@ -48,12 +65,12 @@ class MarkerRepository {
 
 	async getPreviousPage(conditions = {}) {
 		conditions.previous = true;
-		let markers = this[buildConditions](new Marker(), conditions);
+		const where = this[buildWhere](conditions);
 
-		markers = await this[get](markers, 'ASC', pageSize);
+		const markers = await this[get](where, 'ASC', pageSize);
 
 		return {
-			markers: markers.toJSON().sort((a, b) => {
+			markers: markers.sort((a, b) => {
 				if (a.id > b.id) {
 					return 1;
 				}
@@ -87,41 +104,55 @@ class MarkerRepository {
 
 	async [calculateObjectPage](object, user) {
 
-		const searchedMarker = await new Marker({
-			id: object,
-			user_id: user
-		}).fetch({
-			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
-			require: true,
-			withRelated: [
-				{
-					media(query) {
-						return query.select('id', 'marker_id', 'type', 'path');
-					},
+		const searchedMarker = await Marker.findOne({
+			attributes: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
+			where: {
+				id: object,
+				user_id: user
+			},
+			include: [{
+				model: User,
+				attributes: ['id', 'username'],
+				include: {
+					model: Bio,
+					attributes: ['user_id', 'path'],
+					as: 'bio'
 				},
-
-				{
-					user(query) {
-						return query.select('id', 'username');
-					},
-				},
-				{
-					'user.bio'(query) {
-						return query.select('user_id', 'path');
-					}
-				}]
+				as: 'user'
+			}, {
+				model: Media,
+				attributes: ['id', 'marker_id', 'type', 'path'],
+				as: 'media'
+			}],
+			rejectOnEmpty: true
 		});
 
-		const numberMarkersBefore = await new Marker().where('user_id', user).where('id', '>', object).count('user_id');
+		const numberMarkersBefore = await Marker.count({
+			where: {
+				user_id: user,
+				id: {
+					[Op.gt]: object
+				}
+			}
+		});
 		const page = Math.floor(numberMarkersBefore / pageSize);
 
-		const prevMarkers = await this[get](new Marker().where('user_id', user).where('id', '>', object), 'ASC', numberMarkersBefore - page * pageSize);
-		const nextMarkers = await this[get](new Marker().where('user_id', user).where('id', '<', object), 'DESC', pageSize - prevMarkers.length);
+		const prevMarkers = await this[get]({
+			user_id: user,
+			id: {[Op.gt]: object}
+		}, 'ASC', numberMarkersBefore - page * pageSize);
+		const nextMarkers = await this[get]({
+			user_id: user,
+			id: {[Op.lt]: object}
+		}, 'DESC', pageSize - prevMarkers.length);
 
 		nextMarkers.forEach((marker) => {
 			prevMarkers.push(marker);
 		});
-		const markers = prevMarkers.push(searchedMarker).toJSON().sort((a, b) => {
+
+		prevMarkers.push(searchedMarker)
+
+		prevMarkers.sort((a, b) => {
 			if (a.id > b.id) {
 				return -1;
 			}
@@ -129,34 +160,34 @@ class MarkerRepository {
 		});
 
 		return {
-			markers,
+			markers: prevMarkers,
 			page
 		};
 	}
 
-	async [get](query, order, limit) {
-		return await query.where('story_id', null).orderBy('id', order).query((qb) => {
-			qb.limit(limit);
-		}).fetchAll({
-			columns: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
-			withRelated: [
-				{
-					media(query) {
-						return query.select('id', 'marker_id', 'type', 'path');
-					},
+	async [get](where, order, limit) {
+		where.story_id = null;
+		return await Marker.findAll({
+			attributes: ['id', 'user_id', 'lat', 'lng', 'type', 'location', 'time', 'description'],
+			where,
+			include: [{
+				model: User,
+				attributes: ['id', 'username'],
+				include: {
+					model: Bio,
+					attributes: ['user_id', 'path'],
+					as: 'bio',
 				},
-
-				{
-					user(query) {
-						return query.select('id', 'username');
-					},
-				},
-				{
-					'user.bio'(query) {
-						return query.select('user_id', 'path');
-					}
-				}]
+				as: 'user',
+			}, {
+				model: Media,
+				attributes: ['id', 'marker_id', 'type', 'path'],
+				as: 'media',
+			}],
+			order: [['id', order]],
+			limit
 		});
+
 	}
 
 	async [count](query, column = '') {

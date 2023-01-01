@@ -1,6 +1,5 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import request from 'supertest';
 import helpers from '../../Helpers.js';
 import Story from '../../../App/Models/Story.js';
@@ -14,6 +13,9 @@ import fs from "fs";
 import MediaFactory from "../../../database/factories/MediaFactory.js";
 import Marker from "../../../App/Models/Marker.js";
 import Media from "../../../App/Models/Media.js";
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
+
 
 import { fileURLToPath } from 'url';
 
@@ -23,18 +25,19 @@ const __dirname = path.dirname(__filename);
 let story;
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
-
+	await migrator.up();
+	await seeder.up();
 	story = await StoryFactory.create({
-		user_id: 1,
+		user_id: 1
 	});
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
+
 
 test.serial('It prevents not logged from deleting story', async t => {
 	const response = await request(app).delete(`/api/story/${story.id}`).send();
@@ -44,12 +47,10 @@ test.serial('It prevents not logged from deleting story', async t => {
 
 
 test.serial('It prevents other user from deleting story', async t => {
-	const otherUser = await UserFactory.create({
-		password: '123456'
-	});
+	const otherUser = await UserFactory.create();
 
 	const response = await request(app).delete(`/api/story/${story.id}`)
-		.set('Cookie', await helpers.authorizedCookie(otherUser.get('username'), '123456')).send();
+		.set('Cookie', await helpers.authorizedCookie(otherUser.username, '123456')).send();
 
 	t.is(response.status, 403);
 });
@@ -65,12 +66,12 @@ test.serial('It returns 404 if story doesnt exist', async t => {
 test.serial('It deletes a story and its markers and flushes cache', async t => {
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: story.get('id')
+		story_id: story.id
 	});
 
 	const mediaMarker = await MarkerFactory.create({
 		user_id: 1,
-		story_id: story.get('id')
+		story_id: story.id
 	});
 
 	const demoFilePath = path.resolve(__dirname, '../../demo.jpg');
@@ -80,7 +81,7 @@ test.serial('It deletes a story and its markers and flushes cache', async t => {
 	fs.copyFileSync(demoFilePath, thumbPath);
 
 	await MediaFactory.create({
-		marker_id: mediaMarker.get('id'),
+		marker_id: mediaMarker.id,
 		type: 'image',
 		path: `/images/blabla`
 	})

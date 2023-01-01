@@ -1,8 +1,9 @@
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import Story from '../../App/Models/Story.js';
 import BaseFactory from './BaseFactory.js';
+import UserFactory from "./UserFactory.js";
 
-class MarkerFactory extends BaseFactory {
+class StoryFactory extends BaseFactory {
 	model() {
 		return Story;
 	}
@@ -10,8 +11,9 @@ class MarkerFactory extends BaseFactory {
 	define() {
 		return {
 			name: faker.lorem.word(),
+			user_id: UserFactory
 		}
 	}
 }
 
-export default new MarkerFactory();
+export default new StoryFactory();

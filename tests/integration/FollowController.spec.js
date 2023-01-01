@@ -1,20 +1,22 @@
 import test from 'ava';
 import sinon from 'sinon';
-import knex from "../../database/knex.js";
 import request from "supertest";
 import app from "../../app.js";
 import cache from "../../App/Services/CacheService.js";
 import UserFactory from "../../database/factories/UserFactory.js";
 import FollowFactory from "../../database/factories/FollowerFactory.js";
 import Follower from "../../App/Models/Follower.js";
+import migrator from "../Migrator.js";
+import seeder from "../Seeder.js";
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
-test.afterEach.always('Restore sinon', async t => {
-	await knex.migrate.rollback();
+test.afterEach.always(async () => {
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -99,10 +101,14 @@ test.serial('It toggles following on', async t => {
 		success: true
 	});
 
-	const follower = await new Follower().where('endpoint', endpoint).fetch();
+	const follower = await Follower.findOne({
+		where: {
+			endpoint: endpoint
+		}
+	});
 
-	t.is(follower.get('endpoint'), endpoint);
-	t.deepEqual(follower.get('subscription'), subscription);
+	t.is(follower.endpoint, endpoint);
+	t.deepEqual(follower.subscription, subscription);
 	t.true(cacheStub.calledTwice);
 	t.true(cacheStub.firstCall.calledWith(endpoint));
 	t.true(cacheStub.secondCall.calledWith(`followers_1`));
@@ -134,8 +140,10 @@ test.serial('It toggles following off', async t => {
 		success: true
 	});
 
-	const follower = await new Follower().where('endpoint', endpoint).fetch({
-		require: false
+	const follower = await Follower.findOne({
+		where: {
+			endpoint: endpoint
+		}
 	});
 
 	t.is(follower, null);

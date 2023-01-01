@@ -5,7 +5,13 @@ class HttpService {
 		try {
 			return await axios.get(url, headers);
 		} catch (error) {
-			return error.response;
+			if(error.response){
+				return error.response;
+			} else {
+				return {
+					status: 500
+				}
+			}
 		}
 	}
 

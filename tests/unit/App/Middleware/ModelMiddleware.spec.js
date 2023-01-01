@@ -1,11 +1,13 @@
 import test from 'ava';
 import sinon from 'sinon';
 import modelMiddleware from '../../../../App/Http/Middleware/ModelMiddleware.js';
-import knex from "../../../../database/knex.js";
 import MarkerFactory from "../../../../database/factories/MarkerFactory.js";
 import InjectUserMiddleware from "../../../../App/Http/Middleware/InjectUserMiddleware.js";
 import express from "express";
 import User from "../../../../App/Models/User.js";
+import migrator from "../../../Migrator.js";
+import seeder from "../../../Seeder.js";
+import UserFactory from "../../../../database/factories/UserFactory.js";
 
 let res;
 let next;
@@ -20,11 +22,12 @@ test.beforeEach(async () => {
 		})
 	};
 	next = sinon.spy();
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 test.afterEach.always('Restore sinon', async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -94,10 +97,11 @@ test.serial('Ownership validation returns 403 when no user', async t => {
 
 test.serial('Ownership validation returns 403 when user doesnt own object', async t => {
 	const injectUserMiddleware = new InjectUserMiddleware(express.Router());
+	const otherUser = await UserFactory.create();
 	const marker = await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	});
-	const user = await new User().fetch();
+	const user = await User.findOne();
 
 	const req = {
 		objects: {
@@ -108,7 +112,8 @@ test.serial('Ownership validation returns 403 when user doesnt own object', asyn
 		}
 	};
 
-	await injectUserMiddleware.handle(req, res, ()=>{});
+	await injectUserMiddleware.handle(req, res, () => {
+	});
 
 	const error = await t.throwsAsync(async () => {
 		await modelMiddleware.valdiateOwnership('marker')(req, res, next);
@@ -125,7 +130,7 @@ test.serial('Onwership validation passes when user is the owner', async t => {
 	const marker = await MarkerFactory.create({
 		user_id: 1,
 	});
-	const user = await new User().fetch();
+	const user = await User.findOne();
 
 	const req = {
 		objects: {

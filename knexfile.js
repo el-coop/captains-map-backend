@@ -16,7 +16,7 @@ export default {
 			filename: './database/test.sqlite3'
 		},
 		migrations: {
-			directory: __dirname + '/database/migrations',
+			directory: __dirname + '/database/oldMigrations',
 			tableName: 'migrations'
 		},
 		seeds: {
@@ -39,7 +39,7 @@ export default {
 			max: 10
 		},
 		migrations: {
-			directory: __dirname + '/database/migrations',
+			directory: __dirname + '/database/oldMigrations',
 			tableName: 'migrations'
 		},
 		seeds: {
@@ -61,7 +61,7 @@ export default {
 			max: 10
 		},
 		migrations: {
-			directory:  __dirname + '/database/migrations',
+			directory:  __dirname + '/database/oldMigrations',
 			tableName: 'migrations'
 		},
 		seeds: {

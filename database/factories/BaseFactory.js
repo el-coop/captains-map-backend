@@ -1,4 +1,4 @@
-export default class {
+class BaseFactory {
 	model(data) {
 		throw new Error('Model is undefined');
 	}
@@ -22,8 +22,12 @@ export default class {
 
 	async createOne(data) {
 		data = Object.assign(this.define(), data);
-		const object = new (this.model())(data);
-		await object.save();
-		return object;
+		for(let key in data){
+			if(data[key] instanceof BaseFactory){
+				data[key] = (await data[key].create()).id;
+			}
+		}
+		return this.model().create(data);
 	}
 }
+export default BaseFactory;

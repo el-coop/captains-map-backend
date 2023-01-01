@@ -11,9 +11,7 @@ class InjectUserMiddleware extends BaseMiddleware {
 		const {token} = req.signedCookies;
 		const jwt = jwtService.verify(token);
 		if (jwt) {
-			const user = await new User({
-				id: jwt.id
-			}).fetch();
+			const user = await User.findByPk(jwt.id);
 			if (jwt.exp * 1000 - Date.now() < process.env.LOGIN_DURATION * 2 / 3) {
 				res.cookie('token', user.generateJwt(), {
 					httpOnly: true,

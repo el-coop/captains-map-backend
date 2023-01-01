@@ -8,21 +8,21 @@ class CrawlerController {
 		const user = req.objects.user;
 		if (user) {
 			type = 'profile';
-			title = user.get('username');
-			url += `/${user.get('username')}`;
+			title = user.username;
+			url += `/${user.username}`;
 		}
 		const marker = req.objects.marker;
 
 		if (marker) {
-			await marker.load('media');
-			description = marker.get('description');
+			const media = await marker.getMedia();
+			description = marker.description;
 			type = 'article';
-			url += `/${marker.get('id')}`;
-			images = marker.related('media').map((media) => {
-				if (media.get('type') === 'image') {
-					return `https://map.elcoop.io/api${media.get('path')}`;
+			url += `/${marker.id}`;
+			images = media.map((media) => {
+				if (media.type === 'image') {
+					return `https://map.elcoop.io/api${media.path}`;
 				}
-				return `https://instagram.com/p/${media.get('path')}/media/`;
+				return `https://instagram.com/p/${media.path}/media/`;
 			});
 		}
 		return res.status(200).render('crawler.html', {

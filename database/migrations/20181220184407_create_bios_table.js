@@ -1,16 +1,44 @@
-export const up = function (knex, Promise) {
-	return knex.schema.createTable('bios', (table) => {
-		table.increments();
-		table.integer('user_id').unsigned();
-		table.foreign('user_id').references('users.id').onDelete('CASCADE');
-		table.string('path');
-		table.text('description');
-		table.timestamps();
-
-		table.unique('user_id');
-	});
-};
-
-export const down = function (knex, Promise) {
-	return knex.schema.dropTable('bios');
+'use strict';
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+	async up(queryInterface, Sequelize) {
+		await queryInterface.createTable('bios', {
+			id: {
+				allowNull: false,
+				autoIncrement: true,
+				primaryKey: true,
+				type: Sequelize.INTEGER.UNSIGNED
+			},
+			user_id: {
+				allowNull: false,
+				type: Sequelize.INTEGER.UNSIGNED,
+				onDelete: 'CASCADE',
+				references: {
+					model: {
+						tableName: 'users',
+					},
+					key: 'id',
+				}
+			},
+			path: {
+				allowNull: true,
+				type: Sequelize.STRING
+			},
+			description: {
+				allowNull: true,
+				type: Sequelize.TEXT
+			},
+			created_at: {
+				allowNull: false,
+				type: 'timestamp'
+			},
+			updated_at: {
+				allowNull: false,
+				type: 'timestamp'
+			}
+		});
+	},
+	async down(queryInterface, Sequelize) {
+		await queryInterface.dropTable('bios');
+	}
 };

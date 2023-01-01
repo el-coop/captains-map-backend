@@ -1,16 +1,18 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import request from 'supertest';
 import helpers from "../../Helpers.js";
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 });
 
 

@@ -1,3 +1,4 @@
+import registerModels from "../Models/registerModels.js";
 import BaseMiddleware from './Middleware/BaseMiddleware.js';
 import CSRFMiddleware from './Middleware/CSRFMiddleware.js';
 import express from 'express';
@@ -35,6 +36,7 @@ class Kernel {
 			}
 		})
 	}
+
 
 	registerPreMiddleware() {
 		this.registerMiddleware(preMiddleware);

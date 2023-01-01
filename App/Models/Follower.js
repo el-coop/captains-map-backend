@@ -1,26 +1,25 @@
-import Bookshelf from './bookshelf.js';
+import {Model, DataTypes} from 'sequelize';
+import sequelize from "../../database/sequelize.js";
 
-const Follower = Bookshelf.Model.extend({
-	tableName: 'followers',
-	hasTimestamps: true,
+class Follower extends Model {
+	static associate(models) {
+		this.belongsTo(models.User,{
+			foreignKey: 'user_id',
+			as: 'user'
+		});
+	}
+}
 
-	parse(attrs) {
-		if (attrs['subscription']) {
-			attrs['subscription'] = JSON.parse(attrs['subscription']);
-		}
-		return attrs;
-	},
-
-	format(attrs) {
-		if (attrs['subscription']) {
-			attrs['subscription'] = JSON.stringify(attrs['subscription']);
-		}
-		return attrs;
-	},
-
-	user() {
-		return this.belongsTo('User');
-	},
+Follower.init({
+	user_id: DataTypes.INTEGER,
+	endpoint: DataTypes.STRING,
+	subscription: DataTypes.JSON
+}, {
+	sequelize,
+	modelName: 'Follower',
+	createdAt: 'created_at',
+	updatedAt: 'updated_at',
+	tableName: 'followers'
 });
 
-export default Bookshelf.model('Follower', Follower);
+export default Follower;

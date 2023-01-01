@@ -19,7 +19,6 @@ nunjucks.configure('views', {
 
 kernel.registerPreMiddleware();
 
-
 app.use('/api', routes);
 
 kernel.registerPostMiddleware();

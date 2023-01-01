@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/CreateUser.spec.js"
+		"tests/**/story/Update.spec.js"
 	]
 }

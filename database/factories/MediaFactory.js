@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import Media from '../../App/Models/Media.js';
 import BaseFactory from './BaseFactory.js';
+import MarkerFactory from "./MarkerFactory.js";
 
 class MediaFactory extends BaseFactory {
 	model() {
@@ -9,7 +10,7 @@ class MediaFactory extends BaseFactory {
 
 	define() {
 		return {
-			marker_id: 1,
+			marker_id: MarkerFactory,
 			type: 'instagram',
 			path: 'BlfyEoTDKxi',
 		}

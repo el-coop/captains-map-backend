@@ -1,17 +1,45 @@
-export const up = function (knex) {
-	return knex.schema.createTable('stories', (table) => {
-		if(process.env.APP_ENV !== 'test'){
-			table.engine('InnoDB')
-		}
-		table.increments();
-		table.integer('user_id').unsigned();
-		table.string('name');
-		table.boolean('published').defaultTo(false);
-		table.timestamps();
-		table.foreign('user_id').references('users.id').onDelete('CASCADE');
-
-	});
-};
-export const down = function (knex) {
-	return knex.schema.dropTable('stories');
+'use strict';
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+	async up(queryInterface, Sequelize) {
+		await queryInterface.createTable('stories', {
+			id: {
+				allowNull: false,
+				autoIncrement: true,
+				primaryKey: true,
+				type: Sequelize.INTEGER.UNSIGNED
+			},
+			user_id: {
+				allowNull: false,
+				type: Sequelize.INTEGER.UNSIGNED,
+				onDelete: 'CASCADE',
+				references: {
+					model: {
+						tableName: 'users',
+					},
+					key: 'id',
+				}
+			},
+			name: {
+				allowNull: false,
+				type: Sequelize.STRING
+			},
+			published: {
+				allowNull: false,
+				type: Sequelize.BOOLEAN,
+				defaultValue: false
+			},
+			created_at: {
+				allowNull: false,
+				type: 'timestamp'
+			},
+			updated_at: {
+				allowNull: false,
+				type: 'timestamp'
+			}
+		});
+	},
+	async down(queryInterface, Sequelize) {
+		await queryInterface.dropTable('stories');
+	}
 };

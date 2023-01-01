@@ -20,6 +20,7 @@ import path from 'path';
 import Cache from '../../Services/CacheService.js';
 import MarkerRepository from '../../Repositories/MarkerRepository.js';
 import errorLogger from '../../Services/ErrorLogger.js';
+import Bio from "../../Models/Bio.js";
 
 const generateQueryKey = Symbol('generateQueryKey');
 const notifyFollowers = Symbol('notifyFollowers');
@@ -27,15 +28,15 @@ const notifyFollowers = Symbol('notifyFollowers');
 class MarkersController {
 	async create(req, res) {
 		const marker = new Marker();
-		marker.set('user_id', req.user.get('id'));
-		marker.set('lat', req.body.lat);
-		marker.set('lng', req.body.lng);
-		marker.set('time', req.body.time);
-		marker.set('type', req.body.type);
-		marker.set('description', req.body.description);
-		marker.set('location', req.body.location);
+		marker.user_id = req.user.id;
+		marker.lat = parseFloat(req.body.lat);
+		marker.lng = parseFloat(req.body.lng);
+		marker.time = req.body.time;
+		marker.type = req.body.type;
+		marker.description = req.body.description;
+		marker.location = req.body.location;
 		if (req.objects.story) {
-			marker.set('story_id', req.objects.story.get('id'));
+			marker.story_id = req.objects.story.id;
 		}
 		await marker.save();
 
@@ -45,9 +46,9 @@ class MarkersController {
 			if (req.body.media.type === 'instagram') {
 				const media = new Media();
 				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
-				media.set('path', regex.exec(req.body.media.path)[1]);
-				media.set('type', req.body.media.type);
-				media.set('marker_id', marker.get('id'));
+				media.path = regex.exec(req.body.media.path)[1];
+				media.type = req.body.media.type;
+				media.marker_id = marker.id;
 				await media.save();
 
 				medias.push(media);
@@ -55,26 +56,33 @@ class MarkersController {
 				for (let i = 0; i < req.files.length; i++) {
 					const file = req.files[i];
 					const media = new Media();
-					media.set('type', req.body.media.type);
-					media.set('path', `/images/${file.filename}`);
-					media.set('marker_id', marker.get('id'));
+					media.type = req.body.media.type;
+					media.path = `/images/${file.filename}`;
+					media.marker_id = marker.id;
 					await media.save();
 
 					medias.push(media);
 				}
 			}
-			await marker.load('media');
-			await marker.load('user.bio');
+			marker.setDataValue('media', medias);
+			marker.setDataValue('user', {
+				bio: await marker.getUser({
+					include: [{
+						model: Bio,
+						as: 'bio'
+					}]
 
-			await Cache.tag(['markers', `markers_user:${req.user.get('id')}`]).flush();
+				})
+			});
+
+			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
 			res.status(200);
 			res.json(marker);
 
-
 			if (!req.objects.story) {
 				this[notifyFollowers](req.user, marker, req);
-			} else if (await req.objects.story.related('markers').count() === 1) {
+			} else if (await req.objects.story.countMarkers() === 1) {
 				await Cache.tag([`stories_user:${req.user.id}`]).flush();
 			}
 		} catch (e) {
@@ -111,23 +119,23 @@ class MarkersController {
 	async userMarkers(req, res) {
 		const user = req.objects.user;
 
-		const queryKey = this[generateQueryKey](req, `markers_user:${user.get('id')}`);
+		const queryKey = this[generateQueryKey](req, `markers_user:${user.id}`);
 
 		let borders = false;
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
 
-		const markers = await Cache.tag([`markers_user:${user.get('id')}`]).rememberForever(queryKey, async () => {
+		const markers = await Cache.tag([`markers_user:${user.id}`]).rememberForever(queryKey, async () => {
 			if (!req.params.markerId) {
 				return await MarkerRepository.getPage({
 					startId: req.query.startingId || false,
-					user: user.get('id'),
+					user: user.id,
 					borders
 				});
 			} else {
 				try {
-					return await MarkerRepository.getObjectPage(req.params.markerId, user.get('id'));
+					return await MarkerRepository.getObjectPage(req.params.markerId, user.id);
 				} catch (error) {
 					throw new BaseError('Not Found', 404);
 				}
@@ -140,17 +148,17 @@ class MarkersController {
 
 	async previousMarkers(req, res) {
 		const user = req.objects.user;
-		const queryKey = this[generateQueryKey](req, `markers_prevUser:${user.get('id')}`);
+		const queryKey = this[generateQueryKey](req, `markers_prevUser:${user.id}`);
 
 		let borders = false;
 		if (req.query.borders) {
 			borders = JSON.parse(req.query.borders)
 		}
 
-		const markers = await Cache.tag([`markers_user:${user.get('id')}`]).rememberForever(queryKey, async () => {
+		const markers = await Cache.tag([`markers_user:${user.id}`]).rememberForever(queryKey, async () => {
 			return await MarkerRepository.getPreviousPage({
 				startId: req.params.markerId,
-				user: user.get('id'),
+				user: user.id,
 				borders
 			});
 		});
@@ -162,17 +170,16 @@ class MarkersController {
 	async delete(req, res) {
 		try {
 			const marker = req.objects.marker;
-			await marker.load(['media']);
-			const story = marker.get('story_id');
+			const medias = await marker.getMedia();
+			const story = marker.story_id;
 
 			try {
-				const medias = marker.related('media');
 				for (let i = 0; i < medias.length; i++) {
 					const media = medias.at(i);
-					if (media.get('type') === 'image') {
-						fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path')}`));
-						if (fs.existsSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`))) {
-							fs.unlinkSync(path.join(__dirname, `../../../public/${media.get('path').replace('images', 'thumbnails')}`));
+					if (media.type === 'image') {
+						fs.unlinkSync(path.join(__dirname, `../../../public/${media.path}`));
+						if (fs.existsSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`))) {
+							fs.unlinkSync(path.join(__dirname, `../../../public/${media.path.replace('images', 'thumbnails')}`));
 						}
 					}
 					await media.destroy()
@@ -183,7 +190,7 @@ class MarkersController {
 			}
 
 			await marker.destroy();
-			await Cache.tag(['markers', `markers_user:${req.user.get('id')}`]).flush();
+			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
 			res.status(200);
 			res.json({
@@ -199,9 +206,10 @@ class MarkersController {
 	}
 
 	async getInstagramData(req, res) {
-		const instagramId = req.objects.media.get('path');
+		const instagramId = req.objects.media.path;
 		const response = await Cache.remember(`instagram:${instagramId}`, async () => {
 			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
+			console.log(apiResponse);
 			if (apiResponse.status === 200) {
 				return apiResponse.data;
 			}
@@ -228,26 +236,26 @@ class MarkersController {
 	}
 
 	async [notifyFollowers](user, marker, req) {
+
 		try {
-			const followers = await Cache.rememberForever(`followers_${user.get('id')}`, async () => {
-				return await new Follower().where('user_id', user.get('id')).fetchAll({
-					columns: ['subscription', 'user_id'],
-				});
+			const followers = await Cache.rememberForever(`followers_${user.id}`, async () => {
+				return await Follower.findAll({
+					attributes: ['subscription', 'user_id'],
+					where: {
+						user_id: user.id,
+					}
+				})
 			});
 
+
 			const payload = {
-				username: user.get('username'),
-				image: marker.related('media').at(0).get('path'),
+				username: user.username,
+				image: marker.dataValues.media[0].path,
 
 			};
 
 			followers.forEach((follower) => {
-				let subscription;
-				if (follower.get && typeof follower.get === 'function') {
-					subscription = follower.get('subscription');
-				} else {
-					subscription = follower.subscription;
-				}
+				const subscription = follower.subscription;
 				webPush.sendNotification(subscription, JSON.stringify(payload));
 			});
 		} catch (error) {

@@ -1,19 +1,25 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import MarkerFactory from '../../../database/factories/MarkerFactory.js';
 import StoryFactory from '../../../database/factories/StoryFactory.js';
 import cache from '../../../App/Services/CacheService.js';
 import request from 'supertest';
 import sinon from 'sinon';
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
+import UserFactory from "../../../database/factories/UserFactory.js";
+
+let otherUser;
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
+	otherUser = await UserFactory.create();
 });
 
 test.afterEach.always(async () => {
-	await knex.migrate.rollback();
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
 });
 
@@ -24,7 +30,7 @@ test.serial('It caches then returns all existing non story markers with 1 pagina
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const cacheSetStub = sinon.stub(cache.store, 'set');
@@ -103,7 +109,7 @@ test.serial('It returns data in pages when there is much data', async t => {
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const response = await request(app).get('/api/marker');
@@ -121,7 +127,7 @@ test.serial('It returns data and caches after id when there id is specified', as
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const markers = await MarkerFactory.create({
@@ -180,7 +186,7 @@ test.serial('It returns and caches only markers of specific user with hasNext fa
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const marker0 = await MarkerFactory.create({
@@ -190,7 +196,7 @@ test.serial('It returns and caches only markers of specific user with hasNext fa
 		user_id: 1,
 	});
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	}, 2);
 
 	const response = await request(app).get('/api/marker/nur');
@@ -219,7 +225,7 @@ test.serial('It returns from cache only markers of specific user with hasNext fa
 		user_id: 1,
 	});
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 	}, 2);
 
 	sinon.stub(cache.store, 'get').returns(JSON.stringify({
@@ -251,14 +257,14 @@ test.serial('It returns and caches only markers of specific user after specific 
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const userFirstMarkers = await MarkerFactory.create({
 		user_id: 1,
 	}, 3);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 		created_at: new Date(Date.now() - 4 * 24 * 3600 * 1000)
 	});
 	const userSecondMarkers = await MarkerFactory.create({
@@ -294,7 +300,7 @@ test.serial('It returns from cache only markers of specific user after specific 
 		user_id: 1,
 	}, 3);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 		created_at: new Date(Date.now() - 4 * 24 * 3600 * 1000)
 	});
 	const userSecondMarkers = await MarkerFactory.create({
@@ -337,14 +343,14 @@ test.serial('It returns only markers of specific user with hasNext true when mor
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	await MarkerFactory.create({
 		user_id: 1,
 	}, 4);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 		created_at: new Date(Date.now() - 4 * 24 * 3600 * 1000)
 	});
 
@@ -363,7 +369,7 @@ test.serial('It returns and caches specific marker page with has next when neede
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const markers = await MarkerFactory.create({
@@ -449,7 +455,7 @@ test.serial('It returns specific marker page with no has next when no next', asy
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const markers = await MarkerFactory.create({
@@ -504,7 +510,7 @@ test.serial('It returns and caches previous page', async t => {
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id')
+		story_id: Story.id
 	});
 
 	const markers = await MarkerFactory.create({
@@ -585,7 +591,7 @@ test.serial('It returns and caches all markers within boundaries', async t => {
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id'),
+		story_id: Story.id,
 		lat: 9.23849,
 		lng: -9.4922,
 	});
@@ -679,7 +685,7 @@ test.serial('It returns and caches only markers of specific user in specific bou
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id'),
+		story_id: Story.id,
 		lat: 9.23849,
 		lng: -9.4922,
 	});
@@ -690,7 +696,7 @@ test.serial('It returns and caches only markers of specific user in specific bou
 		lng: 0.5
 	}, 4);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 		lat: 0.5,
 		lng: 0.5
 	});
@@ -717,7 +723,7 @@ test.serial('It returns and caches only markers of specific user in specific bou
 	t.true(taggedCacheStub.calledWith('tag:markers_user:1', 0, `markers_user:1_borders:${borders}`));
 });
 
-test.serial('It returns from cache only markers of specific user in specific boundaries', async t =>{
+test.serial('It returns from cache only markers of specific user in specific boundaries', async t => {
 	sinon.stub(cache, 'status').get(() => {
 		return 'ready';
 	});
@@ -731,7 +737,7 @@ test.serial('It returns from cache only markers of specific user in specific bou
 		lng: 0.5
 	}, 4);
 	await MarkerFactory.create({
-		user_id: 2,
+		user_id: otherUser.id,
 		lat: 0.5,
 		lng: 0.5
 	});
@@ -780,7 +786,7 @@ test.serial('It returns and caches previous page within specific boundaries', as
 	});
 	await MarkerFactory.create({
 		user_id: 1,
-		story_id: Story.get('id'),
+		story_id: Story.id,
 		lat: 9.23849,
 		lng: -9.4922,
 	});

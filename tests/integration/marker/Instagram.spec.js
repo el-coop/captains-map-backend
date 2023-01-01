@@ -1,20 +1,22 @@
 import test from 'ava';
 import app from '../../../app.js';
-import knex from '../../../database/knex.js';
 import MediaFactory from '../../../database/factories/MediaFactory.js';
 import request from 'supertest';
 import sinon from 'sinon';
 import httpService from '../../../App/Services/HttpService.js';
 import Cache from '../../../App/Services/CacheService.js';
+import migrator from "../../Migrator.js";
+import seeder from "../../Seeder.js";
 
 test.beforeEach(async () => {
-	await knex.migrate.latest();
-	await knex.seed.run();
+	await migrator.up();
+	await seeder.up();
 });
 
 test.afterEach.always(async () => {
+	await migrator.down({to: '20180814134813_create_users_table'});
+	await seeder.down({to: 0});
 	sinon.restore();
-	await knex.migrate.rollback();
 });
 
 test.serial('It returns and caches Instagram data results from api', async t => {
@@ -31,12 +33,12 @@ test.serial('It returns and caches Instagram data results from api', async t => 
 	});
 	const media = await MediaFactory.create();
 
-	const response = await request(app).get(`/api/marker/instagram/${media.get('id')}`);
+	const response = await request(app).get(`/api/marker/instagram/${media.id}`);
 	t.is(response.status, 200);
 	t.is(response.body.message, 'fake data');
 	t.true(httpStub.calledOnce);
 	t.true(cacheStub.calledOnce);
-	t.true(cacheStub.firstCall.calledWith(`instagram:${media.get('path')}`, 60 * 60 * 12, JSON.stringify({
+	t.true(cacheStub.firstCall.calledWith(`instagram:${media.path}`, 60 * 60 * 12, JSON.stringify({
 		message: 'fake data'
 	})));
 });
