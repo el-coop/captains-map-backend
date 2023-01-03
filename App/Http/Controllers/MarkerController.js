@@ -65,15 +65,16 @@ class MarkersController {
 				}
 			}
 			marker.setDataValue('media', medias);
-			marker.setDataValue('user', {
-				bio: await marker.getUser({
+			marker.setDataValue('user',
+				await marker.getUser({
+					attributes: ['id', 'username'],
 					include: [{
+						attributes: ['user_id', 'path'],
 						model: Bio,
 						as: 'bio'
 					}]
-
 				})
-			});
+			);
 
 			await Cache.tag(['markers', `markers_user:${req.user.id}`]).flush();
 
