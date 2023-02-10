@@ -361,6 +361,37 @@ test('It validates url', async t => {
 	});
 });
 
+test('It validates max', async t => {
+	const prep = validationMiddleware.validate({
+		name: ['max:3']
+	});
+
+	const req = {
+		body: {
+			name: 'guest'
+		}
+	};
+
+	const rules = prep[0][0];
+	const validate = prep[1];
+	await rules(req, {}, sinon.spy());
+
+	const error = t.throws(() => {
+		validate(req, {}, sinon.spy());
+	});
+
+
+	t.is(error.statusCode, 422);
+	t.deepEqual(error.data, {
+		errors: [{
+			location: 'body',
+			param: 'name',
+			value: 'guest',
+			msg: 'Invalid value'
+		}]
+	});
+});
+
 test('It validates requiredIf', async t => {
 	const prep = validationMiddleware.validate({
 		name: ['requiredIf:test,rest']

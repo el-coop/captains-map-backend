@@ -63,6 +63,10 @@ class Validator {
 		this.isLength({min: args[0]})
 	}
 
+	max(args) {
+		this.isLength({max: args[0]})
+	}
+
 	string() {
 		this.isString();
 	}

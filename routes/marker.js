@@ -30,7 +30,7 @@ router.post('/create/:story?', [
 		lng: ['required', 'numeric'],
 		time: ['required', 'date'],
 		description: ['string'],
-		location: ['string'],
+		location: ['string','max:255'],
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
 		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\\/\\/www\\.instagram\\.com\\/p\\/\\w*\\/.*'],
