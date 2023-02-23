@@ -29,7 +29,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "nunjucks": "^3.2.3",
-    "sequelize": "^6.28.0",
+    "sequelize": "^6.28.2",
     "sharp": "^0.31.2",
     "superagent": "^8.0.4",
     "web-push": "^3.5.0"
