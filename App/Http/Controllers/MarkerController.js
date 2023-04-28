@@ -208,17 +208,21 @@ class MarkersController {
 
 	async getInstagramData(req, res) {
 		const instagramId = req.objects.media.path;
-		const response = await Cache.remember(`instagram:${instagramId}`, async () => {
-			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
-			console.log(apiResponse);
+		const image = await Cache.remember(`instagram:${instagramId}`, async () => {
+			const apiResponse = await http.get(`https://www.instagram.com/p/${instagramId}/embed/captioned/`);
+			const imageLink = apiResponse.data.split('"EmbeddedMediaImage"')[1].split('src="')[1].split('"')[0].replaceAll('&amp;','&');
+			const image = await http.get(imageLink,{
+				responseType: 'arraybuffer'
+			});
 			if (apiResponse.status === 200) {
-				return apiResponse.data;
+				return image;
 			}
 			throw new BaseError('An error occurred with the Instagram API');
 		}, 60 * 60 * 12);
-		return res.status(200).set('Cache-Control', 'public, max-age=' + (60 * 60 * 6)).json(
-			response
-		);
+		return res.status(200)
+			.header('content-type',image.headers['content-type'])
+			.set('Cache-Control', 'public, max-age=' + (60 * 60 * 6))
+			.send(image.data);
 	}
 
 	[generateQueryKey](req, pref) {
