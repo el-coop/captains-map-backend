@@ -22,7 +22,7 @@ class CrawlerController {
 				if (media.type === 'image') {
 					return `https://map.elcoop.io/api${media.path}`;
 				}
-				return `https://instagram.com/p/${media.path}/media/`;
+				return `https://map.elcoop.io/api/marker/instagram/${media.instagram_type}/${media.path}`;
 			});
 		}
 		return res.status(200).render('crawler.html', {

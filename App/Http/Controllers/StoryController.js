@@ -41,7 +41,7 @@ class StoryController {
 			},
 			include: [{
 				model: Media,
-				attributes: ['id', 'marker_id', 'type', 'path'],
+				attributes: ['id', 'marker_id', 'type','instagram_type', 'path'],
 				as: 'media'
 			},{
 				model: User,

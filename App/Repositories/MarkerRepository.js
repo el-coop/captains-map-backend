@@ -121,7 +121,7 @@ class MarkerRepository {
 				as: 'user'
 			}, {
 				model: Media,
-				attributes: ['id', 'marker_id', 'type', 'path'],
+				attributes: ['id', 'marker_id', 'type', 'instagram_type','path'],
 				as: 'media'
 			}],
 			rejectOnEmpty: true
@@ -181,7 +181,7 @@ class MarkerRepository {
 				as: 'user',
 			}, {
 				model: Media,
-				attributes: ['id', 'marker_id', 'type', 'path'],
+				attributes: ['id', 'marker_id', 'instagram_type','type', 'path'],
 				as: 'media',
 			}],
 			order: [['id', order]],

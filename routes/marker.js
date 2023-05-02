@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/', MarkerController.index.bind(MarkerController));
 
-router.get('/instagram/:media', modelMiddleware.inject(), MarkerController.getInstagramData);
+router.get('/instagram/:type/:media', MarkerController.getInstagramData);
 
 router.get('/:user/:markerId?', modelMiddleware.inject({
 	User: 'username'
@@ -33,7 +33,7 @@ router.post('/create/:story?', [
 		location: ['string','max:255'],
 		type: ['required', 'in:Visited,Plan,Suggestion,Other'],
 		'media.type': ['required'],
-		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\\/\\/www\\.instagram\\.com\\/p\\/\\w*\\/.*'],
+		'media.path': ['requiredIf:media.type,instagram', 'url', 'matches:https:\\/\\/www\\.instagram\\.com\\/(p|reel)\\/\\w*\\/.*'],
 		'media.files': ['requiredIf:media.type,image,file', 'clamav']
 	}),
 ], MarkerController.create.bind(MarkerController));

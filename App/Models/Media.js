@@ -18,6 +18,7 @@ class Media extends Model {
 Media.init({
 	marker_id: DataTypes.INTEGER,
 	type: DataTypes.STRING,
+	instagram_type: DataTypes.STRING,
 	path: DataTypes.STRING
 }, {
 	sequelize,
