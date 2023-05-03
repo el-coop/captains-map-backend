@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/story/Update.spec.js"
+		"tests/**/crawler/Metadata.spec.js"
 	]
 }

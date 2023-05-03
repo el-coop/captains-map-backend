@@ -11,7 +11,6 @@ module.exports = {
 	},
 
 	async down(queryInterface, Sequelize) {
-		await queryInterface.removeColumn('medias','instagram_type');
-
+		await queryInterface.sequelize.query('ALTER TABLE MEDIAS DROP COLUMN instagram_type');
 	}
 };
