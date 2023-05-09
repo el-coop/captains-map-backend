@@ -45,8 +45,9 @@ class MarkersController {
 		try {
 			if (req.body.media.type === 'instagram') {
 				const media = new Media();
-				const regex = new RegExp(/https:\/\/www\.instagram\.com\/p\/(\w*)\/.*/i);
-				media.path = regex.exec(req.body.media.path)[1];
+				const regex = new RegExp(/https:\/\/www\.instagram\.com\/(p|reel)\/(\w*)\/.*/i);
+				media.instagram_type = regex.exec(req.body.media.path)[1];
+				media.path = regex.exec(req.body.media.path)[2];
 				media.type = req.body.media.type;
 				media.marker_id = marker.id;
 				await media.save();
@@ -207,18 +208,23 @@ class MarkersController {
 	}
 
 	async getInstagramData(req, res) {
-		const instagramId = req.objects.media.path;
-		const response = await Cache.remember(`instagram:${instagramId}`, async () => {
-			const apiResponse = await http.get(`https://api.instagram.com/oembed?url=http://instagr.am/p/${instagramId}/&omitscript=true&hidecaption=true`);
-			console.log(apiResponse);
+		const instagramId = req.params.media;
+		const instagramType = req.params.type;
+		const image = await Cache.remember(`instagram:${instagramId}`, async () => {
+			const apiResponse = await http.get(`https://www.instagram.com/${instagramType}/${instagramId}/embed/`);
+			const imageLink = apiResponse.data.split('"EmbeddedMediaImage"')[1].split('src="')[1].split('"')[0].replaceAll('&amp;','&');
+			const image = await http.get(imageLink,{
+				responseType: 'arraybuffer'
+			});
 			if (apiResponse.status === 200) {
-				return apiResponse.data;
+				return image;
 			}
 			throw new BaseError('An error occurred with the Instagram API');
 		}, 60 * 60 * 12);
-		return res.status(200).set('Cache-Control', 'public, max-age=' + (60 * 60 * 6)).json(
-			response
-		);
+		return res.status(200)
+			.header('content-type',image.headers['content-type'])
+			.set('Cache-Control', 'public, max-age=' + (60 * 60 * 12))
+			.send(image.data);
 	}
 
 	[generateQueryKey](req, pref) {
