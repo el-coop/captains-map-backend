@@ -220,14 +220,17 @@ class MarkersController {
 				responseType: 'arraybuffer'
 			});
 			if (image.status === 200) {
-				return image;
+				return {
+					data: image.data,
+					headers: image.headers
+				};
 			}
 			throw new BaseError('An error occurred with the Instagram API');
 		}, 60 * 60 * 12);
 		return res.status(200)
 			.header('content-type',image.headers['content-type'])
 			.set('Cache-Control', 'public, max-age=' + (60 * 60 * 12))
-			.send(image.data);
+			.send(Buffer.from(image.data));
 	}
 
 	[generateQueryKey](req, pref) {
@@ -260,7 +263,7 @@ class MarkersController {
 
 			const payload = {
 				username: user.username,
-				image: marker.dataValues.media[0].path,
+				image: marker.dataValues.media[0],
 
 			};
 
