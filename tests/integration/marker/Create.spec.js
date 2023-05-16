@@ -79,7 +79,7 @@ test.serial('It creates a marker with instagram and flushes cache', async t => {
 
 });
 
-test.serial('It creates a marker and notifies followers', async t => {
+test('It creates a marker and notifies followers', async t => {
 	const followers = await FollowerFactory.create({
 		user_id: 1,
 	}, 2);
@@ -106,7 +106,11 @@ test.serial('It creates a marker and notifies followers', async t => {
 
 	const payload = JSON.stringify({
 		username: 'nur',
-		image: 'BlfyEoTDKxi'
+		image: {
+			path: 'BlfyEoTDKxi',
+			instagram_type: 'p',
+			type: 'instagram'
+		}
 	});
 
 
@@ -343,7 +347,11 @@ test.serial('It creates a marker and logs follower notification error', async t 
 
 	const payload = JSON.stringify({
 		username: 'nur',
-		image: 'BlfyEoTDKxi'
+		image: {
+			path: 'BlfyEoTDKxi',
+			instagram_type: 'p',
+			type: 'instagram'
+		}
 	});
 
 

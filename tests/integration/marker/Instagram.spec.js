@@ -47,12 +47,10 @@ test.serial('It returns and caches Instagram data results from api', async t => 
 	t.true(httpStub.calledTwice);
 	t.true(cacheStub.calledOnce);
 	t.true(cacheStub.firstCall.calledWith(`instagram:${media.path}`, 60 * 60 * 12, JSON.stringify({
+		data: 'fake data',
 		headers: {
 			'content-type': 'text/html',
 		},
-		status: 200,
-		data: 'fake data'
-
 	})));
 });
 

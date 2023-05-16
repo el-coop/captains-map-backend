@@ -261,9 +261,15 @@ class MarkersController {
 			});
 
 
+			const media = marker.dataValues.media[0];
+
 			const payload = {
 				username: user.username,
-				image: marker.dataValues.media[0],
+				image: {
+					path: media.path,
+					instagram_type: media.instagram_type || null,
+					type: media.type
+				}
 
 			};
 

@@ -3,6 +3,6 @@ export default {
 		"./tests/loadEnv.js"
 	],
 	"files": [
-		"tests/**/crawler/Metadata.spec.js"
+		"tests/**/Instagram.spec.js"
 	]
 }
