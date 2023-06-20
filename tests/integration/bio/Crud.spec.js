@@ -392,7 +392,7 @@ test('It updates only description when only description is given and flushes old
 });
 
 
-test.serial('It updates bio and deletes old image and deletes old data', async t => {
+test('It updates bio and deletes old image and deletes old data', async t => {
 	const forgetCacheStub = sinon.stub(cache, 'forget');
 	const flushStub = sinon.stub();
 	const tagCacheStub = sinon.stub(cache, 'tag').returns({

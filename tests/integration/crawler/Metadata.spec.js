@@ -68,7 +68,7 @@ test.serial('It returns metadata for image marker', async t => {
 	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://map.elcoop.io/api${medias[0].path}"/>`) > -1);
 
 })
-;
+
 
 test.serial('It returns metadata for instagram marker', async t => {
 	const marker = await MarkerFactory.create({
@@ -85,8 +85,8 @@ test.serial('It returns metadata for instagram marker', async t => {
 	t.true(response.text.indexOf('<meta property="og:description" content="' + marker.description + '"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:type" content="article"/>') > -1);
 	t.true(response.text.indexOf('<meta property="og:url" content="https://map.elcoop.io/nur/1"/>') > -1);
-	t.true(response.text.indexOf(`<meta property="og:image" content="https://instagram.com/p/${media.path}/media/"/>`) > -1);
-	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://instagram.com/p/${media.path}/media/"/>`) > -1);
+	t.true(response.text.indexOf(`<meta property="og:image" content="https://map.elcoop.io/api/marker/instagram/${media.instagram_type}/${media.path}"/>`) > -1);
+	t.true(response.text.indexOf(`<meta name="twitter:image" content="https://map.elcoop.io/api/marker/instagram/${media.instagram_type}/${media.path}"/>`) > -1);
 
 
 });

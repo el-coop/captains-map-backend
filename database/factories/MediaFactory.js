@@ -12,6 +12,7 @@ class MediaFactory extends BaseFactory {
 		return {
 			marker_id: MarkerFactory,
 			type: 'instagram',
+			instagram_type: 'p',
 			path: 'BlfyEoTDKxi',
 		}
 	}

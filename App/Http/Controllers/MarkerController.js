@@ -212,19 +212,25 @@ class MarkersController {
 		const instagramType = req.params.type;
 		const image = await Cache.remember(`instagram:${instagramId}`, async () => {
 			const apiResponse = await http.get(`https://www.instagram.com/${instagramType}/${instagramId}/embed/`);
+			if(apiResponse.status !== 200){
+				throw new BaseError('An error occurred with the Instagram API');
+			}
 			const imageLink = apiResponse.data.split('"EmbeddedMediaImage"')[1].split('src="')[1].split('"')[0].replaceAll('&amp;','&');
 			const image = await http.get(imageLink,{
 				responseType: 'arraybuffer'
 			});
-			if (apiResponse.status === 200) {
-				return image;
+			if (image.status === 200) {
+				return {
+					data: image.data,
+					headers: image.headers
+				};
 			}
 			throw new BaseError('An error occurred with the Instagram API');
 		}, 60 * 60 * 12);
 		return res.status(200)
 			.header('content-type',image.headers['content-type'])
 			.set('Cache-Control', 'public, max-age=' + (60 * 60 * 12))
-			.send(image.data);
+			.send(Buffer.from(image.data));
 	}
 
 	[generateQueryKey](req, pref) {
@@ -255,9 +261,15 @@ class MarkersController {
 			});
 
 
+			const media = marker.dataValues.media[0];
+
 			const payload = {
 				username: user.username,
-				image: marker.dataValues.media[0].path,
+				image: {
+					path: media.path,
+					instagram_type: media.instagram_type || null,
+					type: media.type
+				}
 
 			};
 
